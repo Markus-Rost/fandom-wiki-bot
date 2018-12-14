@@ -124,10 +124,10 @@ var pausecmdmap = {
 function cmd_settings(lang, msg, args, line) {
 	if ( msg.isAdmin() ) {
 		if ( msg.guild.id in settings ) {
-			var text = lang.settings.current.replace( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replace( '%2$s', 'https://' + settings[msg.guild.id].wiki[0] + '.wikia.com/wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
+			var text = lang.settings.current.replace( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replace( '%2$s', 'http://' + settings[msg.guild.id].wiki[0] + '.wikia.com/wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
 			if ( settings[msg.guild.id].channels ) {
 				Object.keys(settings[msg.guild.id].channels).forEach( function(channel) {
-					text += '<#' + channel + '>: <https://' + settings[msg.guild.id].channels[channel][0] + '.wikia.com/wiki/>\n';
+					text += '<#' + channel + '>: <http://' + settings[msg.guild.id].channels[channel][0] + '.wikia.com/wiki/>\n';
 				} );
 			} else text += lang.settings.nochannels;
 		} else {
@@ -157,14 +157,14 @@ function cmd_settings(lang, msg, args, line) {
 					if ( args[1] ) {
 						if ( regex !== null ) edit_settings(lang, msg, 'wiki', [regex[1], '']);
 						else msg.replyMsg( nowikis );
-					} else msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].wiki[0] + '.wikia.com/wiki/' + wikis );
+					} else msg.replyMsg( lang.settings[current] + ' http://' + settings[msg.guild.id].wiki[0] + '.wikia.com/wiki/' + wikis );
 				} else if ( args[0] == 'channel' ) {
 					if ( args[1] ) {
 						if ( regex !== null ) edit_settings(lang, msg, 'channel', [regex[1], '']);
 						else msg.replyMsg( nochannels );
 					} else if ( settings[msg.guild.id].channels && msg.channel.id in settings[msg.guild.id].channels ) {
-						msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].channels[msg.channel.id][0] + '.wikia.com/wiki/' + channels );
-					} else msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].wiki[0] + '.wikia.com/wiki/' + channels );
+						msg.replyMsg( lang.settings[current] + ' http://' + settings[msg.guild.id].channels[msg.channel.id][0] + '.wikia.com/wiki/' + channels );
+					} else msg.replyMsg( lang.settings[current] + ' http://' + settings[msg.guild.id].wiki[0] + '.wikia.com/wiki/' + channels );
 				} else msg.replyMsg( text );
 			} else {
 				if ( args[0] == 'lang' ) {
@@ -346,7 +346,7 @@ function cmd_test(lang, msg, args, line) {
 			var embed = new Discord.RichEmbed().setTitle( lang.test.time ).addField( 'Discord', ( then - now ) + 'ms' );
 			now = Date.now();
 			request( {
-				uri: 'https://' + lang.link + '.wikia.com/api.php?action=query&format=json',
+				uri: 'http://' + lang.link + '.wikia.com/api.php?action=query&format=json',
 				json: true
 			}, function( error, response, body ) {
 				then = Date.now();
@@ -459,13 +459,13 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 	var args = title.split(' ').slice(1);
 	
 	if ( ( invoke == 'random' || invoke == '🎲' ) && !args.join('') && !linksuffix ) cmd_random(lang, msg, wiki);
-	else if ( invoke == 'page' || invoke == lang.search.page ) msg.channel.sendMsg( '<https://' + wiki + '.wikia.com/wiki/' + args.join('_').toTitle() + linksuffix + '>' );
-	else if ( invoke == 'search' || invoke == lang.search.search ) msg.channel.sendMsg( '<https://' + wiki + '.wikia.com/wiki/Special:Search/' + args.join('_').toTitle() + linksuffix + '>' );
+	else if ( invoke == 'page' || invoke == lang.search.page ) msg.channel.sendMsg( '<http://' + wiki + '.wikia.com/wiki/' + args.join('_').toTitle() + linksuffix + '>' );
+	else if ( invoke == 'search' || invoke == lang.search.search ) msg.channel.sendMsg( '<http://' + wiki + '.wikia.com/wiki/Special:Search/' + args.join('_').toTitle() + linksuffix + '>' );
 	else if ( invoke == 'diff' && args.length ) cmd_diff(lang, msg, args, wiki);
 	else {
 		msg.reactEmoji('⏳').then( function( reaction ) {
 			request( {
-				uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&meta=siteinfo&siprop=general&iwurl=true' + ( /(?:^|&)redirect=no(?:&|$)/.test( querystring ) ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ),
+				uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&meta=siteinfo&siprop=general&iwurl=true' + ( /(?:^|&)redirect=no(?:&|$)/.test( querystring ) ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ),
 				json: true
 			}, function( error, response, body ) {
 				if ( error || !response || response.statusCode != 200 || !body || !body.query ) {
@@ -475,7 +475,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 					}
 					else {
 						console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-						msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/' + ( linksuffix ? title.toTitle() + linksuffix : 'Special:Search/' + title.toTitle() ) + '>' );
+						msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/' + ( linksuffix ? title.toTitle() + linksuffix : 'Special:Search/' + title.toTitle() ) + '>' );
 					}
 					
 					if ( reaction ) reaction.removeEmoji();
@@ -489,19 +489,19 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 						}
 						else if ( body.query.pages['-1'] && ( ( body.query.pages['-1'].missing != undefined && body.query.pages['-1'].known == undefined ) || body.query.pages['-1'].invalid != undefined ) ) {
 							request( {
-								uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=search&gsrnamespace=0|4|12|14|10000|10002|10004|10006|10008|10010&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ),
+								uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=search&gsrnamespace=0|4|12|14|10000|10002|10004|10006|10008|10010&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ),
 								json: true
 							}, function( srerror, srresponse, srbody ) {
 								if ( srerror || !srresponse || srresponse.statusCode != 200 || !srbody ) {
 									console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
-									msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/Special:Search/' + title.toTitle() + '>' );
+									msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/Special:Search/' + title.toTitle() + '>' );
 								}
 								else {
 									if ( !srbody.query ) {
 										msg.reactEmoji('🤷');
 									}
 									else {
-										var pagelink = 'https://' + wiki + '.wikia.com/wiki/' + Object.values(srbody.query.pages)[0].title.toTitle() + linksuffix;
+										var pagelink = 'http://' + wiki + '.wikia.com/wiki/' + Object.values(srbody.query.pages)[0].title.toTitle() + linksuffix;
 										if ( title.replace( /\-/g, ' ' ).toTitle().toLowerCase() == querypage.title.replace( /\-/g, ' ' ).toTitle().toLowerCase() ) {
 											msg.channel.sendMsg( pagelink );
 										}
@@ -518,7 +518,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 							} );
 						}
 						else {
-							msg.channel.sendMsg( 'https://' + wiki + '.wikia.com/wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) ) );
+							msg.channel.sendMsg( 'http://' + wiki + '.wikia.com/wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) ) );
 							
 							if ( reaction ) reaction.removeEmoji();
 						}
@@ -539,7 +539,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 						}
 					}
 					else {
-						msg.channel.sendMsg( 'https://' + wiki + '.wikia.com/wiki/' + body.query.general.mainpage.toTitle() + linksuffix );
+						msg.channel.sendMsg( 'http://' + wiki + '.wikia.com/wiki/' + body.query.general.mainpage.toTitle() + linksuffix );
 						
 						if ( reaction ) reaction.removeEmoji();
 					}
@@ -604,7 +604,7 @@ function cmd_sendumfrage(lang, msg, args, reactions, imgs, i) {
 function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 	if ( /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d\d)?$/.test(username) ) {
 		request( {
-			uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&list=blocks&bkprop=user|by|timestamp|expiry|reason&bkip=' + encodeURIComponent( username ),
+			uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=blocks&bkprop=user|by|timestamp|expiry|reason&bkip=' + encodeURIComponent( username ),
 			json: true
 		}, function( error, response, body ) {
 			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.blocks ) {
@@ -617,7 +617,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/Special:Contributions/' + username.toTitle() + '>' );
+					msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/Special:Contributions/' + username.toTitle() + '>' );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
@@ -644,7 +644,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 					else if ( range >= 16 ) rangeprefix = username.replace( /^(\d{1,3}\.\d{1,3}\.).+$/, '$1' );
 				}
 				request( {
-					uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&list=usercontribs&ucprop=&ucuser=' + encodeURIComponent( username ),
+					uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=usercontribs&ucprop=&ucuser=' + encodeURIComponent( username ),
 					json: true
 				}, function( ucerror, ucresponse, ucbody ) {
 					if ( ucerror || !ucresponse || ucresponse.statusCode != 200 || !ucbody || !ucbody.query || !ucbody.query.usercontribs ) {
@@ -653,13 +653,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 						}
 						else {
 							console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( ucerror ? ': ' + ucerror : ( ucbody ? ( ucbody.error ? ': ' + ucbody.error.info : '.' ) : '.' ) ) );
-							msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/Special:Contributions/' + username.toTitle() + '>' );
+							msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/Special:Contributions/' + username.toTitle() + '>' );
 						}
 					}
 					else {
 						var editcount = [lang.user.info.editcount, ( username.includes( '/' ) && range != 24 && range != 16 ? '~' : '' ) + ucbody.query.usercontribs.length + ( ucbody.continue ? '+' : '' )];
 						
-						var text = '<https://' + wiki + '.wikia.com/wiki/Special:Contributions/' + username.toTitle() + '>\n\n' + editcount.join(' ');
+						var text = '<http://' + wiki + '.wikia.com/wiki/Special:Contributions/' + username.toTitle() + '>\n\n' + editcount.join(' ');
 						if ( blocks.length ) blocks.forEach( block => text += '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() );
 						
 						msg.channel.sendMsg( text );
@@ -671,7 +671,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 		} );
 	} else {
 		request( {
-			uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&list=users&usprop=blockinfo|groups|editcount|registration|gender&ususers=' + encodeURIComponent( username ),
+			uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=users&usprop=blockinfo|groups|editcount|registration|gender&ususers=' + encodeURIComponent( username ),
 			json: true
 		}, function( error, response, body ) {
 			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.users[0] ) {
@@ -681,7 +681,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/' + namespace + username.toTitle() + linksuffix + '>' );
+					msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/' + namespace + username.toTitle() + linksuffix + '>' );
 				}
 			}
 			else {
@@ -726,7 +726,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 					var blockreason = body.query.users[0].blockreason;
 					var block = [lang.user.block.header.replace( '%s', username ), lang.user.block.text.replace( '%1$s', blockedtimestamp ).replace( '%2$s', blockexpiry ).replace( '%3$s', blockedby ).replace( '%4$s', blockreason )];
 					
-					msg.channel.sendMsg( '<https://' + wiki + '.wikia.com/wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) );
+					msg.channel.sendMsg( '<http://' + wiki + '.wikia.com/wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) );
 				}
 			}
 			
@@ -778,7 +778,7 @@ function cmd_diff(lang, msg, args, wiki) {
 		else {
 			msg.reactEmoji('⏳').then( function( reaction ) {
 				request( {
-					uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&prop=revisions&rvprop=' + ( title ? '&titles=' + title : '&revids=' + revision ) + '&rvdiffto=' + diff,
+					uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&prop=revisions&rvprop=' + ( title ? '&titles=' + title : '&revids=' + revision ) + '&rvdiffto=' + diff,
 					json: true
 				}, function( error, response, body ) {
 					if ( error || !response || response.statusCode != 200 || !body || !body.query ) {
@@ -788,7 +788,7 @@ function cmd_diff(lang, msg, args, wiki) {
 						}
 						else {
 							console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-							msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/' + title + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' );
+							msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/' + title + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' );
 						}
 						
 						if ( reaction ) reaction.removeEmoji();
@@ -823,7 +823,7 @@ function cmd_diff(lang, msg, args, wiki) {
 
 function cmd_diffsend(lang, msg, args, wiki, reaction) {
 	request( {
-		uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&list=tags&tglimit=500&tgprop=displayname&prop=revisions&rvprop=ids|timestamp|flags|user|size|comment|tags&revids=' + args.join('|'),
+		uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=tags&tglimit=500&tgprop=displayname&prop=revisions&rvprop=ids|timestamp|flags|user|size|comment|tags&revids=' + args.join('|'),
 		json: true
 	}, function( error, response, body ) {
 		if ( error || !response || response.statusCode != 200 || !body || !body.query ) {
@@ -833,14 +833,14 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 			}
 			else {
 				console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-				msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/?diff=' + args[0] + ( args[1] ? '&oldid=' + args[1] : '' ) + '>' );
+				msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/?diff=' + args[0] + ( args[1] ? '&oldid=' + args[1] : '' ) + '>' );
 			}
 		}
 		else {
 			if ( body.query.badrevids ) msg.replyMsg( lang.diff.badrev );
 			else if ( body.query.pages && !body.query.pages['-1'] ) {
 				var pages = Object.values(body.query.pages);
-				if ( pages.length != 1 ) msg.channel.sendMsg( '<https://' + wiki + '.wikia.com/wiki/?diff=' + args[0] + ( args[1] ? '&oldid=' + args[1] : '' ) + '>' );
+				if ( pages.length != 1 ) msg.channel.sendMsg( '<http://' + wiki + '.wikia.com/wiki/?diff=' + args[0] + ( args[1] ? '&oldid=' + args[1] : '' ) + '>' );
 				else {
 					var title = pages[0].title;
 					var revisions = [];
@@ -858,7 +858,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 						var tagregex = /<a [^>]*title="([^"]+)"[^>]*>(.+)<\/a>/g;
 					}
 					
-					var pagelink = 'https://' + wiki + '.wikia.com/wiki/' + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
+					var pagelink = 'http://' + wiki + '.wikia.com/wiki/' + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
 					var text = '<' + pagelink + '>\n\n' + editor.join(' ') + '\n' + timestamp.join(' ') + '\n' + size.join(' ') + '\n' + comment.join(' ') + ( tags ? '\n' + tags.join(' ').replace( tagregex, '$2' ) : '' );
 					
 					msg.channel.sendMsg( text );
@@ -874,7 +874,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 function cmd_random(lang, msg, wiki) {
 	msg.reactEmoji('⏳').then( function( reaction ) {
 		request( {
-			uri: 'https://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=random&grnnamespace=0',
+			uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=random&grnnamespace=0',
 			json: true
 		}, function( error, response, body ) {
 			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.pages ) {
@@ -884,10 +884,10 @@ function cmd_random(lang, msg, wiki) {
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.channel.sendErrorMsg( '<https://' + wiki + '.wikia.com/wiki/Special:Random>' );
+					msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/Special:Random>' );
 				}
 			}
-			else msg.channel.sendMsg( '🎲 ' + 'https://' + wiki + '.wikia.com/wiki/' + Object.values(body.query.pages)[0].title.toTitle() );
+			else msg.channel.sendMsg( '🎲 ' + 'http://' + wiki + '.wikia.com/wiki/' + Object.values(body.query.pages)[0].title.toTitle() );
 			
 			if ( reaction ) reaction.removeEmoji();
 		} );
@@ -948,7 +948,7 @@ function cmd_get(lang, msg, args, line) {
 			var channelguild = ['Guild:', channel.guild.name + ' `' + channel.guild.id + '`'];
 			var channelname = ['Channel:', '#' + channel.name + ' `' + channel.id + '` ' + channel.toString()];
 			var channelpermissions = ['Missing permissions:', ( channel.memberPermissions(channel.guild.me).has(defaultPermissions) ? '*none*' : '`' + channel.memberPermissions(channel.guild.me).missing(defaultPermissions).join('`, `') + '`' )];
-			var channelwiki = ['Default Wiki:', 'https://' + ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id][0] : settings[channel.guild.id].wiki[0] ) : settings['default'].wiki[0] ) + '.wikia.com/'];
+			var channelwiki = ['Default Wiki:', 'http://' + ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id][0] : settings[channel.guild.id].wiki[0] ) : settings['default'].wiki[0] ) + '.wikia.com/'];
 			if ( msg.showEmbed() ) {
 				var text = '';
 				var embed = new Discord.RichEmbed().addField( channelguild[0], channelguild[1] ).addField( channelname[0], channelname[1] ).addField( channelpermissions[0], channelpermissions[1] ).addField( channelwiki[0], channelwiki[1] );
@@ -1017,15 +1017,15 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 	while ( ( link = /\[\[(?:([^\|\]]+)\|)?([^\]]+)\]\]([a-z]*)/g.exec(text) ) !== null ) {
 		if ( link[1] ) {
 			var page = ( /^(#|\/)/.test(link[1]) ? title.toTitle(true) + ( /^#/.test(link[1]) ? '#' + link[1].substr(1).toSection() : link[1].toTitle(true) ) : link[1].toTitle(true) );
-			text = text.replace( link[0], '[' + link[2] + link[3] + '](https://' + wiki + '.wikia.com/wiki/' + page + ')' );
+			text = text.replace( link[0], '[' + link[2] + link[3] + '](http://' + wiki + '.wikia.com/wiki/' + page + ')' );
 		} else {
 			var page = ( /^(#|\/)/.test(link[2]) ? title.toTitle(true) + ( /^#/.test(link[2]) ? '#' + link[2].substr(1).toSection() : link[2].toTitle(true) ) : link[2].toTitle(true) );
-			text = text.replace( link[0], '[' + link[2] + link[3] + '](https://' + wiki + '.wikia.com/wiki/' + page + ')' );
+			text = text.replace( link[0], '[' + link[2] + link[3] + '](http://' + wiki + '.wikia.com/wiki/' + page + ')' );
 		}
 	}
 	while ( title != '' && ( link = /\/\*\s*([^\*]+?)\s*\*\/\s*(.)?/g.exec(text) ) !== null ) {
 		var page = title.toTitle(true) + '#' + link[1].toSection();
-		text = text.replace( link[0], '[→](https://' + wiki + '.wikia.com/wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
+		text = text.replace( link[0], '[→](http://' + wiki + '.wikia.com/wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
 	}
 	return text.replace( /(`|_|\*|~|<|>)/g, '\\$1' );
 };
