@@ -52,7 +52,7 @@
 			"wiki": "the default wiki for this server is:",
 			"wikiinvalid": "please provide a valid link to a FANDOM wiki!",
 			"wikichanged": "you changed the default wiki for this server to:",
-			"wikihelp": "Use `%s <wiki>` to change the default wiki.\nLink to the wiki: `https://<wiki>.fandom.com/`",
+			"wikihelp": "Use `%s <wiki>` to change the default wiki.\nLink to the wiki: `https://<wiki>.wikia.com/`",
 			"channel": "the default wiki for this channel is:",
 			"channelchanged": "you changed the default wiki for this channel to:"
 		},
@@ -139,7 +139,7 @@
 			"noadmin": "you need the `Manage Server` permission for these commands!",
 			"list": [
 				{ "cmd": "<search term>", "desc": "I will answer with a link to a matching article in the wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <search term>", "desc": "I will answer with a link to a matching article in the named FANDOM wiki: `https://<wiki>.fandom.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <search term>", "desc": "I will answer with a link to a matching article in the named FANDOM wiki: `https://<wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "User:<username>", "desc": "I will show some information about the user.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "I will answer with a link to the diff in the wiki." },
 				{ "cmd": "diff <page name>", "desc": "I will answer with a link to the last diff on the article in the wiki." },
@@ -194,7 +194,7 @@
 			"wiki": "das Standard-Wiki für diesen Server ist:",
 			"wikiinvalid": "bitte gib einen gültigen Link zu einem FANDOM-Wiki an!",
 			"wikichanged": "du hast das Standard-Wiki für diesen Server geändert zu:",
-			"wikihelp": "Nutze `%s <Wiki>` um das Standard-Wiki zu ändern.\nLink zum Wiki: `https://<Wiki>.fandom.com/`",
+			"wikihelp": "Nutze `%s <Wiki>` um das Standard-Wiki zu ändern.\nLink zum Wiki: `https://<Wiki>.wikia.com/`",
 			"channel": "das Standard-Wiki für diesen Kanal ist:",
 			"channelchanged": "du hast das Standard-Wiki für diesen Kanal geändert zu:"
 		},
@@ -282,7 +282,7 @@
 			"noadmin": "du benötigst die `Server verwalten`-Berechtigung für diese Befehle!",
 			"list": [
 				{ "cmd": "<Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im Wiki.", "unsearchable": true },
-				{ "cmd": "!<Wiki> <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im angegebenen FANDOM-Wiki: `https://<Wiki>.fandom.com/`", "unsearchable": true },
+				{ "cmd": "!<Wiki> <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im angegebenen FANDOM-Wiki: `https://<Wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "Benutzer:<Benutzername>", "desc": "Ich liste ein paar Informationen über den Benutzer auf.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Ich verlinke auf die Änderung im Wiki." },
 				{ "cmd": "diff <Seitenname>", "desc": "Ich verlinke auf die letzte Änderung an der Seite im Wiki." },
@@ -345,7 +345,7 @@
 			"wiki": "le wiki associé à ce serveur est :",
 			"wikiinvalid": "veuillez fournir un lien valide vers un wiki de FANDOM !",
 			"wikichanged": "le wiki par défaut a été changé pour :",
-			"wikihelp": "Utilisez `%s <wiki>` pour changer le wiki par défaut.\nLien du wiki : `https://<wiki>.fandom.com/`",
+			"wikihelp": "Utilisez `%s <wiki>` pour changer le wiki par défaut.\nLien du wiki : `https://<wiki>.wikia.com/`",
 			"channel": "le wiki défini pour ce salon est :",
 			"channelchanged": "le wiki défini pour ce salon sera désormais :"
 		},
@@ -432,7 +432,7 @@
 			"noadmin": "vous devez avoir la permission `Gérer le serveur` pour utiliser ces commandes !",
 			"list": [
 				{ "cmd": "<terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur Wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki FANDOM nommé : `https://<wiki>.fandom.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki FANDOM nommé : `https://<wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "Utilisateur:<nom d'utilisateur>", "desc": "Je vais montrer quelques informations sur l'utilisateur.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Je vais répondre avec un lien vers la diff sur Wiki." },
 				{ "cmd": "diff <nom de la page>", "desc": "Je vais répondre avec un lien vers la dernière diff de l'article sur Wiki." },
@@ -494,7 +494,7 @@
 			"wiki": "domyślną wiki tego serwera jest:",
 			"wikiinvalid": "podaj poprawny link do wiki na FANDOM!",
 			"wikichanged": "zmieniono domyślną wiki dla tego serwera na:",
-			"wikihelp": "Użyj `%s <wiki>` aby zmienić domyślną wiki.\nLink do wiki: `https://<wiki>.fandom.com/`",
+			"wikihelp": "Użyj `%s <wiki>` aby zmienić domyślną wiki.\nLink do wiki: `https://<wiki>.wikia.com/`",
 			"channel": "domyślną wiki tego kanału jest:",
 			"channelchanged": "zmieniono domyślną wiki dla tego kanału na:"
 		},
@@ -581,7 +581,7 @@
 			"noadmin": "potrzebujesz uprawnienia `Zarządzanie serwerem` aby używać tych komend!",
 			"list": [
 				{ "cmd": "<wyszukiwana fraza>", "desc": "Odpowiem linkiem do pasujacego artykułu na Wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na FANDOM: `https://<wiki>.fandom.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na FANDOM: `https://<wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "Użytkownik:<nazwa użytkownika>", "desc": "Pokażę informacje na temat użytkownika.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Odpowiem linkiem do podanej zmiany na Wiki." },
 				{ "cmd": "diff <nazwa strony>", "desc": "Odpowiem linkiem do ostatniej zmiany w podanym artykule na Wiki." },
@@ -651,7 +651,7 @@
 			"wiki": "a wiki padrão para este servidor é:",
 			"wikiinvalid": "por favor, forneça um link válido para uma wiki da FANDOM!",
 			"wikichanged": "você mudou a wiki padrão para este servidor para:",
-			"wikihelp": "Use `%s <wiki>` para alterar a wiki padrão.\nLink para a wiki: `https://<wiki>.fandom.com/`",
+			"wikihelp": "Use `%s <wiki>` para alterar a wiki padrão.\nLink para a wiki: `https://<wiki>.wikia.com/`",
 			"channel": "a wiki padrão para este canal é:",
 			"channelchanged": "você mudou a wiki padrão para este canal para:"
 		},
@@ -738,7 +738,7 @@
 			"noadmin": "você precisa da permissão de `Gerenciar servidor` para esses comandos!",
 			"list": [
 				{ "cmd": "<termo de pesquisa>", "desc": "Eu vou responder com um link para um artigo correspondente no wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da FANDOM: `https://<wiki>.fandom.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da FANDOM: `https://<wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "Usuário:<username>", "desc": "Vou mostrar algumas informações sobre o usuário.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Vou responder com um link para o diff na wiki." },
 				{ "cmd": "diff <page name>", "desc": "Vou responder com um link para o último diff no artigo na wiki." },
