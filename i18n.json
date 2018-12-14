@@ -76,6 +76,8 @@
 				["bot", "Bot"],
 				["bureaucrat", "Bureaucrat"],
 				["sysop", "Administrator"],
+				["helper", "FANDOM helper"],
+				["vstf", "VSTF"],
 				["user", "User"]
 			],
 			"manager": "Wiki manager",
@@ -218,6 +220,8 @@
 				["bot", "Bot"],
 				["bureaucrat", "Bürokrat"],
 				["sysop", "Administrator"],
+				["helper", "FANDOM-Helfer"],
+				["vstf", "VSTF"],
 				["user", "Benutzer"]
 			],
 			"manager": "Wiki-Manager",
@@ -369,6 +373,8 @@
 				["bot", "Robot"],
 				["bureaucrat", "Bureaucrate"],
 				["sysop", "Administrateur"],
+				["helper", "Assistant FANDOM"],
+				["vstf", "VSTF"],
 				["user", "Utilisateur"]
 			],
 			"manager": "Gestionnaire du wiki",
@@ -518,6 +524,8 @@
 				["bot", "Bot"],
 				["bureaucrat", "Biurokrata"],
 				["sysop", "Adminsitrator"],
+				["helper", "pomocnik FANDOM"],
+				["vstf", "VSTF"],
 				["user", "Użytkownik"]
 			],
 			"manager": "Menedżer wiki",
@@ -675,6 +683,8 @@
 				["bot", "Robô"],
 				["bureaucrat", "Burocrata"],
 				["sysop", "Administrador"],
+				["helper", "Ajudante da FANDOM"],
+				["vstf", "VSTF"],
 				["user", "Usuário"]
 			],
 			"manager": "Gerente de wiki",
