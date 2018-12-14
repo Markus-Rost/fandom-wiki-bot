@@ -26,7 +26,10 @@ var ready = {
 var defaultSettings = {
 	"default": {
 		"lang": "en",
-		"wiki": "help"
+		"wiki": [
+			"community",
+			""
+		]
 	}
 }
 var settings = defaultSettings;
@@ -121,10 +124,10 @@ var pausecmdmap = {
 function cmd_settings(lang, msg, args, line) {
 	if ( msg.isAdmin() ) {
 		if ( msg.guild.id in settings ) {
-			var text = lang.settings.current.replace( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replace( '%2$s', 'https://' + settings[msg.guild.id].wiki + '.fandom.com/wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
+			var text = lang.settings.current.replace( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replace( '%2$s', 'https://' + settings[msg.guild.id].wiki[0] + '.fandom.com/wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
 			if ( settings[msg.guild.id].channels ) {
 				Object.keys(settings[msg.guild.id].channels).forEach( function(channel) {
-					text += '<#' + channel + '>: <https://' + settings[msg.guild.id].channels[channel] + '.fandom.com/wiki/>\n';
+					text += '<#' + channel + '>: <https://' + settings[msg.guild.id].channels[channel][0] + '.fandom.com/wiki/>\n';
 				} );
 			} else text += lang.settings.nochannels;
 		} else {
@@ -149,16 +152,16 @@ function cmd_settings(lang, msg, args, line) {
 					} else msg.replyMsg( lang.settings[current] + langs );
 				} else if ( args[0] == 'wiki' ) {
 					if ( args[1] ) {
-						if ( regex !== null ) edit_settings(lang, msg, 'wiki', regex[1]);
+						if ( regex !== null ) edit_settings(lang, msg, 'wiki', [regex[1], '']);
 						else msg.replyMsg( nowikis );
-					} else msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].wiki + '.fandom.com/wiki/' + wikis );
+					} else msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].wiki[0] + '.fandom.com/wiki/' + wikis );
 				} else if ( args[0] == 'channel' ) {
 					if ( args[1] ) {
-						if ( regex !== null ) edit_settings(lang, msg, 'channel', regex[1]);
+						if ( regex !== null ) edit_settings(lang, msg, 'channel', [regex[1], '']);
 						else msg.replyMsg( nochannels );
 					} else if ( settings[msg.guild.id].channels && msg.channel.id in settings[msg.guild.id].channels ) {
-						msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].channels[msg.channel.id] + '.fandom.com/wiki/' + channels );
-					} else msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].wiki + '.fandom.com/wiki/' + channels );
+						msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].channels[msg.channel.id][0] + '.fandom.com/wiki/' + channels );
+					} else msg.replyMsg( lang.settings[current] + ' https://' + settings[msg.guild.id].wiki[0] + '.fandom.com/wiki/' + channels );
 				} else msg.replyMsg( text );
 			} else {
 				if ( args[0] == 'lang' ) {
@@ -168,7 +171,7 @@ function cmd_settings(lang, msg, args, line) {
 					} else msg.replyMsg( lang.settings.lang + langs );
 				} else if ( args[0] == 'wiki' || args[0] == 'channel' ) {
 					if ( args[1] ) {
-						if ( regex !== null ) edit_settings(lang, msg, 'wiki', regex[1]);
+						if ( regex !== null ) edit_settings(lang, msg, 'wiki', [regex[1], '']);
 						else msg.replyMsg( nowikis );
 					} else msg.replyMsg( lang.settings.wikimissing + wikis );
 				} else msg.replyMsg( text );
@@ -200,7 +203,7 @@ function edit_settings(lang, msg, key, value) {
 					var channels = temp_settings[guild].channels;
 					if ( channels ) {
 						Object.keys(channels).forEach( function(channel) {
-							if ( channels[channel] == temp_settings[guild].wiki || !client.guilds.get(guild).channels.has(channel) ) delete channels[channel];
+							if ( channels[channel].join() == temp_settings[guild].wiki.join() || !client.guilds.get(guild).channels.has(channel) ) delete channels[channel];
 						} );
 						if ( !Object.keys(channels).length ) delete temp_settings[guild].channels;
 					}
@@ -1047,7 +1050,7 @@ function cmd_get(lang, msg, args, line) {
 			var channelguild = ['Guild:', channel.guild.name + ' `' + channel.guild.id + '`'];
 			var channelname = ['Channel:', '#' + channel.name + ' `' + channel.id + '` ' + channel.toString()];
 			var channelpermissions = ['Missing permissions:', ( channel.memberPermissions(channel.guild.me).has(defaultPermissions) ? '*none*' : '`' + channel.memberPermissions(channel.guild.me).missing(defaultPermissions).join('`, `') + '`' )];
-			var channelwiki = ['Default Wiki:', 'https://' + ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id] : settings[channel.guild.id].wiki ) : settings['default'].wiki ) + '.fandom.com/'];
+			var channelwiki = ['Default Wiki:', 'https://' + ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id][0] : settings[channel.guild.id].wiki[0] ) : settings['default'].wiki[0] ) + '.fandom.com/'];
 			if ( msg.showEmbed() ) {
 				var text = '';
 				var embed = new Discord.RichEmbed().addField( channelguild[0], channelguild[1] ).addField( channelname[0], channelname[1] ).addField( channelpermissions[0], channelpermissions[1] ).addField( channelwiki[0], channelwiki[1] );
@@ -1198,7 +1201,7 @@ client.on( 'message', msg => {
 			msg.channel.sendMsg( '⚠ **Limited Functionality** ⚠\nNo settings found, please contact the bot owner!\n' + process.env.invite );
 		} else if ( channel.type == 'text' && msg.guild.id in settings ) setting = Object.assign({}, settings[msg.guild.id]);
 		var lang = Object.assign({}, i18n[setting.lang]);
-		lang.link = setting.wiki;
+		lang.link = setting.wiki[0];
 		if ( setting.channels && channel.id in setting.channels ) lang.link = setting.channels[channel.id];
 		if ( channel.type != 'text' || permissions.has(['SEND_MESSAGES','ADD_REACTIONS','USE_EXTERNAL_EMOJIS']) ) {
 			var invoke = cont.split(' ')[1] ? cont.split(' ')[1].split('\n')[0].toLowerCase() : '';
