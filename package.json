@@ -1,0 +1,37 @@
+{
+  "name": "fandom-wiki-bot",
+  "version": "1.0.0-pre",
+  "description": "Wiki-Bot is a bot for Discord with the purpose to easily link to FANDOM wikis. He resolves redirects and follows interwiki links.",
+  "main": "main.js",
+  "scripts": {
+    "test": "node --icu-data-dir=node_modules/full-icu main.js debug",
+    "start": "node --icu-data-dir=node_modules/full-icu main.js"
+  },
+  "author": "MarkusRost",
+  "license": "ISC",
+  "dependencies": {
+    "dblapi.js": "^2.3.0",
+    "discord.js": "^11.4.2",
+    "dotenv": "^6.2.0",
+    "full-icu": "^1.2.1",
+    "npm": "^6.5.0",
+    "request": "^2.88.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Markus-Rost/fandom-wiki-bot.git"
+  },
+  "keywords": [
+    "fandom",
+    "wikia",
+    "discord",
+    "wikibot",
+    "voice-channel",
+    "wiki",
+    "discord-bot"
+  ],
+  "bugs": {
+    "url": "https://github.com/Markus-Rost/fandom-wiki-bot/issues"
+  },
+  "homepage": "https://github.com/Markus-Rost/fandom-wiki-bot#readme"
+}
