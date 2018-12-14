@@ -1,12 +1,12 @@
 # Wiki-Bot
-<a href="https://discordbots.org/bot/461189216198590464"><img align="right" src="https://discordbots.org/api/widget/461189216198590464.svg" alt="Wiki-Bot"></a>
+<a href="https://discordbots.org/bot/523162656346079234"><img align="right" src="https://discordbots.org/api/widget/523162656346079234.svg" alt="Wiki-Bot"></a>
 **Wiki-Bot** is a bot for [Discord](https://discordapp.com/) with the purpose to easily link to [FANDOM wikis](https://fandom.wikia.com/explore).
 <br>He resolves redirects and follows interwiki links.
 <br>**Wiki-Bot** has translations for English, German, French, Polish and Brazilian Portuguese.
 
 **Wiki-Bot is not affiliated with FANDOM/Wikia and is an unofficial tool!**
 
-[Use this link to invite **Wiki-Bot** to your Discord server.](https://discordapp.com/oauth2/authorize?client_id=461189216198590464&permissions=268954689&scope=bot)
+[Use this link to invite **Wiki-Bot** to your Discord server.](https://discordapp.com/oauth2/authorize?client_id=523162656346079234&permissions=268954689&scope=bot)
 
 Support server: [https://discord.gg/v77RTk5](https://discord.gg/v77RTk5)
 
@@ -16,7 +16,7 @@ For a full list with all commands use `!wiki help`
 | Command | Description |
 | --- | --- |
 | `!wiki <search term>` | **Wiki-Bot** will answer with a link to a matching article in the wiki. |
-| `!wiki !<wiki> <search term>` | **Wiki-Bot** will answer with a link to a matching article in the named FANDOM wiki: `https://<wiki>.fandom.com/` |
+| `!wiki !<wiki> <search term>` | **Wiki-Bot** will answer with a link to a matching article in the named FANDOM wiki: `https://<wiki>.wikia.com/` |
 | `!wiki User:<username>` | **Wiki-Bot** will show some information about the user. |
 | `!wiki diff <diff> [<oldid>]` | **Wiki-Bot** will answer with a link to the diff in the wiki. |
 | `!wiki diff <page name>` | **Wiki-Bot** will answer with a link to the last diff on the article in the wiki. |
