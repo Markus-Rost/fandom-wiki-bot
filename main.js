@@ -350,6 +350,7 @@ function cmd_test(lang, msg, args, line) {
 				json: true
 			}, function( error, response, body ) {
 				then = Date.now();
+				if ( body && body.warnings ) log_warn(body.warnings);
 				var ping = ( then - now ) + 'ms';
 				if ( error || !response || response.statusCode != 200 || !body ) {
 					if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + lang.link + '.wikia.com' ) {
@@ -468,6 +469,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 				uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&meta=siteinfo&siprop=general|namespaces|specialpagealiases&iwurl=true' + ( /(?:^|&)redirect=no(?:&|$)/.test( querystring ) ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ),
 				json: true
 			}, function( error, response, body ) {
+				if ( body && body.warnings ) log_warn(body.warnings);
 				if ( error || !response || response.statusCode != 200 || !body || !body.query ) {
 					if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + wiki + '.wikia.com' ) {
 						console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
@@ -499,6 +501,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 								uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=search&gsrnamespace=4|12|14|' + Object.values(body.query.namespaces).filter( ns => ns.content != undefined ).map( ns => ns.id ).join('|') + '&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ),
 								json: true
 							}, function( srerror, srresponse, srbody ) {
+								if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
 								if ( srerror || !srresponse || srresponse.statusCode != 200 || !srbody ) {
 									console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
 									msg.channel.sendErrorMsg( '<http://' + wiki + '.wikia.com/wiki/Special:Search/' + title.toTitle() + '>' );
@@ -614,6 +617,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 			uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=blocks&bkprop=user|by|timestamp|expiry|reason&bkip=' + encodeURIComponent( username ),
 			json: true
 		}, function( error, response, body ) {
+			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.blocks ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + wiki + '.wikia.com' ) {
 					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
@@ -654,6 +658,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 					uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=usercontribs&ucprop=&ucuser=' + encodeURIComponent( username ),
 					json: true
 				}, function( ucerror, ucresponse, ucbody ) {
+					if ( ucbody && ucbody.warnings ) log_warn(ucbody.warnings);
 					if ( ucerror || !ucresponse || ucresponse.statusCode != 200 || !ucbody || !ucbody.query || !ucbody.query.usercontribs ) {
 						if ( ucbody && ucbody.error && ucbody.error.code == 'baduser_ucuser' ) {
 							msg.reactEmoji('error');
@@ -681,6 +686,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 			uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=users&usprop=blockinfo|groups|editcount|registration|gender&ususers=' + encodeURIComponent( username ),
 			json: true
 		}, function( error, response, body ) {
+			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.users[0] ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + wiki + '.wikia.com' ) {
 					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
@@ -788,6 +794,7 @@ function cmd_diff(lang, msg, args, wiki) {
 					uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&prop=revisions&rvprop=' + ( title ? '&titles=' + title : '&revids=' + revision ) + '&rvdiffto=' + diff,
 					json: true
 				}, function( error, response, body ) {
+					if ( body && body.warnings ) log_warn(body.warnings);
 					if ( error || !response || response.statusCode != 200 || !body || !body.query ) {
 						if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + wiki + '.wikia.com' ) {
 							console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
@@ -833,6 +840,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 		uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&list=tags&tglimit=500&tgprop=displayname&prop=revisions&rvprop=ids|timestamp|flags|user|size|comment|tags&revids=' + args.join('|'),
 		json: true
 	}, function( error, response, body ) {
+		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode != 200 || !body || !body.query ) {
 			if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + wiki + '.wikia.com' ) {
 				console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
@@ -884,6 +892,7 @@ function cmd_random(lang, msg, wiki) {
 			uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=random&grnnamespace=0',
 			json: true
 		}, function( error, response, body ) {
+			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.pages ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href == 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=' + wiki + '.wikia.com' ) {
 					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
@@ -1235,18 +1244,25 @@ client.login(process.env.token).catch( error => log_error(error, true, 'LOGIN-')
 
 
 client.on( 'error', error => log_error(error, true) );
-client.on( 'warn', console.warn );
+client.on( 'warn', log_warn );
 
 
-async function log_error(error, isBig = false, type = '') {
+function log_error(error, isBig = false, type = '') {
 	var time = new Date(Date.now()).toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin' });
 	if ( isDebug ) {
-		console.log( '--- ' + type + 'ERROR START ' + time + ' ---' );
-		console.error(error);
-		console.log( '--- ' + type + 'ERROR END ' + time + ' ---' );
+		console.error( '--- ' + type + 'ERROR START ' + time + ' ---\n\u200b' + util.inspect( error ).replace( /\n/g, '\n\u200b' ) + '\n--- ' + type + 'ERROR END ' + time + ' ---' );
 	} else {
-		if ( isBig ) console.log( '--- ' + type + 'ERROR: ' + time + ' ---' );
-		console.log( '- ' + error.name + ': ' + error.message );
+		if ( isBig ) console.log( '--- ' + type + 'ERROR: ' + time + ' ---\n- ' + error.name + ': ' + error.message );
+		else console.log( '- ' + error.name + ': ' + error.message );
+	}
+}
+
+function log_warn(warning) {
+	warning = util.inspect( warning ).replace( /\n/g, '\n\u200b' );
+	if ( isDebug ) {
+		console.warn( '--- Warning start ---\n\u200b' + warning + '\n--- Warning end ---' );
+	} else {
+		console.warn( '--- Warning ---\n\u200b' + warning );
 	}
 }
 
