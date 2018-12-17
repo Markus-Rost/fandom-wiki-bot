@@ -138,7 +138,7 @@ function cmd_settings(lang, msg, args, line) {
 			var regex = null;
 			if ( args[1] ) {
 				args[1] = args.slice(1).join(' ').toLowerCase();
-				regex = args[1].match( /^(?:(?:https?:)?\/\/)?([a-z\d\.]{1,30})(?:\.wikia\.com|$)/ );
+				regex = args[1].match( /^(?:(?:https?:)?\/\/)?([a-z\d\.-]{1,30})(?:\.wikia\.com|$)/ );
 			}
 			var langs = '\n' + lang.settings.langhelp.replace( '%s', process.env.prefix + ' settings lang' ) + ' `' + i18n.allLangs[1].join(', ') + '`';
 			var wikis = '\n' + lang.settings.wikihelp.replace( '%s', process.env.prefix + ' settings wiki' );
@@ -501,7 +501,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 							var userparts = querypage.title.split(':');
 							cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, reaction);
 						}
-						else if ( ( body.query.pages['-1'].missing != undefined && body.query.pages['-1'].known == undefined ) || body.query.pages['-1'].invalid != undefined ) {
+						else if ( ( querypage.missing != undefined && querypage.known == undefined ) || querypage.invalid != undefined ) {
 							request( {
 								uri: 'http://' + wiki + '.wikia.com/api.php?action=query&format=json&generator=search&gsrnamespace=4|12|14|' + Object.values(body.query.namespaces).filter( ns => ns.content != undefined ).map( ns => ns.id ).join('|') + '&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ),
 								json: true
@@ -1152,7 +1152,7 @@ client.on( 'message', msg => {
 						if ( ownercmd ) ownercmdmap[aliasInvoke](lang, msg, args, line);
 						else if ( channel.type != 'text' || !pause[msg.guild.id] || ( msg.isAdmin() && aliasInvoke in pausecmdmap ) ) {
 							if ( aliasInvoke in cmdmap ) cmdmap[aliasInvoke](lang, msg, args, line);
-							else if ( /^![a-z\d\.]{1,30}$/.test(invoke) ) cmd_link(lang, msg, args.join(' '), invoke.substr(1), ' ' + invoke + ' ');
+							else if ( /^![a-z\d\.-]{1,30}$/.test(invoke) ) cmd_link(lang, msg, args.join(' '), invoke.substr(1), ' ' + invoke + ' ');
 							else cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
 						}
 					} else if ( line.hasPrefix() && count == 10 ) {
