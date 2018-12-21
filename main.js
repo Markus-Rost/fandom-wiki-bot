@@ -700,7 +700,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 			json: true
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
-			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.users[0] ) {
+			if ( error || !response || response.statusCode != 200 || !body || !body.query || !body.query.users ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href == wiki.noWiki() ) {
 					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 					msg.reactEmoji('nowiki');
@@ -711,7 +711,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 				}
 			}
 			else {
-				if ( body.query.users[0].missing == "" || body.query.users[0].invalid == "" ) {
+				if ( !body.query.users[0] ) {
 					msg.reactEmoji('🤷');
 				}
 				else {
