@@ -1048,7 +1048,7 @@ Array.prototype.toEmojis = function() {
 };
 
 String.prototype.toTitle = function(isMarkdown = false) {
-	var title = this.replace( / /g, '_' ).replace( /\%/g, '%25' ).replace( /\?/g, '%3F' );
+	var title = this.replace( / /g, '_' ).replace( /\%/g, '%25' ).replace( /\?/g, '%3F' ).replace( /@(here|everyone)/g, '%40$1' );
 	if ( isMarkdown ) title = title.replace( /(\(|\))/g, '\\$1' );
 	return title;
 };
@@ -1072,11 +1072,11 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 		var page = title.toTitle(true) + '#' + link[1].toSection();
 		text = text.replace( link[0], '[→](' + wiki + 'wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
 	}
-	return text.replace( /(`|_|\*|~|<|>|{|}|\/)/g, '\\$1' );
+	return text.replace( /(`|_|\*|~|<|>|{|}|\||\/\/)/g, '\\$1' );
 };
 
 String.prototype.toPlaintext = function() {
-	return this.replace( /\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1' ).replace( /\/\*\s*([^\*]+?)\s*\*\//g, '→$1:' ).replace( /(`|_|\*|~|<|>|{|}|\/)/g, '\\$1' );
+	return this.replace( /\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1' ).replace( /\/\*\s*([^\*]+?)\s*\*\//g, '→$1:' ).replace( /(`|_|\*|~|<|>|{|}|\||\/\/)/g, '\\$1' );
 };
 
 Discord.Message.prototype.reactEmoji = function(name) {
