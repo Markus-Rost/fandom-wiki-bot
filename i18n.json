@@ -15,17 +15,17 @@
 			"polski": "pl",
 			"pt-br": "pt-br",
 			"brazilian portuguese": "pt-br",
-			"português brasileiro": "pt-br"
+			"português brasileiro": "pt-br",
 			"tr": "tr",
-			"turkish": "turkish"
-			"turkçe": "türkçe"
+			"turkish": "tr",
+			"turkçe": "tr"
 		},
 		[
 			"English",
 			"German",
 			"French",
 			"Polish",
-			"Brazilian Portuguese"
+			"Brazilian Portuguese",
 			"Turkish"
 		]
 	],
@@ -792,7 +792,8 @@
 				{ "cmd": "purge <contagem>", "desc": "Excluirei as mensagens recentes no canal, desde que não tenham mais de 14 dias.", "hide": true, "admin": true }
 			]
 		}
-	},"en": {
+	},
+	"tr": {
 		"__translator": [
 			"Doğukan Karakaş"
 		],
