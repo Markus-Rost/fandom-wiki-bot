@@ -1079,7 +1079,7 @@ String.prototype.toPlaintext = function() {
 	return this.replace( /\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1' ).replace( /\/\*\s*([^\*]+?)\s*\*\//g, '→$1:' ).escapeFormatting();
 };
 
-String.prototype.escapeFormatting() = function() {
+String.prototype.escapeFormatting = function() {
 	return this.replace( /(`|_|\*|~|<|>|{|}|@|\/\/|\|)/g, '\\$1' );
 };
 
