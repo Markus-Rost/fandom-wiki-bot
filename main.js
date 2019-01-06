@@ -555,7 +555,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 							selfcall++;
 							cmd_link(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', querystring, fragment, selfcall);
 						} else {
-							msg.channel.sendMsg( inter.url + linksuffix ).then( message => {
+							msg.channel.sendMsg( inter.url.replace( /@(here|everyone)/g, '%40$1' ) + linksuffix ).then( message => {
 								if ( message && selfcall == 3 ) message.reactEmoji('⚠');
 							} );
 							if ( reaction ) reaction.removeEmoji();
@@ -1072,11 +1072,15 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 		var page = title.toTitle(true) + '#' + link[1].toSection();
 		text = text.replace( link[0], '[→](' + wiki + 'wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
 	}
-	return text.replace( /(`|_|\*|~|<|>|{|}|\||\/\/)/g, '\\$1' );
+	return text.escapeFormatting();
 };
 
 String.prototype.toPlaintext = function() {
-	return this.replace( /\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1' ).replace( /\/\*\s*([^\*]+?)\s*\*\//g, '→$1:' ).replace( /(`|_|\*|~|<|>|{|}|\||\/\/)/g, '\\$1' );
+	return this.replace( /\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1' ).replace( /\/\*\s*([^\*]+?)\s*\*\//g, '→$1:' ).escapeFormatting();
+};
+
+String.prototype.escapeFormatting() = function() {
+	return this.replace( /(`|_|\*|~|<|>|{|}|@|\/\/|\|)/g, '\\$1' );
 };
 
 Discord.Message.prototype.reactEmoji = function(name) {
