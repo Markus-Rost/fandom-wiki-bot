@@ -749,7 +749,7 @@
 				{ "cmd": "<arama terimi>", "desc": "Wiki'deki eşleşen bir makale bağlantısıyla cevap vereceğim.", "unsearchable": true },
 				{ "cmd": "!<wiki> <arama terimi>", "desc": "Belirtilen FANDOM Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `http://<wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "Kullanıcı:<kullanıcıadı>", "desc": "Kullanıcı hakkında bazı bilgileri göstereceğim.", "unsearchable": true },
-				{ "cmd": "diff <fark> [<eskiid>]", "desc": "Wikideki farkların bağlantısıyla cevap vereceğim." },
+				{ "cmd": "diff <diff> [<oldid>]", "desc": "Wikideki farkların bağlantısıyla cevap vereceğim." },
 				{ "cmd": "diff <sayfa adı>", "desc": "Wikideki son farkın bağlantısıyla cevap vereceğim." },
 				{ "cmd": "random", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim." },
 				{ "cmd": "🎲", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim.", "hide": true },
