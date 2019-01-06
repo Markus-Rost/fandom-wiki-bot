@@ -1,6 +1,6 @@
 {
   "name": "fandom-wiki-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wikia-Bot is a bot for Discord with the purpose to easily link to FANDOM wikis. He resolves redirects and follows interwiki links.",
   "main": "main.js",
   "scripts": {
