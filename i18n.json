@@ -799,8 +799,10 @@
 		],
 		"lang": "tr",
 		"aliase": {
+			"purge": "delete",
 			"temizleme": "delete",
-			"destek": "help",
+			"bilgi": "info",
+			"yardım": "help",
 			"anket": "poll"
 		},
 		"missingperms": "Bu komutu uygulamak için ihtiyacım olan birkaç izin eksik:",
@@ -839,7 +841,7 @@
 				"female": "kadın"
 			},
 			"dateformat": "tr-TR",
-			"gruplar": [
+			"groups": [
 				["global-bot", "Global bot"],
 				["staff", "FANDOM personeli"],
 				["bot", "Bot"],
@@ -877,7 +879,7 @@
 		},
 		"search": {
 			"page": "sayfa",
-			"search": "ara",
+			"search": "arama",
 			"infopage": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s kullan.",
 			"infosearch": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s, tüm isabetlerin listesi için %2$s kullan."
 		},
@@ -887,10 +889,10 @@
 		"poll": {
 			"header": "**Anket:**\n"
 		},
-		"sil": {
-			"geçersiz": "belirtilen sayı geçerli değil.",
-			"başarı": "sunucudaki en yeni % mesaj silindi.",
-			"büyük": "belirtilen sayı çok büyük. En fazla %s!"
+		"delete": {
+			"invalid": "belirtilen sayı geçerli değil.",
+			"success": "sunucudaki en yeni % mesaj silindi.",
+			"big": "belirtilen sayı çok büyük. En fazla %s!"
 		},
 		"test": {
 			"random": 10,
@@ -912,7 +914,7 @@
 				{ "cmd": "<arama terimi>", "desc": "Wiki'deki eşleşen bir makale bağlantısıyla cevap vereceğim.", "unsearchable": true },
 				{ "cmd": "!<wiki> <arama terimi>", "desc": "Belirtilen FANDOM Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `http://<wiki>.wikia.com/`", "unsearchable": true },
 				{ "cmd": "Kullanıcı:<kullanıcıadı>", "desc": "Kullanıcı hakkında bazı bilgileri göstereceğim.", "unsearchable": true },
-				{ "cmd": "fark <fark> [<eskiid>]", "desc": "Wikideki farkların bağlantısıyla cevap vereceğim." },
+				{ "cmd": "diff <fark> [<eskiid>]", "desc": "Wikideki farkların bağlantısıyla cevap vereceğim." },
 				{ "cmd": "diff <sayfa adı>", "desc": "Wikideki son farkın bağlantısıyla cevap vereceğim." },
 				{ "cmd": "random", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim." },
 				{ "cmd": "🎲", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim.", "hide": true },
@@ -921,10 +923,11 @@
 				{ "cmd": "arama <arama terimi>", "desc": "Wikideki makalenin arama sayfasına doğrudan bir bağlantı ile cevap vereceğim." },
 				{ "cmd": "search <arama terimi>", "desc": "Wikideki makalenin arama sayfasına doğrudan bir bağlantı ile cevap vereceğim.", "hide": true },
 				{ "cmd": "bilgi", "desc": "Kendimi tanıtacağım." },
+				{ "cmd": "info", "desc": "Kendimi tanıtacağım.", "hide": true },
 				{ "cmd": "yardım", "desc": "Anladığım tüm komutları listeleyeceğim." },
 				{ "cmd": "yardım <bot komutu>", "desc": "Bir komut nasıl çalışıyor biliyor musun? Sana açıklayayım!" },
-				{ "cmd": "yönetici yardım", "desc": "Tüm yönetici komutlarını listeleyeceğim." },
-				{ "cmd": "yönetici yardım", "desc": "Tüm yönetici komutlarını listeleyeceğim.", "unsearchable": true, "admin": true },
+				{ "cmd": "yardım admin", "desc": "Tüm yönetici komutlarını listeleyeceğim." },
+				{ "cmd": "yardım admin", "desc": "Tüm yönetici komutlarını listeleyeceğim.", "unsearchable": true, "admin": true },
 				{ "cmd": "help", "desc": "Anladığım tüm komutları listeleyeceğim.", "hide": true },
 				{ "cmd": "help <bot komutu>", "desc": "Bir komut nasıl çalışıyor biliyor musun? Sana açıklayayım!", "hide": true },
 				{ "cmd": "help admin", "desc": "Tüm yönetici komutlarını listeleyeceğim.", "hide": true },
@@ -936,10 +939,11 @@
 				{ "cmd": "anket <emoji> [<emoji> ...] <question as free text>", "desc": "Bir anket yaratacağım ve olası cevaplarla tepki ekleyeceğim.", "admin": true },
 				{ "cmd": "poll <serbest metin olarak soru>", "desc": "Anket yaratacağım ve şu tepkileri vereceğim: <:support:448222377009086465> ve <:oppose:448222455425794059>.", "hide": true, "admin": true },
 				{ "cmd": "poll <emoji> [<emoji> ...] <question as free text>", "desc": "Bir anket yaratacağım ve olası cevaplarla tepki ekleyeceğim.", "hide": true, "admin": true },
-				{ "cmd": "test", "desc": "Eğer aktifsem, cevap veririm! Aksi takdirde vermem."},
+				{ "cmd": "test", "desc": "Eğer aktifsem, cevap veririm! Aksi takdirde vermem." },
 				{ "cmd": "say <mesaj>", "desc": "Verilen mesajı yazacağım.", "admin": true },
 				{ "cmd": "say alarm <mesaj>", "desc": "Verilen mesajı biçimlendirilmiş olarak bu şekilde yazacağım: 🚨 **<mesaj>** 🚨", "admin": true },
-				{ "cmd": "delete <adet>", "desc": "Kanaldaki son mesajları 14 günden daha eski olmadıkları sürece silerim.", "admin": true },
+				{ "cmd": "temizleme <adet>", "desc": "Kanaldaki son mesajları 14 günden daha eski olmadıkları sürece silerim.", "admin": true },
+				{ "cmd": "delete <adet>", "desc": "Kanaldaki son mesajları 14 günden daha eski olmadıkları sürece silerim.", "hide": true, "admin": true },
 				{ "cmd": "purge <adet>", "desc": "Kanaldaki son mesajları 14 günden daha eski olmadıkları sürece silerim.", "hide": true, "admin": true }
 			]
 		}
