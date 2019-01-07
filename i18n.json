@@ -16,9 +16,9 @@
 			"tr": "tr",
 			"turkish": "tr",
 			"turkçe": "tr",
-			"pt-br": "pt-br",
-			"brazilian portuguese": "pt-br",
-			"português brasileiro": "pt-br"
+			"pt": "pt",
+			"portuguese": "pt",
+			"português": "pt"
 		},
 		[
 			"English",
@@ -26,7 +26,7 @@
 			"French",
 			"Polish",
 			"Turkish",
-			"Brazilian Portuguese"
+			"Portuguese"
 		]
 	],
 	"en": {
@@ -783,12 +783,12 @@
 			]
 		}
 	},
-	"pt-br": {
+	"pt": {
 		"__translator": [
 			"Eduaddad",
 			"Jhonabf"
 		],
-		"lang": "pt-br",
+		"lang": "pt",
 		"aliase": {
 			"purge": "delete",
 			"ajuda": "help",
@@ -808,11 +808,11 @@
 			"save_failed": "infelizmente as configurações não puderam ser salvas, por favor, tente novamente mais tarde.",
 			"missing": "este servidor ainda não está configurado. Use %1$s e %2$s para alterar as configurações.",
 			"foundwikis": "Você quer dizer algum dessas wikis?",
-			"current": "Esta é a configuração atual para este servidor:\nIdioma: `Português Brasileiro` %1$s\nWiki padrão: $2%s\nWiki atribuída aos canais",
+			"current": "Esta é a configuração atual para este servidor:\nIdioma: `Português` %1$s\nWiki padrão: $2%s\nWiki atribuída aos canais",
 			"nochannels": "*Nenhuma canal é associado a wiki  específica ainda*",
-			"lang": "o iddioma para este servidor é: `Português Brasileiro`",
+			"lang": "o iddioma para este servidor é: `Português`",
 			"langinvalid": "o idioma especificado não é suportado!",
-			"langchanged": "você mudou o idioma deste servidor para: `Português Brasileiro`",
+			"langchanged": "você mudou o idioma deste servidor para: `Português`",
 			"langhelp": "Use `%s <idioma>` para mudar o idioma.\nIdiomas atualmente suportados são:",
 			"wikimissing": "nenhuma wiki padrão está configurado para este servidor ainda!",
 			"wiki": "a wiki padrão para este servidor é:",
@@ -835,7 +835,7 @@
 				"male": "Masculino",
 				"female": "Feminino"
 			},
-			"dateformat": "pt-BR",
+			"dateformat": "pt-PT",
 			"groups": [
 				["global-bot", "Robô da FANDOM"],
 				["staff", "Equipe da FANDOM"],
