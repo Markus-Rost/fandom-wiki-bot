@@ -640,7 +640,7 @@
 			"yardım": "help",
 			"anket": "poll"
 		},
-		"missingperms": "Bu komutu uygulamak için ihtiyacım olan birkaç izin eksik:",
+		"missingperm": "Bu komutu uygulamak için ihtiyacım olan birkaç izin eksik:",
 		"limit": "🚨 **Dur, limite ulaştın!** 🚨\n\n%s, mesajın çok fazla komut içeriyor!",
 		"disclaimer": "Ben, FANDOM Wikilerinin bağlantılarını göndermek ile görevlendirilmiş küçük bir botum. %s, beni JavaScript kullanarak yazdı.\n\n**FANDOM/Wikia ile resmi bir bağım yok, ben bir gayri resmi aracım!!**",
 		"helpserver": "Sorular ve sorunlarınız için lütfen destek sunucumu ziyaret edin:",
@@ -722,7 +722,7 @@
 			"bot": "Beni başka bir sunucuya davet etmek için bu bağlantıyı kullan:"
 		},
 		"poll": {
-			"header": "**Anket:**\n"
+			"title": "**Anket:**\n"
 		},
 		"delete": {
 			"invalid": "belirtilen sayı geçerli değil.",
