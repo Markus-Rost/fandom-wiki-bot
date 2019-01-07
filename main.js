@@ -789,7 +789,7 @@ function cmd_diff(lang, msg, args, wiki) {
 			}
 			else error = true;
 		}
-		else title = args.join('_').replace( /\?/g, '%3F' );
+		else title = args.join(' ');
 		
 		if ( error ) msg.reactEmoji('error');
 		else if ( /^\d+$/.test(diff) ) {
@@ -804,7 +804,7 @@ function cmd_diff(lang, msg, args, wiki) {
 		else {
 			msg.reactEmoji('⏳').then( function( reaction ) {
 				request( {
-					uri: wiki + 'api.php?action=query&prop=revisions&rvprop=' + ( title ? '&titles=' + title : '&revids=' + revision ) + '&rvdiffto=' + diff + '&format=json',
+					uri: wiki + 'api.php?action=query&prop=revisions&rvprop=' + ( title ? '&titles=' + encodeURIComponent( title ) : '&revids=' + revision ) + '&rvdiffto=' + diff + '&format=json',
 					json: true
 				}, function( error, response, body ) {
 					if ( body && body.warnings ) log_warn(body.warnings);
@@ -815,7 +815,7 @@ function cmd_diff(lang, msg, args, wiki) {
 						}
 						else {
 							console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-							msg.channel.sendErrorMsg( '<' + wiki + 'wiki/' + title + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' );
+							msg.channel.sendErrorMsg( '<' + wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' );
 						}
 						
 						if ( reaction ) reaction.removeEmoji();
