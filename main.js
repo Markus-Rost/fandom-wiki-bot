@@ -836,7 +836,8 @@ function cmd_diff(lang, msg, args, wiki) {
 							else argids = [ids.to];
 							cmd_diffsend(lang, msg, argids, wiki, reaction);
 						} else {
-							msg.reactEmoji('error');
+							if ( body.query.pages && body.query.pages[-1] ) msg.replyMsg( lang.diff.badrev );
+							else msg.reactEmoji('error');
 							
 							if ( reaction ) reaction.removeEmoji();
 						}
