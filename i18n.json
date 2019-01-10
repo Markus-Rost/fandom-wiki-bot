@@ -113,6 +113,7 @@
 		"search": {
 			"page": "page",
 			"search": "search",
+			"random": "random",
 			"infopage": "Not the correct result? Use %s for a direct link.",
 			"infosearch": "Not the correct result? Use %1$s for a direct link or %2$s for a list of all hits."
 		},
@@ -257,6 +258,7 @@
 		"search": {
 			"page": "seite",
 			"search": "suche",
+			"random": "zufall",
 			"infopage": "Nicht das richtige Ergebnis? Nutze %s für einen direkten Link.",
 			"infosearch": "Nicht das richtige Ergebnis? Nutze %1$s für einen direkten Link oder %2$s für eine Liste mit allen Treffern."
 		},
@@ -294,7 +296,8 @@
 				{ "cmd": "Benutzer:<Benutzername>", "desc": "Ich liste ein paar Informationen über den Benutzer auf.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Ich verlinke auf die Änderung im Wiki." },
 				{ "cmd": "diff <Seitenname>", "desc": "Ich verlinke auf die letzte Änderung an der Seite im Wiki." },
-				{ "cmd": "random", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki." },
+				{ "cmd": "zufall", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki." },
+				{ "cmd": "random", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki.", "hide": true },
 				{ "cmd": "🎲", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki.", "hide": true },
 				{ "cmd": "seite <Seitenname>", "desc": "Ich antworte mit einem direkten Link zu der angegebenen Seite im Wiki.", "hide": true },
 				{ "cmd": "page <Seitenname>", "desc": "Ich antworte mit einem direkten Link zu der angegebenen Seite im Wiki.", "hide": true },
@@ -410,6 +413,7 @@
 		"search": {
 			"page": "page",
 			"search": "chercher",
+			"random": "random",
 			"infopage": "Pas le bon résultat ? Utilisez %s pour un lien direct.",
 			"infosearch": "Pas le bon résultat ? Utilisez %1$s pour un lien direct ou %2$s pour une liste de toutes les correspondances."
 		},
@@ -561,6 +565,7 @@
 		"search": {
 			"page": "strona",
 			"search": "szukaj",
+			"random": "random",
 			"infopage": "Nie to czego szukałeś? Użyj %s dla bezpośredniego linku.",
 			"infosearch": "Nie to czego szukałeś? Użyj %1$s dla bezpośredniego linku lub %2$s dla listy wszystkich wyników."
 		},
@@ -715,6 +720,7 @@
 		"search": {
 			"page": "sayfa",
 			"search": "arama",
+			"random": "random",
 			"infopage": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s kullan.",
 			"infosearch": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s, tüm isabetlerin listesi için %2$s kullan."
 		},
@@ -875,6 +881,7 @@
 		"search": {
 			"page": "página",
 			"search": "pesquisar",
+			"random": "random",
 			"infopage": "Não é o resultado correto? Use %s para um link direto.",
 			"infosearch": "Não é o resultado correto? Use %1$s para um link direto ou %2$s para uma lista de todos os acessos."
 		},
