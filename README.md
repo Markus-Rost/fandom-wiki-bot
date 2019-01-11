@@ -1,10 +1,10 @@
 # Wikia-Bot
 <a href="https://discordbots.org/bot/523162656346079234"><img align="right" src="https://discordbots.org/api/widget/523162656346079234.svg" alt="Wikia-Bot"></a>
-**Wikia-Bot** is a bot for [Discord](https://discordapp.com/) with the purpose to easily link to [FANDOM wikis](https://fandom.wikia.com/explore).
+**Wikia-Bot** is a bot for [Discord](https://discordapp.com/) with the purpose to easily link to [Fandom wikis](https://fandom.wikia.com/explore).
 <br>He resolves redirects and follows interwiki links.
 <br>**Wikia-Bot** has translations for English, German, French, Polish, Turkish and Portuguese.
 
-**Wikia-Bot is not affiliated with FANDOM/Wikia and is an unofficial tool!**
+**Wikia-Bot is not affiliated with Fandom/Wikia and is an unofficial tool!**
 
 [Use this link to invite **Wikia-Bot** to your Discord server.](https://discordapp.com/oauth2/authorize?client_id=523162656346079234&permissions=268954689&scope=bot)
 
@@ -16,7 +16,7 @@ For a full list with all commands use `!wikia help`
 | Command | Description |
 | --- | --- |
 | `!wikia <search term>` | **Wikia-Bot** will answer with a link to a matching article in the wiki. |
-| `!wikia !<wiki> <search term>` | **Wikia-Bot** will answer with a link to a matching article in the named FANDOM wiki: `http://<wiki>.wikia.com/` |
+| `!wikia !<wiki> <search term>` | **Wikia-Bot** will answer with a link to a matching article in the named Fandom wiki: `http://<wiki>.wikia.com/` |
 | `!wikia User:<username>` | **Wikia-Bot** will show some information about the user. |
 | `!wikia diff <diff> [<oldid>]` | **Wikia-Bot** will answer with a link to the diff in the wiki. |
 | `!wikia diff <page name>` | **Wikia-Bot** will answer with a link to the last diff on the article in the wiki. |
