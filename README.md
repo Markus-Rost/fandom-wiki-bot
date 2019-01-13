@@ -38,6 +38,7 @@ For a full list with all administrator commands use `!wikia help admin`
 | `!wikia settings lang <language>` | **Wikia-Bot** will change the language for the server. |
 | `!wikia settings wiki <wiki>` | **Wikia-Bot** will change the default wiki for the server. |
 | `!wikia settings channel <wiki>` | **Wikia-Bot** will change the default wiki for the current channel. |
+| `!wikia pause @Wikia-Bot` | **Wikia-Bot** will ignore all commands on this server, except a few admin commands. |
 | `!wikia poll <question as free text>` | **Wikia-Bot** will create a poll and react with `:support:` and `:oppose:`. |
 | `!wikia poll <emoji> [<emoji> ...] <question as free text>` | **Wikia-Bot** will create a poll and react with the possible answers. |
 | `!wikia say <message>` | **Wikia-Bot** will write the given message. |
