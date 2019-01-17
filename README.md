@@ -2,7 +2,7 @@
 <a href="https://discordbots.org/bot/523162656346079234"><img align="right" src="https://discordbots.org/api/widget/523162656346079234.svg" alt="Wikia-Bot"></a>
 **Wikia-Bot** is a bot for [Discord](https://discordapp.com/) with the purpose to easily link to [Fandom wikis](https://fandom.wikia.com/explore).
 <br>He resolves redirects and follows interwiki links.
-<br>**Wikia-Bot** has translations for English, German, French, Polish, Turkish and Portuguese.
+<br>**Wikia-Bot** has translations for English, German, French, Dutch, Polish, Portuguese and Turkish.
 
 **Wikia-Bot is not affiliated with Fandom/Wikia and is an unofficial tool!**
 
