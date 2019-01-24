@@ -125,6 +125,13 @@ var pausecmdmap = {
 	settings: cmd_settings
 }
 
+/**
+ * Show or change the settings
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_settings(lang, msg, args, line) {
 	if ( msg.isAdmin() ) {
 		if ( msg.guild.id in settings ) {
@@ -196,6 +203,13 @@ function cmd_settings(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Edit the settings
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [key] The name of the setting to change
+ * @param {String|String[]} [value] The new value of the setting
+ */
 function edit_settings(lang, msg, key, value) {
 	msg.reactEmoji('⏳', true).then( function( reaction ) {
 		if ( settings === defaultSettings ) {
@@ -256,6 +270,13 @@ function edit_settings(lang, msg, key, value) {
 	} );
 }
 
+/**
+ * Show information about the bot
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_info(lang, msg, args, line) {
 	if ( args.join('') ) cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
 	else {
@@ -267,10 +288,22 @@ function cmd_info(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Send a link to the help server
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ */
 function cmd_helpserver(lang, msg) {
 	msg.sendChannel( lang.helpserver + '\n' + process.env.invite );
 }
 
+/**
+ * Show the bot help
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_help(lang, msg, args, line) {
 	if ( msg.channel.type === 'text' && pause[msg.guild.id] && ( args.join('') || !msg.isAdmin() ) ) return;
 	if ( msg.isAdmin() && !( msg.guild.id in settings ) && settings !== defaultSettings ) {
@@ -310,6 +343,13 @@ function cmd_help(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Make the bot talk
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_say(lang, msg, args, line) {
 	args = args.toEmojis();
 	var text = args.join(' ');
@@ -335,6 +375,13 @@ function cmd_say(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Test if the bot works
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_test(lang, msg, args, line) {
 	if ( args.join('') ) {
 		if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
@@ -375,6 +422,13 @@ function cmd_test(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Send an invite for the bot
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_invite(lang, msg, args, line) {
 	if ( args.join('') ) {
 		cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
@@ -383,6 +437,14 @@ function cmd_invite(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Evaluate code
+ * @async
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 async function cmd_eval(lang, msg, args, line) {
 	try {
 		var text = util.inspect( await eval( args.join(' ') ) );
@@ -394,6 +456,14 @@ async function cmd_eval(lang, msg, args, line) {
 	if ( isDebug ) console.log( '--- EVAL START ---\n\u200b' + text.replace( /\n/g, '\n\u200b' ) + '\n--- EVAL END ---' );
 }
 
+/**
+ * Kill the bot
+ * @async
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 async function cmd_stop(lang, msg, args, line) {
 	if ( args.join(' ').split('\n')[0].isMention(msg.guild) ) {
 		await msg.replyMsg( 'I\'ll destroy myself now!', {}, true );
@@ -408,6 +478,13 @@ async function cmd_stop(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Switch pause mode
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_pause(lang, msg, args, line) {
 	if ( msg.channel.type === 'text' && args.join(' ').split('\n')[0].isMention(msg.guild) && ( msg.isAdmin() || msg.isOwner() ) ) {
 		if ( pause[msg.guild.id] ) {
@@ -424,6 +501,13 @@ function cmd_pause(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Delete the last messages
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_delete(lang, msg, args, line) {
 	if ( msg.channel.memberPermissions(msg.member).has('MANAGE_MESSAGES') ) {
 		if ( /^\d+$/.test(args[0]) && parseInt(args[0], 10) + 1 > 0 ) {
@@ -446,6 +530,17 @@ function cmd_delete(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Search or switch the wiki
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [title] The searchterm
+ * @param {String} [wiki=lang.link] The current wiki
+ * @param {String} [cmd=' '] The command to the current wiki
+ * @param {String} [querystring=''] The querystring for the page
+ * @param {String} [fragment=''] The section of the page
+ * @param {Number} [selfcall=0] The number of recursive calls
+ */
 function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '', fragment = '', selfcall = 0) {
 	if ( cmd === ' ' && msg.isAdmin() && !( msg.guild.id in settings ) && settings !== defaultSettings ) {
 		cmd_settings(lang, msg, [], '');
@@ -572,6 +667,13 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ', querystring = '
 	}
 }
 
+/**
+ * Filter the reactions to add to the poll
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_umfrage(lang, msg, args, line) {
 	var imgs = msg.attachments.map( function(img) {
 		return {attachment:img.url,name:img.filename};
@@ -607,6 +709,14 @@ function cmd_umfrage(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Send a poll
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [text] The text to send
+ * @param {String[]} [reactions] The reactions to add
+ * @param {Object[]} [imgs] The files to send
+ */
 function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
 	msg.channel.send( lang.poll.title + text, {disableEveryone:!msg.member.hasPermission(['MENTION_EVERYONE']),files:imgs} ).then( poll => {
 		msg.deleteMsg();
@@ -627,6 +737,16 @@ function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
 	} );
 }
 
+/**
+ * Send information about a user
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [namespace] The namespace
+ * @param {String} [username] The username
+ * @param {String} [wiki] The current wiki
+ * @param {String} [linksuffix] The linksuffix
+ * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ */
 function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 	if ( /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d\d)?$/.test(username) ) {
 		request( {
@@ -764,6 +884,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 	}
 }
 
+/**
+ * Get the ids for diffs
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [wiki] The current wiki
+ */
 function cmd_diff(lang, msg, args, wiki) {
 	if ( args[0] ) {
 		var error = false;
@@ -852,6 +979,14 @@ function cmd_diff(lang, msg, args, wiki) {
 	else msg.reactEmoji('error');
 }
 
+/**
+ * Send information about a diff
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {Number[]} [args] The revision ids
+ * @param {String} [wiki] The current wiki
+ * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ */
 function cmd_diffsend(lang, msg, args, wiki, reaction) {
 	request( {
 		uri: wiki + 'api.php?action=query&list=tags&tglimit=500&tgprop=displayname&prop=revisions&rvprop=ids|timestamp|flags|user|size|comment|tags&revids=' + args.join('|') + '&format=json',
@@ -903,6 +1038,12 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 	} );
 }
 
+/**
+ * Send a link to a random wiki page
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [wiki] The current wiki
+ */
 function cmd_random(lang, msg, wiki) {
 	msg.reactEmoji('⏳').then( function( reaction ) {
 		request( {
@@ -927,6 +1068,13 @@ function cmd_random(lang, msg, wiki) {
 	} );
 }
 
+/**
+ * Show an error for commands that need to use the full message
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_multiline(lang, msg, args, line) {
 	if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 		if ( msg.isAdmin() ) msg.reactEmoji('error', true);
@@ -934,11 +1082,25 @@ function cmd_multiline(lang, msg, args, line) {
 	}
 }
 
+/**
+ * Show how to use the voice channel feature
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_voice(lang, msg, args, line) {
 	if ( msg.isAdmin() && !args.join('') ) msg.replyMsg( lang.voice.text + '\n`' + lang.voice.channel + ' – <' + lang.voice.name + '>`' );
 	else cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
 }
 
+/**
+ * Get information about a guild, user or channel
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
 function cmd_get(lang, msg, args, line) {
 	var id = args.join().replace( /^\\?<(?:@!?|#)(\d+)>$/, '$1' );
 	if ( /^\d+$/.test(id) ) {
@@ -995,10 +1157,18 @@ function cmd_get(lang, msg, args, line) {
 	} else if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
 }
 
+/**
+ * Create url for non existing wiki
+ * @returns {String}
+ */
 String.prototype.noWiki = function() {
 	return this.replace( /^https?:\/\/([a-z\d\.-]{1,30}\.(?:wikia|fandom)\.com)\/(?:[a-z-]{1,8}\/)?$/, 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
 };
 
+/**
+ * Build link to the wiki
+ * @returns {String}
+ */
 Array.prototype.toLink = function() {
 	var link = '';
 	if ( this[2] === 'fandom' ) {
@@ -1011,27 +1181,43 @@ Array.prototype.toLink = function() {
 	return link;
 };
 
+/**
+ * If string is a mention
+ * @returns {Boolean}
+ */
 String.prototype.isMention = function(guild) {
 	var text = this.trim();
-	if ( text === '@' + client.user.username || text.replace( /^<@!?(\d+)>$/, '$1' ) === client.user.id || ( guild && text === '@' + guild.me.displayName ) ) return true;
-	else return false;
+	return text === '@' + client.user.username || text.replace( /^<@!?(\d+)>$/, '$1' ) === client.user.id || ( guild && text === '@' + guild.me.displayName );
 };
 
+/**
+ * If message send by admin
+ * @returns {Boolean}
+ */
 Discord.Message.prototype.isAdmin = function() {
-	if ( this.channel.type === 'text' && this.member && this.member.permissions.has('MANAGE_GUILD') ) return true;
-	else return false;
+	return this.channel.type === 'text' && this.member && this.member.permissions.has('MANAGE_GUILD');
 };
 
+/**
+ * If message send by bot owner
+ * @returns {Boolean}
+ */
 Discord.Message.prototype.isOwner = function() {
-	if ( this.author.id === process.env.owner ) return true;
-	else return false;
+	return this.author.id === process.env.owner;
 };
 
+/**
+ * If bot can use embeds
+ * @returns {Boolean}
+ */
 Discord.Message.prototype.showEmbed = function() {
-	if ( this.channel.type !== 'text' || this.channel.permissionsFor(client.user).has('EMBED_LINKS') ) return true;
-	else return false;
+	return this.channel.type !== 'text' || this.channel.permissionsFor(client.user).has('EMBED_LINKS');
 };
 
+/**
+ * Convert custom emotes
+ * @returns {String[]}
+ */
 Array.prototype.toEmojis = function() {
 	var text = this.join(' ');
 	var regex = /(<a?:)(\d+)(>)/g;
@@ -1051,16 +1237,30 @@ Array.prototype.toEmojis = function() {
 	else return this;
 };
 
+/**
+ * Format string for links
+ * @returns {String}
+ */
 String.prototype.toTitle = function(isMarkdown = false) {
 	var title = this.replace( / /g, '_' ).replace( /\%/g, '%25' ).replace( /\?/g, '%3F' ).replace( /@(here|everyone)/g, '%40$1' );
 	if ( isMarkdown ) title = title.replace( /(\(|\))/g, '\\$1' );
 	return title;
 };
 
+/**
+ * Format string for section links
+ * @returns {String}
+ */
 String.prototype.toSection = function() {
 	return encodeURIComponent( this.replace( / /g, '_' ) ).replace( /\'/g, '%27' ).replace( /\(/g, '%28' ).replace( /\)/g, '%29' ).replace( /\%/g, '.' );
 };
 
+/**
+ * Convert wiki code to markdown text
+ * @param {String} [wiki] The current wiki
+ * @param {String} [title=''] The title of the current page
+ * @returns {String}
+ */
 String.prototype.toMarkdown = function(wiki, title = '') {
 	var text = this;
 	while ( ( link = /\[\[(?:([^\|\]]+)\|)?([^\]]+)\]\]([a-z]*)/g.exec(text) ) !== null ) {
@@ -1079,14 +1279,28 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 	return text.escapeFormatting();
 };
 
+/**
+ * Convert wiki code to plain text
+ * @returns {String}
+ */
 String.prototype.toPlaintext = function() {
 	return this.replace( /\[\[(?:[^\|\]]+\|)?([^\]]+)\]\]/g, '$1' ).replace( /\/\*\s*([^\*]+?)\s*\*\//g, '→$1:' ).escapeFormatting();
 };
 
+/**
+ * Escape all characters used for formatting
+ * @returns {String}
+ */
 String.prototype.escapeFormatting = function() {
 	return this.replace( /(`|_|\*|~|<|>|{|}|@|\/\/|\|)/g, '\\$1' );
 };
 
+/**
+ * Add a reaction to the message
+ * @param {string|Discord.Emoji|Discord.ReactionEmoji} [name] The emoji to react with
+ * @param {Boolean} [ignorePause=false] If message should be send while paused
+ * @returns {Promise<Discord.MessageReaction>}
+ */
 Discord.Message.prototype.reactEmoji = function(name, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
 		var emoji = '440871715938238494';
@@ -1113,10 +1327,21 @@ Discord.Message.prototype.reactEmoji = function(name, ignorePause = false) {
 	}
 };
 
+/**
+ * Remove this reaction
+ * @returns {Promise<Discord.MessageReaction>}
+ */
 Discord.MessageReaction.prototype.removeEmoji = function() {
 	return this.remove().catch(log_error);
 };
 
+/**
+ * Send another message to the channel of the message
+ * @param {StringResolvable} [content] Text for the message
+ * @param {Discord.MessageOptions|Discord.Attachment|Discord.RichEmbed} [options] Options for the message, can also be just a RichEmbed or Attachment
+ * @param {Boolean} [ignorePause=false] If message should be send while paused
+ * @returns {Promise<Discord.Message|Discord.Message[]>}
+ */
 Discord.Message.prototype.sendChannel = function(content, options, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
 		return this.channel.send(content, options).catch(log_error);
@@ -1126,10 +1351,23 @@ Discord.Message.prototype.sendChannel = function(content, options, ignorePause =
 	}
 };
 
+/**
+ * Send another message to the channel of this message and react with error
+ * @param {StringResolvable} [content] Text for the message
+ * @param {Discord.MessageOptions|Discord.Attachment|Discord.RichEmbed} [options] Options for the message, can also be just a RichEmbed or Attachment
+ * @returns {Promise<Discord.Message|Discord.Message[]>}
+ */
 Discord.Message.prototype.sendChannelError = function(content, options) {
 	return this.channel.send(content, options).then( message => message.reactEmoji('error'), log_error );
 };
 
+/**
+ * Reply to the message
+ * @param {StringResolvable} [content] The content for the message
+ * @param {Discord.MessageOptions} [options] The options to provide
+ * @param {Boolean} [ignorePause=false] If message should be send while paused
+ * @returns {Promise<Discord.Message|Discord.Message[]>}
+ */
 Discord.Message.prototype.replyMsg = function(content, options, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
 		return this.reply(content, options).catch(log_error);
@@ -1139,13 +1377,22 @@ Discord.Message.prototype.replyMsg = function(content, options, ignorePause = fa
 	}
 };
 
+/**
+ * Deletes the message
+ * @param {Number} [timeout=0] How long to wait to delete the message in milliseconds
+ * @returns {Promise<Discord.Message>}
+ */
 Discord.Message.prototype.deleteMsg = function(timeout = 0) {
 	return this.delete(timeout).catch(log_error);
 };
 
+/**
+ * Check if the test has the command prefix
+ * @param {String} [flags=''] The flags for the RegExp
+ * @returns {Boolean}
+ */
 String.prototype.hasPrefix = function(flags = '') {
-	if ( RegExp( '^' + process.env.prefix + '(?: |$)', flags ).test(this.toLowerCase()) ) return true;
-	else return false;
+	return RegExp( '^' + process.env.prefix + '(?: |$)', flags ).test(this.toLowerCase());
 };
 
 client.on( 'message', msg => {
@@ -1294,6 +1541,12 @@ client.on( 'error', error => log_error(error, true) );
 client.on( 'warn', warning => log_warn(warning, false) );
 
 
+/**
+ * Log an error
+ * @param {Error} [error] The error
+ * @param {Boolean} [isBig=false] If major error
+ * @param {String} [type=''] The type of the error
+ */
 function log_error(error, isBig = false, type = '') {
 	var time = new Date(Date.now()).toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin' });
 	if ( isDebug ) {
@@ -1304,6 +1557,11 @@ function log_error(error, isBig = false, type = '') {
 	}
 }
 
+/**
+ * Log a warning
+ * @param {Object|*} [warning] The warning
+ * @param {Boolean} [api=true] If warning from the MediaWiki API
+ */
 function log_warn(warning, api = true) {
 	if ( isDebug ) {
 		console.warn( '--- Warning start ---\n\u200b' + util.inspect( warning ).replace( /\n/g, '\n\u200b' ) + '\n--- Warning end ---' );
@@ -1313,6 +1571,11 @@ function log_warn(warning, api = true) {
 	}
 }
 
+/**
+ * Graceful shoutdown
+ * @async
+ * @param {Number} [code=1] The exit code
+ */
 async function graceful(code = 1) {
 	stop = true;
 	console.log( '- SIGTERM: Beenden wird vorbereitet...' );
