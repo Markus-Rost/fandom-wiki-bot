@@ -1557,7 +1557,7 @@ client.on( 'error', error => log_error(error, true) );
 client.on( 'warn', warning => log_warn(warning, false) );
 
 client.on( 'rateLimit', warning => log_warn(warning, false, true) );
-if ( isDebug ) client.on( 'debug', debug => console.log( '--- DEBUG START ---\n\u200b' + debug.replace( /\n/g, '\n\u200b' ) + '\n--- DEBUG END ---' ) );
+if ( isDebug ) client.on( 'debug', debug => console.log( '- Debug: ' + debug ) );
 
 
 /**
