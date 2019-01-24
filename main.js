@@ -1556,6 +1556,9 @@ client.login(process.env.token).catch( error => log_error(error, true, 'LOGIN-')
 client.on( 'error', error => log_error(error, true) );
 client.on( 'warn', warning => log_warn(warning, false) );
 
+client.on( 'rateLimit', warning => log_warn(warning, false, true) );
+if ( isDebug ) client.on( 'debug', debug => console.log( '--- DEBUG START ---\n\u200b' + debug.replace( /\n/g, '\n\u200b' ) + '\n--- DEBUG END ---' ) );
+
 
 /**
  * Log an error
@@ -1577,12 +1580,15 @@ function log_error(error, isBig = false, type = '') {
  * Log a warning
  * @param {Object|*} [warning] The warning
  * @param {Boolean} [api=true] If warning from the MediaWiki API
+ * @param {Boolean} [rateLimit=false] If warning because a rate limit was hit
  */
-function log_warn(warning, api = true) {
+function log_warn(warning, api = true, rateLimit = false) {
 	if ( isDebug ) {
-		console.warn( '--- Warning start ---\n\u200b' + util.inspect( warning ).replace( /\n/g, '\n\u200b' ) + '\n--- Warning end ---' );
+		var type = ( rateLimit ? 'Rate limit' : 'Warning' )
+		console.warn( '--- ' + type + ' start ---\n\u200b' + util.inspect( warning ).replace( /\n/g, '\n\u200b' ) + '\n--- ' + type + ' end ---' );
 	} else {
 		if ( api ) console.warn( '- Warning: ' + Object.keys(warning).join(', ') );
+		else if ( rateLimit ) console.warn( '- Warning: Rate Limit hit' );
 		else console.warn( '--- Warning ---\n\u200b' + util.inspect( warning ).replace( /\n/g, '\n\u200b' ) );
 	}
 }
