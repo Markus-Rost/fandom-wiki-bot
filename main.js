@@ -135,14 +135,14 @@ var pausecmdmap = {
 function cmd_settings(lang, msg, args, line) {
 	if ( msg.isAdmin() ) {
 		if ( msg.guild.id in settings ) {
-			var text = lang.settings.current.replace( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replace( '%2$s', settings[msg.guild.id].wiki.toLink() + 'wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
+			var text = lang.settings.current.replaceSave( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replaceSave( '%2$s', settings[msg.guild.id].wiki.toLink() + 'wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
 			if ( settings[msg.guild.id].channels ) {
 				Object.keys(settings[msg.guild.id].channels).forEach( function(channel) {
 					text += '<#' + channel + '>: <' + settings[msg.guild.id].channels[channel].toLink() + 'wiki/>\n';
 				} );
 			} else text += lang.settings.nochannels;
 		} else {
-			var text = lang.settings.missing.replace( '%1$s', '`' + process.env.prefix + ' settings lang`' ).replace( '%2$s', '`' + process.env.prefix + ' settings wiki`' );
+			var text = lang.settings.missing.replaceSave( '%1$s', '`' + process.env.prefix + ' settings lang`' ).replaceSave( '%2$s', '`' + process.env.prefix + ' settings wiki`' );
 		}
 		if ( args.length ) {
 			if ( args[0] ) args[0] = args[0].toLowerCase();
@@ -158,9 +158,9 @@ function cmd_settings(lang, msg, args, line) {
 					if ( regex !== null ) match = [regex[2], regex[1], 'wikia'];
 				}
 			}
-			var langs = '\n' + lang.settings.langhelp.replace( '%s', process.env.prefix + ' settings lang' ) + ' `' + i18n.allLangs[1].join(', ') + '`';
-			var wikis = '\n' + lang.settings.wikihelp.replace( '%s', process.env.prefix + ' settings wiki' );
-			var channels = '\n' + lang.settings.wikihelp.replace( '%s', process.env.prefix + ' settings channel' );
+			var langs = '\n' + lang.settings.langhelp.replaceSave( '%s', process.env.prefix + ' settings lang' ) + ' `' + i18n.allLangs[1].join(', ') + '`';
+			var wikis = '\n' + lang.settings.wikihelp.replaceSave( '%s', process.env.prefix + ' settings wiki' );
+			var channels = '\n' + lang.settings.wikihelp.replaceSave( '%s', process.env.prefix + ' settings channel' );
 			var nolangs = lang.settings.langinvalid + langs;
 			var nowikis = lang.settings.wikiinvalid + wikis;
 			var nochannels = lang.settings.wikiinvalid + channels;
@@ -282,7 +282,7 @@ function cmd_info(lang, msg, args, line) {
 	else {
 		var owner = '*MarkusRost*';
 		if ( msg.channel.type === 'text' && msg.guild.members.has(process.env.owner) ) owner = '<@' + process.env.owner + '>';
-		msg.sendChannel( lang.disclaimer.replace( '%s', owner ) );
+		msg.sendChannel( lang.disclaimer.replaceSave( '%s', owner ) );
 		cmd_helpserver(lang, msg);
 		cmd_invite(lang, msg, args, line);
 	}
@@ -317,7 +317,7 @@ function cmd_help(lang, msg, args, line) {
 		else if ( args[0].toLowerCase() === 'admin' ) {
 			if ( msg.channel.type !== 'text' || msg.isAdmin() ) {
 				var cmdlist = lang.help.admin + '\n' + cmds.filter( cmd => cmd.admin && !cmd.hide ).map( cmd => cmdintro + cmd.cmd + '`\n\t' + cmd.desc ).join('\n');
-				cmdlist = cmdlist.replace( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
+				cmdlist = cmdlist.replaceSave( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
 				msg.sendChannel( cmdlist, {split:true} );
 			}
 			else {
@@ -326,19 +326,19 @@ function cmd_help(lang, msg, args, line) {
 		}
 		else {
 			var cmdlist = cmds.filter( cmd => cmd.cmd.split(' ')[0] === args[0].toLowerCase() && !cmd.unsearchable && ( msg.channel.type !== 'text' || !cmd.admin || msg.isAdmin() ) ).map( cmd => cmdintro + cmd.cmd + '`\n\t' + cmd.desc ).join('\n');
-			cmdlist = cmdlist.replace( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
+			cmdlist = cmdlist.replaceSave( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
 			if ( cmdlist === '' ) msg.reactEmoji('❓');
 			else msg.sendChannel( cmdlist, {split:true} );
 		}
 	}
 	else if ( msg.isAdmin() && pause[msg.guild.id] ) {
 		var cmdlist = lang.help.pause + '\n' + cmds.filter( cmd => cmd.pause ).map( cmd => cmdintro + cmd.cmd + '`\n\t' + cmd.desc ).join('\n');
-		cmdlist = cmdlist.replace( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
+		cmdlist = cmdlist.replaceSave( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
 		msg.sendChannel( cmdlist, {split:true}, true );
 	}
 	else {
 		var cmdlist = lang.help.all + '\n' + cmds.filter( cmd => !cmd.hide && !cmd.admin ).map( cmd => cmdintro + cmd.cmd + '`\n\t' + cmd.desc ).join('\n');
-		cmdlist = cmdlist.replace( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
+		cmdlist = cmdlist.replaceSave( /@mention/g, '@' + ( msg.channel.type === 'text' ? msg.guild.me.displayName : client.user.username ) );
 		msg.sendChannel( cmdlist, {split:true} );
 	}
 }
@@ -637,10 +637,10 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 										msg.sendChannel( pagelink );
 									}
 									else if ( !srbody.continue ) {
-										msg.sendChannel( pagelink + '\n' + lang.search.infopage.replace( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ) );
+										msg.sendChannel( pagelink + '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ) );
 									}
 									else {
-										msg.sendChannel( pagelink + '\n' + lang.search.infosearch.replace( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replace( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' ) );
+										msg.sendChannel( pagelink + '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' ) );
 									}
 								}
 							}
@@ -660,7 +660,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 					var regex = inter.url.match( /^(https?:\/\/([a-z\d\.-]{1,30})\.(?:wikia|fandom)\.com\/(?:([a-z-]{1,8})\/)?)wiki\// );
 					if ( regex !== null && selfcall < 3 ) {
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
-							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replace( intertitle.replace( /\_/g, ' ' ), intertitle );
+							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
 							selfcall++;
 							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, querystring, fragment, selfcall);
 						} else {
@@ -798,7 +798,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 						if ( Date.parse(blockexpiry) > Date.now() ) isBlocked = true;
 						blockexpiry = (new Date(blockexpiry)).toLocaleString(lang.user.dateformat, timeoptions);
 					}
-					if ( isBlocked ) return [lang.user.block.header.replace( '%s', block.user ), lang.user.block.text.replace( '%1$s', blockedtimestamp ).replace( '%2$s', blockexpiry ).replace( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replace( '%4$s', block.reason )];
+					if ( isBlocked ) return [lang.user.block.header.replaceSave( '%s', block.user ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replaceSave( '%4$s', block.reason )];
 				} ).filter( block => block !== undefined );
 				if ( username.includes( '/' ) ) {
 					var rangeprefix = username;
@@ -890,7 +890,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 					}
 					var blockedby = '[[User:' + body.query.users[0].blockedby + '|' + body.query.users[0].blockedby + ']]';
 					var blockreason = body.query.users[0].blockreason;
-					var block = [lang.user.block.header.replace( '%s', username ), lang.user.block.text.replace( '%1$s', blockedtimestamp ).replace( '%2$s', blockexpiry ).replace( '%3$s', blockedby ).replace( '%4$s', blockreason )];
+					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
 					
 					msg.sendChannel( '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) );
 				}
@@ -1243,9 +1243,9 @@ Array.prototype.toEmojis = function() {
 		var entry;
 		while ( ( entry = regex.exec(text) ) !== null ) {
 			if ( emojis.has(entry[2]) ) {
-				text = text.replace(entry[0], emojis.get(entry[2]).toString());
+				text = text.replaceSave(entry[0], emojis.get(entry[2]).toString());
 			} else {
-				text = text.replace(entry[0], entry[1] + 'unknown_emoji:' + entry[2] + entry[3]);
+				text = text.replaceSave(entry[0], entry[1] + 'unknown_emoji:' + entry[2] + entry[3]);
 			}
 		}
 		return text.split(' ');
@@ -1282,15 +1282,15 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 	while ( ( link = /\[\[(?:([^\|\]]+)\|)?([^\]]+)\]\]([a-z]*)/g.exec(text) ) !== null ) {
 		if ( link[1] ) {
 			var page = ( /^(#|\/)/.test(link[1]) ? title.toTitle(true) + ( /^#/.test(link[1]) ? '#' + link[1].substr(1).toSection() : link[1].toTitle(true) ) : link[1].toTitle(true) );
-			text = text.replace( link[0], '[' + link[2] + link[3] + '](' + wiki + 'wiki/' + page + ')' );
+			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki + 'wiki/' + page + ')' );
 		} else {
 			var page = ( /^(#|\/)/.test(link[2]) ? title.toTitle(true) + ( /^#/.test(link[2]) ? '#' + link[2].substr(1).toSection() : link[2].toTitle(true) ) : link[2].toTitle(true) );
-			text = text.replace( link[0], '[' + link[2] + link[3] + '](' + wiki + 'wiki/' + page + ')' );
+			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki + 'wiki/' + page + ')' );
 		}
 	}
 	while ( title !== '' && ( link = /\/\*\s*([^\*]+?)\s*\*\/\s*(.)?/g.exec(text) ) !== null ) {
 		var page = title.toTitle(true) + '#' + link[1].toSection();
-		text = text.replace( link[0], '[→](' + wiki + 'wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
+		text = text.replaceSave( link[0], '[→](' + wiki + 'wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
 	}
 	return text.escapeFormatting();
 };
@@ -1309,6 +1309,16 @@ String.prototype.toPlaintext = function() {
  */
 String.prototype.escapeFormatting = function() {
 	return this.replace( /(`|_|\*|~|<|>|{|}|@|\/\/|\|)/g, '\\$1' );
+};
+
+/**
+ * Replace with escaped $
+ * @param {string|RegExp} [pattern] Pattern to replace
+ * @param {string|function} [replacement] Replacement for the pattern
+ * @returns {string}
+ */
+String.prototype.replaceSave = function(pattern, replacement) {
+	return this.replace( pattern, replacement.replace( '$', '$$$$' ) );
 };
 
 /**
@@ -1473,7 +1483,7 @@ client.on( 'message', msg => {
 					count++;
 					console.log( '- Nachricht enthält zu viele Befehle!' );
 					msg.reactEmoji('⚠');
-					msg.sendErrorMsg( lang.limit.replace( '%s', author.toString() ) );
+					msg.sendErrorMsg( lang.limit.replaceSave( '%s', author.toString() ) );
 				}
 			} );
 		}
@@ -1497,14 +1507,14 @@ client.on( 'voiceStateUpdate', (oldm, newm) => {
 			var oldrole = oldm.roles.find( role => role.name === lang.voice.channel + ' – ' + oldm.voiceChannel.name );
 			if ( oldrole && oldrole.comparePositionTo(oldm.guild.me.highestRole) < 0 ) {
 				console.log( oldm.guild.name + ': ' + oldm.displayName + ' hat den Sprachkanal "' + oldm.voiceChannel.name + '" verlassen.' );
-				oldm.removeRole( oldrole, lang.voice.left.replace( '%1$s', oldm.displayName ).replace( '%2$s', oldm.voiceChannel.name ) ).catch(log_error);
+				oldm.removeRole( oldrole, lang.voice.left.replaceSave( '%1$s', oldm.displayName ).replaceSave( '%2$s', oldm.voiceChannel.name ) ).catch(log_error);
 			}
 		}
 		if ( newm.voiceChannel ) {
 			var newrole = newm.guild.roles.find( role => role.name === lang.voice.channel + ' – ' + newm.voiceChannel.name );
 			if ( newrole && newrole.comparePositionTo(newm.guild.me.highestRole) < 0 ) {
 				console.log( newm.guild.name + ': ' + newm.displayName + ' hat den Sprachkanal "' + newm.voiceChannel.name + '" betreten.' );
-				newm.addRole( newrole, lang.voice.join.replace( '%1$s', newm.displayName ).replace( '%2$s', newm.voiceChannel.name ) ).catch(log_error);
+				newm.addRole( newrole, lang.voice.join.replaceSave( '%1$s', newm.displayName ).replaceSave( '%2$s', newm.voiceChannel.name ) ).catch(log_error);
 			}
 		}
 	}
