@@ -542,16 +542,20 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ') {
 	if ( cmd === ' ' && msg.isAdmin() && !( msg.guild.id in settings ) && settings !== defaultSettings ) {
 		cmd_settings(lang, msg, [], '');
 	}
+	if ( /^\|\|(?:(?!\|\|).)+\|\|$/.test(title) ) {
+		title = title.substring( 2, title.length - 2);
+		var spoiler = ' || ';
+	}
 	if ( title.includes( '#' ) ) {
 		var fragment = title.split('#').slice(1).join('#');
 		title = title.split('#')[0];
 	}
-	if ( /\?[a-z]+=/.test(title) ) {
+	if ( /\?\w+=/.test(title) ) {
 		var querystart = title.search(/\?\w+=/);
 		var querystring = title.substr(querystart + 1);
 		title = title.substr(0, querystart);
 	}
-	msg.reactEmoji('⏳').then( reaction => check_wiki(lang, msg, title, wiki, cmd, reaction, querystring, fragment) );
+	msg.reactEmoji('⏳').then( reaction => check_wiki(lang, msg, title, wiki, cmd, reaction, querystring, fragment, spoiler) );
 }
 
 /**
@@ -564,9 +568,10 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ') {
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
  * @param {String} [querystring=''] The querystring for the page
  * @param {String} [fragment=''] The section of the page
+ * @param {String} [spoiler=''] The pipes if the message is a spoiler
  * @param {Number} [selfcall=0] The number of recursive calls
  */
-function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fragment = '', selfcall = 0) {
+function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fragment = '', spoiler = '', selfcall = 0) {
 	var linksuffix = ( querystring ? '?' + querystring.toTitle() : '' ) + ( fragment ? '#' + fragment.toSection() : '' );
 	if ( title.length > 300 ) {
 		title = title.substr(0, 300);
@@ -575,16 +580,16 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 	var invoke = title.split(' ')[0].toLowerCase();
 	var args = title.split(' ').slice(1);
 	
-	if ( ( invoke === 'random' || invoke === '🎲' || invoke === lang.search.random ) && !args.join('') && !linksuffix ) cmd_random(lang, msg, wiki, reaction);
+	if ( ( invoke === 'random' || invoke === '🎲' || invoke === lang.search.random ) && !args.join('') && !linksuffix ) cmd_random(lang, msg, wiki, reaction, spoiler);
 	else if ( invoke === 'page' || invoke === lang.search.page ) {
-		msg.sendChannel( '<' + wiki + 'wiki/' + args.join('_').toTitle() + linksuffix + '>' );
+		msg.sendChannel( spoiler + '<' + wiki + 'wiki/' + args.join('_').toTitle() + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
 	else if ( invoke === 'search' || invoke === lang.search.search ) {
-		msg.sendChannel( '<' + wiki + 'wiki/Special:Search/' + args.join('_').toTitle() + linksuffix + '>' );
+		msg.sendChannel( spoiler + '<' + wiki + 'wiki/Special:Search/' + args.join('_').toTitle() + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
-	else if ( invoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction);
+	else if ( invoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
 	else {
 		request( {
 			uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general|namespaces|specialpagealiases&iwurl=true' + ( /(?:^|&)redirect=no(?:&|$)/.test( querystring ) ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ) + '&format=json',
@@ -598,7 +603,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( '<' + wiki + 'wiki/' + ( linksuffix ? title.toTitle() + linksuffix : 'Special:Search/' + title.toTitle() ) + '>' );
+					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( linksuffix ? title.toTitle() + linksuffix : 'Special:Search/' + title.toTitle() ) + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
@@ -615,7 +620,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 					
 					if ( querypage.ns === 2 && ( !querypage.title.includes( '/' ) || /^[^:]+:[\d\.]+\/\d\d$/.test(querypage.title) ) ) {
 						var userparts = querypage.title.split(':');
-						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, reaction);
+						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, reaction, spoiler);
 					}
 					else if ( ( querypage.missing !== undefined && querypage.known === undefined ) || querypage.invalid !== undefined ) {
 						request( {
@@ -625,7 +630,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 							if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
 							if ( srerror || !srresponse || srresponse.statusCode !== 200 || !srbody ) {
 								console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
-								msg.sendChannelError( '<' + wiki + 'wiki/Special:Search/' + title.toTitle() + '>' );
+								msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Search/' + title.toTitle() + '>' + spoiler );
 							}
 							else {
 								if ( !srbody.query ) {
@@ -634,13 +639,13 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 								else {
 									var pagelink = wiki + 'wiki/' + Object.values(srbody.query.pages)[0].title.toTitle() + linksuffix;
 									if ( title.replace( /\-/g, ' ' ).toTitle().toLowerCase() === querypage.title.replace( /\-/g, ' ' ).toTitle().toLowerCase() ) {
-										msg.sendChannel( pagelink );
+										msg.sendChannel( spoiler + pagelink + spoiler );
 									}
 									else if ( !srbody.continue ) {
-										msg.sendChannel( pagelink + '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ) );
+										msg.sendChannel( spoiler + pagelink + '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ) + spoiler );
 									}
 									else {
-										msg.sendChannel( pagelink + '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' ) );
+										msg.sendChannel( spoiler + pagelink + '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' ) + spoiler );
 									}
 								}
 							}
@@ -649,7 +654,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 						} );
 					}
 					else {
-						msg.sendChannel( wiki + 'wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) ) );
+						msg.sendChannel( spoiler + wiki + 'wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) ) + spoiler );
 						
 						if ( reaction ) reaction.removeEmoji();
 					}
@@ -662,20 +667,20 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
 							selfcall++;
-							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, querystring, fragment, selfcall);
+							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, querystring, fragment, spoiler, selfcall);
 						} else {
 							if ( reaction ) reaction.removeEmoji();
 							console.log( '- Abgebrochen, pausiert.' );
 						}
 					} else {
-						msg.sendChannel( inter.url.replace( /@(here|everyone)/g, '%40$1' ) + linksuffix ).then( message => {
+						msg.sendChannel( spoiler + inter.url.replace( /@(here|everyone)/g, '%40$1' ) + linksuffix + spoiler ).then( message => {
 							if ( message && selfcall === 3 ) message.reactEmoji('⚠');
 						} );
 						if ( reaction ) reaction.removeEmoji();
 					}
 				}
 				else {
-					msg.sendChannel( wiki + 'wiki/' + body.query.general.mainpage.toTitle() + linksuffix );
+					msg.sendChannel( spoiler + wiki + 'wiki/' + body.query.general.mainpage.toTitle() + linksuffix + spoiler );
 					
 					if ( reaction ) reaction.removeEmoji();
 				}
@@ -763,8 +768,9 @@ function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
  * @param {String} [wiki] The current wiki
  * @param {String} [linksuffix] The linksuffix
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler] The pipes if the message is a spoiler
  */
-function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
+function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction, spoiler) {
 	if ( /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d\d)?$/.test(username) ) {
 		request( {
 			uri: wiki + 'api.php?action=query&list=blocks&bkprop=user|by|timestamp|expiry|reason&bkip=' + encodeURIComponent( username ) + '&format=json',
@@ -781,7 +787,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>' );
+					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
@@ -818,7 +824,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 						}
 						else {
 							console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( ucerror ? ': ' + ucerror : ( ucbody ? ( ucbody.error ? ': ' + ucbody.error.info : '.' ) : '.' ) ) );
-							msg.sendChannelError( '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>' );
+							msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>' + spoiler );
 						}
 					}
 					else {
@@ -827,7 +833,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 						var text = '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>\n\n' + editcount.join(' ');
 						if ( blocks.length ) blocks.forEach( block => text += '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() );
 						
-						msg.sendChannel( text );
+						msg.sendChannel( spoiler + text + spoiler );
 					}
 					
 					if ( reaction ) reaction.removeEmoji();
@@ -847,7 +853,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' );
+					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 			}
 			else {
@@ -892,7 +898,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
 					var blockreason = body.query.users[0].blockreason;
 					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
 					
-					msg.sendChannel( '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) );
+					msg.sendChannel( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) + spoiler );
 				}
 			}
 			
@@ -908,8 +914,9 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction) {
  * @param {String[]} [args] The arguments
  * @param {String} [wiki] The current wiki
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler] The pipes if the message is a spoiler
  */
-function cmd_diff(lang, msg, args, wiki, reaction) {
+function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 	if ( args[0] ) {
 		var error = false;
 		var title = '';
@@ -945,7 +952,7 @@ function cmd_diff(lang, msg, args, wiki, reaction) {
 			if ( parseInt(revision, 10) > parseInt(diff, 10) ) argids = [revision, diff];
 			else if ( parseInt(revision, 10) === parseInt(diff, 10) ) argids = [revision];
 			else argids = [diff, revision];
-			cmd_diffsend(lang, msg, argids, wiki, reaction);
+			cmd_diffsend(lang, msg, argids, wiki, reaction, spoiler);
 		}
 		else {
 			request( {
@@ -960,7 +967,7 @@ function cmd_diff(lang, msg, args, wiki, reaction) {
 					}
 					else {
 						console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-						msg.sendChannelError( '<' + wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' );
+						msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' + spoiler );
 					}
 					
 					if ( reaction ) reaction.removeEmoji();
@@ -979,7 +986,7 @@ function cmd_diff(lang, msg, args, wiki, reaction) {
 							else argids = [ids.to, ids.from];
 						}
 						else argids = [ids.to];
-						cmd_diffsend(lang, msg, argids, wiki, reaction);
+						cmd_diffsend(lang, msg, argids, wiki, reaction, spoiler);
 					} else {
 						if ( body.query.pages && body.query.pages[-1] ) msg.replyMsg( lang.diff.badrev );
 						else msg.reactEmoji('error');
@@ -1003,8 +1010,9 @@ function cmd_diff(lang, msg, args, wiki, reaction) {
  * @param {Number[]} [args] The revision ids
  * @param {String} [wiki] The current wiki
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler] The pipes if the message is a spoiler
  */
-function cmd_diffsend(lang, msg, args, wiki, reaction) {
+function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler) {
 	request( {
 		uri: wiki + 'api.php?action=query&list=tags&tglimit=500&tgprop=displayname&prop=revisions&rvprop=ids|timestamp|flags|user|size|comment|tags&revids=' + args.join('|') + '&format=json',
 		json: true
@@ -1017,14 +1025,14 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 			}
 			else {
 				console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-				msg.sendChannelError( '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' );
+				msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 			}
 		}
 		else {
 			if ( body.query.badrevids ) msg.replyMsg( lang.diff.badrev );
 			else if ( body.query.pages && !body.query.pages['-1'] ) {
 				var pages = Object.values(body.query.pages);
-				if ( pages.length !== 1 ) msg.sendChannel( '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' );
+				if ( pages.length !== 1 ) msg.sendChannel( spoiler + '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 				else {
 					var title = pages[0].title;
 					var revisions = [];
@@ -1045,7 +1053,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
 					var pagelink = wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
 					var text = '<' + pagelink + '>\n\n' + editor.join(' ') + '\n' + timestamp.join(' ') + '\n' + size.join(' ') + '\n' + comment.join(' ') + ( tags ? '\n' + tags.join(' ').replace( tagregex, '$2' ) : '' );
 					
-					msg.sendChannel( text );
+					msg.sendChannel( spoiler + text + spoiler );
 				}
 			}
 			else msg.reactEmoji('error');
@@ -1061,8 +1069,9 @@ function cmd_diffsend(lang, msg, args, wiki, reaction) {
  * @param {Discord.Message} [msg] The message
  * @param {String} [wiki] The current wiki
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler] The pipes if the message is a spoiler
  */
-function cmd_random(lang, msg, wiki, reaction) {
+function cmd_random(lang, msg, wiki, reaction, spoiler) {
 	request( {
 		uri: wiki + 'api.php?action=query&generator=random&grnnamespace=0&format=json',
 		json: true
@@ -1075,10 +1084,10 @@ function cmd_random(lang, msg, wiki, reaction) {
 			}
 			else {
 				console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-				msg.sendChannelError( '<' + wiki + 'wiki/Special:Random>' );
+				msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Random>' + spoiler );
 			}
 		}
-		else msg.sendChannel( '🎲 ' + wiki + 'wiki/' + Object.values(body.query.pages)[0].title.toTitle() );
+		else msg.sendChannel( spoiler + '🎲 ' + wiki + 'wiki/' + Object.values(body.query.pages)[0].title.toTitle() + spoiler );
 		
 		if ( reaction ) reaction.removeEmoji();
 	} );
@@ -1308,7 +1317,7 @@ String.prototype.toPlaintext = function() {
  * @returns {String}
  */
 String.prototype.escapeFormatting = function() {
-	return this.replace( /(`|_|\*|~|<|>|{|}|@|\/\/|\|)/g, '\\$1' );
+	return this.replace( /(`|_|\*|~|<|>|{|}|@|\||\/\/)/g, '\\$1' );
 };
 
 /**
