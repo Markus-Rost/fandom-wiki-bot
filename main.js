@@ -546,16 +546,7 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ') {
 		title = title.substring( 2, title.length - 2);
 		var spoiler = ' || ';
 	}
-	if ( title.includes( '#' ) ) {
-		var fragment = title.split('#').slice(1).join('#');
-		title = title.split('#')[0];
-	}
-	if ( /\?\w+=/.test(title) ) {
-		var querystart = title.search(/\?\w+=/);
-		var querystring = title.substr(querystart + 1);
-		title = title.substr(0, querystart);
-	}
-	msg.reactEmoji('⏳').then( reaction => check_wiki(lang, msg, title, wiki, cmd, reaction, querystring, fragment, spoiler) );
+	msg.reactEmoji('⏳').then( reaction => check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler) );
 }
 
 /**
@@ -566,12 +557,21 @@ function cmd_link(lang, msg, title, wiki = lang.link, cmd = ' ') {
  * @param {String} [wiki] The current wiki
  * @param {String} [cmd] The command to the current wiki
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler=''] The pipes if the message is a spoiler
  * @param {String} [querystring=''] The querystring for the page
  * @param {String} [fragment=''] The section of the page
- * @param {String} [spoiler=''] The pipes if the message is a spoiler
  * @param {Number} [selfcall=0] The number of recursive calls
  */
-function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fragment = '', spoiler = '', selfcall = 0) {
+function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', querystring = '', fragment = '', selfcall = 0) {
+	if ( title.includes( '#' ) ) {
+		fragment = title.split('#').slice(1).join('#');
+		title = title.split('#')[0];
+	}
+	if ( /\?\w+=/.test(title) ) {
+		var querystart = title.search(/\?\w+=/);
+		querystring = title.substr(querystart + 1) + ( querystring ? '&' + querystring : '' );
+		title = title.substr(0, querystart);
+	}
 	var linksuffix = ( querystring ? '?' + querystring.toTitle() : '' ) + ( fragment ? '#' + fragment.toSection() : '' );
 	if ( title.length > 300 ) {
 		title = title.substr(0, 300);
@@ -591,8 +591,9 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 	}
 	else if ( invoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
 	else {
+		var noRedirect = /(?:^|&)redirect=no(?:&|$)/.test(querystring) || /(?:^|&)action=(?!view(?:&|$))/.test(querystring)
 		request( {
-			uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general|namespaces|specialpagealiases&iwurl=true' + ( /(?:^|&)redirect=no(?:&|$)/.test( querystring ) ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ) + '&format=json',
+			uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general|namespaces|specialpagealiases&iwurl=true' + ( noRedirect ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ) + '&format=json',
 			json: true
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
@@ -667,13 +668,19 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, querystring = '', fra
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
 							selfcall++;
-							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, querystring, fragment, spoiler, selfcall);
+							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, spoiler, querystring, fragment, selfcall);
 						} else {
 							if ( reaction ) reaction.removeEmoji();
 							console.log( '- Abgebrochen, pausiert.' );
 						}
 					} else {
-						msg.sendChannel( spoiler + inter.url.replace( /@(here|everyone)/g, '%40$1' ) + linksuffix + spoiler ).then( message => {
+						if ( inter.url.includes( '#' ) ) {
+							if ( !fragment ) fragment = '#' + inter.url.split('#').slice(1).join('#');
+							else fragment = '#' + fragment.toSection();
+							inter.url = inter.url.split('#')[0];
+						}
+						if ( querystring ) inter.url += ( inter.url.includes( '?' ) ? '&' : '?' ) + querystring.toTitle() + fragment;
+						msg.sendChannel( spoiler + inter.url.replace( /@(here|everyone)/g, '%40$1' ) + spoiler ).then( message => {
 							if ( message && selfcall === 3 ) message.reactEmoji('⚠');
 						} );
 						if ( reaction ) reaction.removeEmoji();
@@ -1492,7 +1499,7 @@ client.on( 'message', msg => {
 					count++;
 					console.log( '- Nachricht enthält zu viele Befehle!' );
 					msg.reactEmoji('⚠');
-					msg.sendErrorMsg( lang.limit.replaceSave( '%s', author.toString() ) );
+					msg.sendChannelError( lang.limit.replaceSave( '%s', author.toString() ) );
 				}
 			} );
 		}
