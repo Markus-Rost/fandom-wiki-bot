@@ -664,7 +664,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 				else if ( body.query.interwiki ) {
 					var inter = body.query.interwiki[0];
 					var intertitle = inter.title.substr(inter.iw.length + 1);
-					var regex = inter.url.match( /^(https?:\/\/([a-z\d\.-]{1,30})\.(?:wikia|fandom)\.com\/(?:([a-z-]{1,8})\/)?)wiki\// );
+					var regex = inter.url.match( /^(https?:\/\/([a-z\d\.-]{1,30})\.(?:wikia|fandom)\.com\/(?:(?!wiki\/)([a-z-]{1,8})\/)?)wiki\// );
 					if ( regex !== null && selfcall < 3 ) {
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
