@@ -638,7 +638,8 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 									msg.reactEmoji('🤷');
 								}
 								else {
-									var pagelink = wiki + 'wiki/' + Object.values(srbody.query.pages)[0].title.toTitle() + linksuffix;
+									querypage = Object.values(srbody.query.pages)[0];
+									var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
 									if ( title.replace( /\-/g, ' ' ).toTitle().toLowerCase() === querypage.title.replace( /\-/g, ' ' ).toTitle().toLowerCase() ) {
 										msg.sendChannel( spoiler + pagelink + spoiler );
 									}
