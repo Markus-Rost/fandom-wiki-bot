@@ -591,9 +591,9 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 	}
 	else if ( invoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
 	else {
-		var noRedirect = /(?:^|&)redirect=no(?:&|$)/.test(querystring) || /(?:^|&)action=(?!view(?:&|$))/.test(querystring)
+		var noRedirect = ( /(?:^|&)redirect=no(?:&|$)/.test(querystring) || /(?:^|&)action=(?!view(?:&|$))/.test(querystring) );
 		request( {
-			uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general|namespaces|specialpagealiases&iwurl=true' + ( noRedirect ? '' : '&redirects=true' ) + '&titles=' + encodeURIComponent( title ) + '&format=json',
+			uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general|namespaces|specialpagealiases&iwurl=true' + ( noRedirect ? '' : '&redirects=true' ) + '&prop=imageinfo|categoryinfo&titles=' + encodeURIComponent( title ) + '&format=json',
 			json: true
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
@@ -623,9 +623,9 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						var userparts = querypage.title.split(':');
 						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, reaction, spoiler);
 					}
-					else if ( ( querypage.missing !== undefined && querypage.known === undefined ) || querypage.invalid !== undefined ) {
+					else if ( ( querypage.missing !== undefined && querypage.known === undefined && !( noRedirect || querypage.categoryinfo ) ) || querypage.invalid !== undefined ) {
 						request( {
-							uri: wiki + 'api.php?action=query&generator=search&gsrnamespace=4|12|14|' + Object.values(body.query.namespaces).filter( ns => ns.content !== undefined ).map( ns => ns.id ).join('|') + '&gsrwhat=nearmatch&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ) + '&format=json',
+							uri: wiki + 'api.php?action=query&prop=imageinfo|categoryinfo&generator=search&gsrnamespace=4|12|14|' + Object.values(body.query.namespaces).filter( ns => ns.content !== undefined ).map( ns => ns.id ).join('|') + '&gsrwhat=nearmatch&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ) + '&format=json',
 							json: true
 						}, function( srerror, srresponse, srbody ) {
 							if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
@@ -640,15 +640,46 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 								else {
 									querypage = Object.values(srbody.query.pages)[0];
 									var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+									var text = '';
+									var embed = {};
+									if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
+										var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
+										embed = {files:[{
+											attachment: wiki + 'wiki/Special:FilePath/' + filename,
+											name: ( spoiler ? 'SPOILER ' : '' ) + filename
+										}]};
+									}
+						
 									if ( title.replace( /\-/g, ' ' ).toTitle().toLowerCase() === querypage.title.replace( /\-/g, ' ' ).toTitle().toLowerCase() ) {
-										msg.sendChannel( spoiler + pagelink + spoiler );
+										text = '';
 									}
 									else if ( !srbody.continue ) {
-										msg.sendChannel( spoiler + pagelink + '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ) + spoiler );
+										text = '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' );
 									}
 									else {
-										msg.sendChannel( spoiler + pagelink + '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' ) + spoiler );
+										text = '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' );
 									}
+									
+									if ( querypage.categoryinfo ) {
+										var langCategory = lang.search.category;
+										var category = [langCategory.content];
+										if ( querypage.categoryinfo.size === 0 ) category.push(langCat.empty);
+										if ( querypage.categoryinfo.pages > 0 ) {
+											var pages = querypage.categoryinfo.pages;
+											category.push(langCategory.pages[( pages in langCategory.pages ? pages : 'default' )].replaceSave( '%s', pages ));
+										}
+										if ( querypage.categoryinfo.files > 0 ) {
+											var files = querypage.categoryinfo.files;
+											category.push(langCategory.files[( files in langCategory.files ? files : 'default' )].replaceSave( '%s', files ));
+										}
+										if ( querypage.categoryinfo.subcats > 0 ) {
+											var subcats = querypage.categoryinfo.subcats;
+											category.push(langCategory.subcats[( subcats in langCategory.subcats ? subcats : 'default' )].replaceSave( '%s', subcats ));
+										}
+										text += '\n\n' + category.join('\n');
+									}
+									
+									msg.sendChannel( spoiler + pagelink + text + spoiler, embed );
 								}
 							}
 							
@@ -656,7 +687,36 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						} );
 					}
 					else {
-						msg.sendChannel( spoiler + wiki + 'wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) ) + spoiler );
+						var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) );
+						var text = '';
+						var embed = {};
+						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
+							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
+							embed = {files:[{
+								attachment: wiki + 'wiki/Special:FilePath/' + filename,
+								name: ( spoiler ? 'SPOILER ' : '' ) + filename
+							}]};
+						}
+						if ( querypage.categoryinfo ) {
+							var langCategory = lang.search.category;
+							var category = [langCategory.content];
+							if ( querypage.categoryinfo.size === 0 ) category.push(langCat.empty);
+							if ( querypage.categoryinfo.pages > 0 ) {
+								var pages = querypage.categoryinfo.pages;
+								category.push(langCategory.pages[( pages in langCategory.pages ? pages : 'default' )].replaceSave( '%s', pages ));
+							}
+							if ( querypage.categoryinfo.files > 0 ) {
+								var files = querypage.categoryinfo.files;
+								category.push(langCategory.files[( files in langCategory.files ? files : 'default' )].replaceSave( '%s', files ));
+							}
+							if ( querypage.categoryinfo.subcats > 0 ) {
+								var subcats = querypage.categoryinfo.subcats;
+								category.push(langCategory.subcats[( subcats in langCategory.subcats ? subcats : 'default' )].replaceSave( '%s', subcats ));
+							}
+							text += '\n\n' + category.join('\n');
+						}
+						
+						msg.sendChannel( spoiler + pagelink + text + spoiler, embed );
 						
 						if ( reaction ) reaction.removeEmoji();
 					}
@@ -1245,6 +1305,16 @@ Discord.Message.prototype.isOwner = function() {
  */
 Discord.Message.prototype.showEmbed = function() {
 	return this.channel.type !== 'text' || this.channel.permissionsFor(client.user).has('EMBED_LINKS');
+};
+
+
+/**
+ * If bot can upload files
+ * @returns {Boolean}
+ */
+Discord.Message.prototype.uploadFiles = function() {
+	if ( this.channel.type !== 'text' || this.channel.permissionsFor(client.user).has('ATTACH_FILES') ) return true;
+	else return false;
 };
 
 /**
