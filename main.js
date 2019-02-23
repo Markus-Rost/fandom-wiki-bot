@@ -1,13 +1,10 @@
 require('dotenv').config();
-const fs = require('fs');
 const util = require('util');
 util.inspect.defaultOptions = {compact:false,breakLength:Infinity};
 
 const Discord = require('discord.js');
 const DBL = require("dblapi.js");
 var request = require('request');
-
-var isDebug = ( process.argv[2] === 'debug' ? true : false );
 
 var client = new Discord.Client( {disableEveryone:true} );
 const dbl = new DBL(process.env.dbltoken);
@@ -16,8 +13,19 @@ var i18n = require('./i18n.json');
 
 var pause = {};
 var stop = false;
+var isDebug = ( process.argv[2] === 'debug' ? true : false );
 const access = {'PRIVATE-TOKEN': process.env.access};
-var defaultPermissions = new Discord.Permissions(268954688).toArray();
+const defaultPermissions = new Discord.Permissions(268954688).toArray();
+const timeoptions = {
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+	hour: '2-digit',
+	minute: '2-digit',
+	timeZone: 'UTC',
+	timeZoneName: 'short'
+}
+
 
 var ready = {
 	settings: true
@@ -77,17 +85,6 @@ client.on( 'ready', () => {
 		} );
 	}, 10800000);
 } );
-
-
-var timeoptions = {
-	year: 'numeric',
-	month: 'short',
-	day: 'numeric',
-	hour: '2-digit',
-	minute: '2-digit',
-	timeZone: 'UTC',
-	timeZoneName: 'short'
-}
 	
 	
 var cmdmap = {
@@ -605,7 +602,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( linksuffix ? title.toTitle() + linksuffix : 'Special:Search/' + title.toTitle() ) + '>' + spoiler );
+					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( linksuffix || !title ? title.toTitle() + linksuffix : 'Special:Search/' + title.toTitle() ) + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
