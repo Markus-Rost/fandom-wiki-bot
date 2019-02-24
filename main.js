@@ -617,9 +617,14 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						querypage.ns = -1;
 					}
 					
-					if ( querypage.ns === 2 && ( !querypage.title.includes( '/' ) || /^[^:]+:[\d\.]+\/\d\d$/.test(querypage.title) ) ) {
+					var contribs = body.query.namespaces['-1']['*'] + ':' + body.query.specialpagealiases.find( sp => sp.realname === 'Contributions' ).aliases[0] + '/';
+					if ( querypage.ns === 2 && ( !querypage.title.includes( '/' ) || /^[^:]+:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d\d$/.test(querypage.title) ) ) {
 						var userparts = querypage.title.split(':');
-						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, reaction, spoiler);
+						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, noRedirect, contribs.toTitle(), reaction, spoiler);
+					}
+					else if ( querypage.ns === -1 && querypage.title.startsWith(contribs) && querypage.title.length > contribs.length ) {
+						var userparts = querypage.title.split('/');
+						cmd_user(lang, msg, userparts[0].toTitle() + '/', userparts.slice(1).join('/'), wiki, linksuffix, noRedirect, contribs.toTitle(), reaction, spoiler);
 					}
 					else if ( ( querypage.missing !== undefined && querypage.known === undefined && !( noRedirect || querypage.categoryinfo ) ) || querypage.invalid !== undefined ) {
 						request( {
@@ -776,8 +781,8 @@ function cmd_umfrage(lang, msg, args, line) {
 		for ( var i = 0; ( i < args.length || imgs.length ); i++ ) {
 			var reaction = args[i];
 			var custom = /^<a?:/;
-			var pattern = /^[\u0000-\u1FFF]{1,2}$/;
-			if ( !custom.test(reaction) && ( reaction.length > 2 || pattern.test(reaction) ) ) {
+			var pattern = /^[\u0000-\u1FFF]{1,4}$/;
+			if ( !custom.test(reaction) && ( reaction.length > 4 || pattern.test(reaction) ) ) {
 				cmd_sendumfrage(lang, msg, args.slice(i).join(' ').replace( /^\n| (\n)/, '$1' ), reactions, imgs);
 				break;
 			} else if ( reaction === '' ) {
@@ -834,10 +839,12 @@ function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
  * @param {String} [username] The username
  * @param {String} [wiki] The current wiki
  * @param {String} [linksuffix] The linksuffix
+ * @param {Boolean} [noRedirect] If bot should follow redirects
+ * @param {String} [contribs] Localized name of the Special:Contributions page
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
  * @param {String} [spoiler] The pipes if the message is a spoiler
  */
-function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction, spoiler) {
+function cmd_user(lang, msg, namespace, username, wiki, linksuffix, noRedirect, contribs, reaction, spoiler) {
 	if ( /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d\d)?$/.test(username) ) {
 		request( {
 			uri: wiki + 'api.php?action=query&list=blocks&bkprop=user|by|timestamp|expiry|reason&bkip=' + encodeURIComponent( username ) + '&format=json',
@@ -854,12 +861,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction, sp
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>' + spoiler );
+					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( noRedirect ? namespace : contribs ) + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
 			}
 			else {
+				if ( !noRedirect ) namespace = contribs;
 				var blocks = body.query.blocks.map( function(block) {
 					var isBlocked = false;
 					var blockedtimestamp = (new Date(block.timestamp)).toLocaleString(lang.user.dateformat, timeoptions);
@@ -891,13 +899,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, reaction, sp
 						}
 						else {
 							console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( ucerror ? ': ' + ucerror : ( ucbody ? ( ucbody.error ? ': ' + ucbody.error.info : '.' ) : '.' ) ) );
-							msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>' + spoiler );
+							msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 						}
 					}
 					else {
 						var editcount = [lang.user.info.editcount, ( username.includes( '/' ) && range !== 24 && range !== 16 ? '~' : '' ) + ucbody.query.usercontribs.length + ( ucbody.continue ? '+' : '' )];
 						
-						var text = '<' + wiki + 'wiki/Special:Contributions/' + username.toTitle() + '>\n\n' + editcount.join(' ');
+						var text = '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + editcount.join(' ');
 						if ( blocks.length ) blocks.forEach( block => text += '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() );
 						
 						msg.sendChannel( spoiler + text + spoiler );
