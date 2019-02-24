@@ -615,16 +615,45 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						delete body.query.redirects[0].tofragment;
 						delete querypage.missing;
 						querypage.ns = -1;
+						querypage.special = '';
 					}
 					
 					var contribs = body.query.namespaces['-1']['*'] + ':' + body.query.specialpagealiases.find( sp => sp.realname === 'Contributions' ).aliases[0] + '/';
-					if ( querypage.ns === 2 && ( !querypage.title.includes( '/' ) || /^[^:]+:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d\d$/.test(querypage.title) ) ) {
+					if ( querypage.ns === 2 && ( !querypage.title.includes( '/' ) || /^[^:]+:(?:(?:\d{1,3}\.){3}\d{1,3}\/\d{2}|(?:[\dA-F]{1,4}:){7}[\dA-F]{1,4}\/\d{2,3})$/.test(querypage.title) ) ) {
 						var userparts = querypage.title.split(':');
-						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, noRedirect, contribs.toTitle(), reaction, spoiler);
+						querypage.noRedirect = noRedirect;
+						cmd_user(lang, msg, userparts[0].toTitle() + ':', userparts.slice(1).join(':'), wiki, linksuffix, querypage, contribs.toTitle(), reaction, spoiler);
 					}
 					else if ( querypage.ns === -1 && querypage.title.startsWith(contribs) && querypage.title.length > contribs.length ) {
-						var userparts = querypage.title.split('/');
-						cmd_user(lang, msg, userparts[0].toTitle() + '/', userparts.slice(1).join('/'), wiki, linksuffix, noRedirect, contribs.toTitle(), reaction, spoiler);
+						var username = querypage.title.split('/').slice(1).join('/');
+						request( {
+							uri: wiki + 'api.php?action=query&titles=User:' + encodeURIComponent( username ) + '&format=json',
+							json: true
+						}, function( uerror, uresponse, ubody ) {
+							if ( uerror || !uresponse || uresponse.statusCode !== 200 || !ubody || !ubody.query ) {
+								console.log( '- Fehler beim Erhalten der Benutzer' + ( uerror ? ': ' + uerror : ( ubody ? ( ubody.error ? ': ' + ubody.error.info : '.' ) : '.' ) ) );
+								msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( contribs + username ).toTitle() + linksuffix + '>' + spoiler );
+								
+								if ( reaction ) reaction.removeEmoji();
+							}
+							else {
+								querypage = Object.values(ubody.query.pages)[0];
+								if ( querypage.ns === 2 ) {
+									username = querypage.title.split(':').slice(1).join(':');
+									querypage.title = contribs + username;
+									delete querypage.missing;
+									querypage.ns = -1;
+									querypage.special = '';
+									querypage.noRedirect = noRedirect;
+									cmd_user(lang, msg, contribs.toTitle(), username, wiki, linksuffix, querypage, contribs.toTitle(), reaction, spoiler);
+								}
+								else {
+									msg.reactEmoji('error');
+									
+									if ( reaction ) reaction.removeEmoji();
+								}
+							}
+						} );
 					}
 					else if ( ( querypage.missing !== undefined && querypage.known === undefined && !( noRedirect || querypage.categoryinfo ) ) || querypage.invalid !== undefined ) {
 						request( {
@@ -839,13 +868,13 @@ function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
  * @param {String} [username] The username
  * @param {String} [wiki] The current wiki
  * @param {String} [linksuffix] The linksuffix
- * @param {Boolean} [noRedirect] If bot should follow redirects
+ * @param {Object} [querypage] Data about the page
  * @param {String} [contribs] Localized name of the Special:Contributions page
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
  * @param {String} [spoiler] The pipes if the message is a spoiler
  */
-function cmd_user(lang, msg, namespace, username, wiki, linksuffix, noRedirect, contribs, reaction, spoiler) {
-	if ( /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d\d)?$/.test(username) ) {
+function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, contribs, reaction, spoiler) {
+	if ( /^(?:(?:\d{1,3}\.){3}\d{1,3}(?:\/\d{2})?|(?:[\dA-F]{1,4}:){7}[\dA-F]{1,4}(?:\/\d{2,3})?)$/.test(username) ) {
 		request( {
 			uri: wiki + 'api.php?action=query&list=blocks&bkprop=user|by|timestamp|expiry|reason&bkip=' + encodeURIComponent( username ) + '&format=json',
 			json: true
@@ -857,17 +886,30 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, noRedirect, 
 					msg.reactEmoji('nowiki');
 				}
 				else if ( body && body.error && ( body.error.code === 'param_ip' || body.error.code === 'cidrtoobroad' ) ) {
-					msg.reactEmoji('error');
+					if ( querypage.missing !== undefined || querypage.ns === -1 ) msg.reactEmoji('error');
+					else {
+						var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+						var embed = {};
+						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
+							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
+							embed = {files:[{
+								attachment: wiki + 'wiki/Special:FilePath/' + filename,
+								name: ( spoiler ? 'SPOILER ' : '' ) + filename
+							}]};
+						}
+						
+						msg.sendChannel( spoiler + pagelink + spoiler, embed );
+					}
 				}
 				else {
 					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( noRedirect ? namespace : contribs ) + username.toTitle() + linksuffix + '>' + spoiler );
+					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( querypage.noRedirect ? namespace : contribs ) + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
 			}
 			else {
-				if ( !noRedirect ) namespace = contribs;
+				if ( !querypage.noRedirect || ( querypage.missing === undefined && querypage.ns !== -1 ) ) namespace = contribs;
 				var blocks = body.query.blocks.map( function(block) {
 					var isBlocked = false;
 					var blockedtimestamp = (new Date(block.timestamp)).toLocaleString(lang.user.dateformat, timeoptions);
@@ -883,15 +925,29 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, noRedirect, 
 				} ).filter( block => block !== undefined );
 				if ( username.includes( '/' ) ) {
 					var rangeprefix = username;
-					var range = parseInt(username.substr(-2, 2), 10);
-					if ( range >= 32 ) username = username.replace( /^(.+)\/\d\d$/, '$1' );
-					else if ( range >= 24 ) rangeprefix = username.replace( /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.).+$/, '$1' );
-					else if ( range >= 16 ) rangeprefix = username.replace( /^(\d{1,3}\.\d{1,3}\.).+$/, '$1' );
+					if ( username.includes( ':' ) ) {
+						var range = parseInt(username.replace( /^.+\/(\d{2,3})$/, '$1' ), 10);
+						if ( range === 128 ) username = username.replace( /^(.+)\/\d{2,3}$/, '$1' );
+						else if ( range >= 112 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){7}).+$/, '$1' );
+						else if ( range >= 96 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){6}).+$/, '$1' );
+						else if ( range >= 80 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){5}).+$/, '$1' );
+						else if ( range >= 64 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){4}).+$/, '$1' );
+						else if ( range >= 48 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){3}).+$/, '$1' );
+						else if ( range >= 32 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){2}).+$/, '$1' );
+						else if ( range >= 19 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){1}).+$/, '$1' );
+					}
+					else {
+						var range = parseInt(username.substr(-2, 2), 10);
+						if ( range === 32 ) username = username.replace( /^(.+)\/\d{2}$/, '$1' );
+						else if ( range >= 24 ) rangeprefix = username.replace( /^((?:\d{1,3}\.){3}).+$/, '$1' );
+						else if ( range >= 16 ) rangeprefix = username.replace( /^((?:\d{1,3}\.){2}).+$/, '$1' );
+					}
 				}
 				request( {
-					uri: wiki + 'api.php?action=query&list=usercontribs&ucprop=&ucuser=' + encodeURIComponent( username ) + '&format=json',
+					uri: wiki + 'api.php?action=query&list=usercontribs&ucprop=&uclimit=50&ucuser=' + encodeURIComponent( username ) + '&format=json',
 					json: true
 				}, function( ucerror, ucresponse, ucbody ) {
+					if ( rangeprefix && !username.includes( '/' ) ) username = rangeprefix;
 					if ( ucbody && ucbody.warnings ) log_warn(ucbody.warnings);
 					if ( ucerror || !ucresponse || ucresponse.statusCode !== 200 || !ucbody || !ucbody.query || !ucbody.query.usercontribs ) {
 						if ( ucbody && ucbody.error && ucbody.error.code === 'baduser_ucuser' ) {
@@ -903,7 +959,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, noRedirect, 
 						}
 					}
 					else {
-						var editcount = [lang.user.info.editcount, ( username.includes( '/' ) && range !== 24 && range !== 16 ? '~' : '' ) + ucbody.query.usercontribs.length + ( ucbody.continue ? '+' : '' )];
+						var editcount = [lang.user.info.editcount, ( username.includes( '/' ) ? '~' : '' ) + ucbody.query.usercontribs.length + ( ucbody.continue ? '+' : '' )];
 						
 						var text = '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + editcount.join(' ');
 						if ( blocks.length ) blocks.forEach( block => text += '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() );
@@ -933,7 +989,20 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, noRedirect, 
 			}
 			else {
 				if ( !body.query.users[0] ) {
-					msg.reactEmoji('🤷');
+					if ( querypage.missing !== undefined || querypage.ns === -1 ) msg.reactEmoji('🤷');
+					else {
+						var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+						var embed = {};
+						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
+							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
+							embed = {files:[{
+								attachment: wiki + 'wiki/Special:FilePath/' + filename,
+								name: ( spoiler ? 'SPOILER ' : '' ) + filename
+							}]};
+						}
+						
+						msg.sendChannel( spoiler + pagelink + spoiler, embed );
+					}
 				}
 				else {
 					username = body.query.users[0].name;
