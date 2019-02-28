@@ -39,7 +39,7 @@ const defaultSettings = {
 }
 var settings = defaultSettings;
 
-function getSettings(callback) {
+function getSettings() {
 	ready.settings = true;
 	request( {
 		uri: process.env.read + process.env.file + process.env.raw,
@@ -54,7 +54,7 @@ function getSettings(callback) {
 			console.log( '- Einstellungen erfolgreich ausgelesen.' );
 			settings = Object.assign({}, body);
 		}
-		callback();
+		setStatus();
 	} );
 }
 
@@ -68,7 +68,7 @@ function setStatus() {
 
 client.on( 'ready', () => {
 	console.log( '- Erfolgreich als ' + client.user.username + ' angemeldet!' );
-	getSettings(setStatus);
+	getSettings();
 	
 	if ( !isDebug ) client.setInterval( () => {
 		console.log( '- Anzahl der Server: ' + client.guilds.size );
@@ -1574,7 +1574,7 @@ client.on( 'message', msg => {
 	var channel = msg.channel;
 	if ( channel.type === 'text' ) var permissions = channel.permissionsFor(client.user);
 	
-	if ( !ready.settings && settings === defaultSettings ) getSettings(setStatus);
+	if ( !ready.settings && settings === defaultSettings ) getSettings();
 	var setting = Object.assign({}, settings['default']);
 	if ( settings === defaultSettings ) {
 		msg.sendChannel( '⚠ **Limited Functionality** ⚠\nNo settings found, please contact the bot owner!\n' + process.env.invite, {}, true );
@@ -1635,7 +1635,7 @@ client.on( 'message', msg => {
 client.on( 'voiceStateUpdate', (oldm, newm) => {
 	if ( stop ) return;
 	
-	if ( !ready.settings && settings === defaultSettings ) getSettings(setStatus);
+	if ( !ready.settings && settings === defaultSettings ) getSettings();
 	if ( oldm.guild.me.permissions.has('MANAGE_ROLES') && oldm.voiceChannelID !== newm.voiceChannelID ) {
 		var setting = Object.assign({}, settings['default']);
 		if ( oldm.guild.id in settings ) setting = Object.assign({}, settings[oldm.guild.id]);
