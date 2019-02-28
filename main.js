@@ -34,11 +34,7 @@ var ready = {
 const defaultSettings = {
 	"default": {
 		"lang": "en",
-		"wiki": [
-			"community",
-			null,
-			"wikia"
-		]
+		"wiki": "https://community.wikia.com/"
 	}
 }
 var settings = defaultSettings;
@@ -132,10 +128,10 @@ var pausecmdmap = {
 function cmd_settings(lang, msg, args, line) {
 	if ( msg.isAdmin() ) {
 		if ( msg.guild.id in settings ) {
-			var text = lang.settings.current.replaceSave( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replaceSave( '%2$s', settings[msg.guild.id].wiki.toLink() + 'wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
+			var text = lang.settings.current.replaceSave( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replaceSave( '%2$s', settings[msg.guild.id].wiki + 'wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
 			if ( settings[msg.guild.id].channels ) {
 				Object.keys(settings[msg.guild.id].channels).forEach( function(channel) {
-					text += '<#' + channel + '>: <' + settings[msg.guild.id].channels[channel].toLink() + 'wiki/>\n';
+					text += '<#' + channel + '>: <' + settings[msg.guild.id].channels[channel] + 'wiki/>\n';
 				} );
 			} else text += lang.settings.nochannels;
 		} else {
@@ -145,15 +141,10 @@ function cmd_settings(lang, msg, args, line) {
 			if ( args[0] ) args[0] = args[0].toLowerCase();
 			args[1] = args.slice(1).join(' ').toLowerCase().replace( /^<(.*)>$/, '$1' );
 			if ( args[1] && ( args[0] === 'wiki' || args[0] === 'channel' ) ) {
-				var match = [];
-				var regex = args[1].match( /^(?:(?:https?:)?\/\/)?([a-z\d-]{1,30})\.fandom\.com(?:\/([a-z-]{1,8}))?(?:\/|$)/ );
-				if ( regex !== null ) {
-					match = [regex[1], regex[2], 'fandom'];
-					if ( match[1] === 'wiki' ) match[1] = null;
-				} else {
-					regex = args[1].match( /^(?:(?:https?:)?\/\/)?(?:([a-z-]{1,8})\.)?([a-z\d-]{1,30})(?:\.wikia\.com|$)/ );
-					if ( regex !== null ) match = [regex[2], regex[1], 'wikia'];
-				}
+				var wikinew = '';
+				var regex = args[1].match( /^(?:https?:\/\/)?(([a-z-]{1,8}\.)?[a-z\d-]{1,30}\.(?:wikia|fandom)\.com(?:(?!\/wiki\/)\/[a-z-]{1,8})?)/ );
+				if ( regex !== null ) wikinew = ( regex[2] ? 'http://' : 'https://' ) + regex[1] + '/';
+				else if ( /^(?:[a-z-]{1,8}\.)?[a-z\d-]{1,30}$/.test( args[1] ) ) wikinew = ( args[1].includes( '.' ) ? 'http://' : 'https://' ) + args[1] + '.wikia.com/';
 			}
 			var langs = '\n' + lang.settings.langhelp.replaceSave( '%s', process.env.prefix + ' settings lang' ) + ' `' + i18n.allLangs[1].join(', ') + '`';
 			var wikis = '\n' + lang.settings.wikihelp.replaceSave( '%s', process.env.prefix + ' settings wiki' );
@@ -170,16 +161,16 @@ function cmd_settings(lang, msg, args, line) {
 					} else msg.replyMsg( lang.settings[current] + langs, {}, true );
 				} else if ( args[0] === 'wiki' ) {
 					if ( args[1] ) {
-						if ( match.length ) edit_settings(lang, msg, 'wiki', match);
+						if ( wikinew ) edit_settings(lang, msg, 'wiki', wikinew);
 						else msg.replyMsg( nowikis, {}, true );
-					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki.toLink() + 'wiki/' + wikis, {}, true );
+					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki + 'wiki/' + wikis, {}, true );
 				} else if ( args[0] === 'channel' ) {
 					if ( args[1] ) {
-						if ( match.length ) edit_settings(lang, msg, 'channel', match);
+						if ( wikinew ) edit_settings(lang, msg, 'channel', wikinew);
 						else msg.replyMsg( nochannels, {}, true );
 					} else if ( settings[msg.guild.id].channels && msg.channel.id in settings[msg.guild.id].channels ) {
-						msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].channels[msg.channel.id].toLink() + 'wiki/' + channels, {}, true );
-					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki.toLink() + 'wiki/' + channels, {}, true );
+						msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].channels[msg.channel.id] + 'wiki/' + channels, {}, true );
+					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki + 'wiki/' + channels, {}, true );
 				} else msg.replyMsg( text, {}, true );
 			} else {
 				if ( args[0] === 'lang' ) {
@@ -189,7 +180,7 @@ function cmd_settings(lang, msg, args, line) {
 					} else msg.replyMsg( lang.settings.lang + langs, {}, true );
 				} else if ( args[0] === 'wiki' || args[0] === 'channel' ) {
 					if ( args[1] ) {
-						if ( match.length ) edit_settings(lang, msg, 'wiki', match);
+						if ( wikinew ) edit_settings(lang, msg, 'wiki', wikinew);
 						else msg.replyMsg( nowikis, {}, true );
 					} else msg.replyMsg( lang.settings.wikimissing + wikis, {}, true );
 				} else msg.replyMsg( text, {}, true );
@@ -228,7 +219,7 @@ function edit_settings(lang, msg, key, value) {
 					var channels = temp_settings[guild].channels;
 					if ( channels ) {
 						Object.keys(channels).forEach( function(channel) {
-							if ( channels[channel].join() === temp_settings[guild].wiki.join() || !client.guilds.get(guild).channels.has(channel) ) delete channels[channel];
+							if ( channels[channel] === temp_settings[guild].wiki || !client.guilds.get(guild).channels.has(channel) ) delete channels[channel];
 						} );
 						if ( !Object.keys(channels).length ) delete temp_settings[guild].channels;
 					}
@@ -1312,7 +1303,7 @@ function cmd_get(lang, msg, args, line) {
 			var channelguild = ['Guild:', channel.guild.name + ' `' + channel.guild.id + '`' + ( pause[channel.guild.id] ? '\\*' : '' )];
 			var channelname = ['Channel:', '#' + channel.name + ' `' + channel.id + '` ' + channel.toString()];
 			var channelpermissions = ['Missing permissions:', ( channel.memberPermissions(channel.guild.me).has(defaultPermissions) ? '*none*' : '`' + channel.memberPermissions(channel.guild.me).missing(defaultPermissions).join('`, `') + '`' )];
-			var channelwiki = ['Default Wiki:', ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id] : settings[channel.guild.id].wiki ) : settings['default'].wiki ).toLink()];
+			var channelwiki = ['Default Wiki:', ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id] : settings[channel.guild.id].wiki ) : settings['default'].wiki )];
 			if ( msg.showEmbed() ) {
 				var text = '';
 				var embed = new Discord.RichEmbed().addField( channelguild[0], channelguild[1] ).addField( channelname[0], channelname[1] ).addField( channelpermissions[0], channelpermissions[1] ).addField( channelwiki[0], channelwiki[1] );
@@ -1331,23 +1322,7 @@ function cmd_get(lang, msg, args, line) {
  * @returns {String}
  */
 String.prototype.noWiki = function() {
-	return this.replace( /^https?:\/\/([a-z\d\.-]{1,30}\.(?:wikia|fandom)\.com)\/(?:[a-z-]{1,8}\/)?$/, 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
-};
-
-/**
- * Build link to the wiki
- * @returns {String}
- */
-Array.prototype.toLink = function() {
-	var link = '';
-	if ( this[2] === 'fandom' ) {
-		if ( this[1] ) link = 'https://' + this[0] + '.fandom.com/' + this[1] + '/';
-		else link = 'https://' + this[0] + '.fandom.com/';
-	} else {
-		if ( this[1] ) link = 'http://' + this[1] + '.' + this[0] + '.wikia.com/';
-		else link = 'https://' + this[0] + '.wikia.com/';
-	}
-	return link;
+	return this.replace( /^https?:\/\/((?:[a-z-]{1,8}\.)?[a-z\d-]{1,30}\.(?:wikia|fandom)\.com)\/(?:[a-z-]{1,8}\/)?$/, 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
 };
 
 /**
@@ -1605,8 +1580,8 @@ client.on( 'message', msg => {
 		msg.sendChannel( '⚠ **Limited Functionality** ⚠\nNo settings found, please contact the bot owner!\n' + process.env.invite, {}, true );
 	} else if ( channel.type === 'text' && msg.guild.id in settings ) setting = Object.assign({}, settings[msg.guild.id]);
 	var lang = Object.assign({}, i18n[setting.lang]);
-	lang.link = setting.wiki.toLink();
-	if ( setting.channels && channel.id in setting.channels ) lang.link = setting.channels[channel.id].toLink();
+	lang.link = setting.wiki;
+	if ( setting.channels && channel.id in setting.channels ) lang.link = setting.channels[channel.id];
 	
 	if ( channel.type !== 'text' || permissions.has(['SEND_MESSAGES','ADD_REACTIONS','USE_EXTERNAL_EMOJIS','READ_MESSAGE_HISTORY']) ) {
 		var invoke = cont.split(' ')[1] ? cont.split(' ')[1].split('\n')[0].toLowerCase() : '';
@@ -1638,7 +1613,7 @@ client.on( 'message', msg => {
 					if ( ownercmd ) ownercmdmap[aliasInvoke](lang, msg, args, line);
 					else if ( channel.type !== 'text' || !pause[msg.guild.id] || ( msg.isAdmin() && aliasInvoke in pausecmdmap ) ) {
 						if ( aliasInvoke in cmdmap ) cmdmap[aliasInvoke](lang, msg, args, line);
-						else if ( match = invoke.match( /^!(?:([a-z-]{1,8})\.)?([a-z\d-]{1,30})/ ) ) cmd_link(lang, msg, args.join(' '), [match[2], match[1], 'wikia'].toLink(), ' ' + invoke + ' ');
+						else if ( /^!(?:[a-z-]{1,8}\.)?[a-z\d-]{1,30}$/.test(invoke) ) cmd_link(lang, msg, args.join(' '), ( invoke.includes( '.' ) ? 'http://' : 'https://' ) + invoke.substr(1) + '.wikia.com/', ' ' + invoke + ' ');
 						else cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
 					}
 				} else if ( line.hasPrefix() && count === 10 ) {
