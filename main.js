@@ -1403,7 +1403,6 @@ Array.prototype.toEmojis = function() {
 	if ( regex.test(text) ) {
 		regex.lastIndex = 0;
 		var emojis = client.emojis;
-		var entry;
 		while ( ( entry = regex.exec(text) ) !== null ) {
 			if ( emojis.has(entry[2]) ) {
 				text = text.replaceSave(entry[0], emojis.get(entry[2]).toString());
