@@ -1266,17 +1266,18 @@ function cmd_get(lang, msg, args, line) {
 	if ( /^\d+$/.test(id) ) {
 		if ( client.guilds.has(id) ) {
 			var guild = client.guilds.get(id);
-			var guildname = ['Guild:', guild.name + ' `' + guild.id + '`' + ( pause[guild.id] ? '\\*' : '' )];
-			var guildowner = ['Owner:', guild.owner.user.tag + ' `' + guild.ownerID + '` ' + guild.owner.toString()];
+			var guildname = ['Guild:', guild.name.escapeFormatting() + ' `' + guild.id + '`' + ( pause[guild.id] ? '\\*' : '' )];
+			var guildowner = ['Owner:', guild.owner.user.tag.escapeFormatting() + ' `' + guild.ownerID + '` ' + guild.owner.toString()];
+			var guildsize = ['Size:', guild.memberCount + ' members (' + guild.members.filter( member => member.user.bot ).size + ' bots)'];
 			var guildpermissions = ['Missing permissions:', ( guild.me.permissions.has(defaultPermissions) ? '*none*' : '`' + guild.me.permissions.missing(defaultPermissions).join('`, `') + '`' )];
 			var guildsettings = ['Settings:', ( guild.id in settings ? '```json\n' + JSON.stringify( settings[guild.id], null, '\t' ) + '\n```' : '*default*' )];
 			if ( msg.showEmbed() ) {
 				var text = '';
-				var embed = new Discord.RichEmbed().addField( guildname[0], guildname[1] ).addField( guildowner[0], guildowner[1] ).addField( guildpermissions[0], guildpermissions[1] ).addField( guildsettings[0], guildsettings[1] );
+				var embed = new Discord.RichEmbed().addField( guildname[0], guildname[1] ).addField( guildowner[0], guildowner[1] ).addField( guildsize[0], guildsize[1] ).addField( guildpermissions[0], guildpermissions[1] ).addField( guildsettings[0], guildsettings[1] );
 			}
 			else {
 				var embed = {};
-				var text = guildname.join(' ') + '\n' + guildowner.join(' ') + '\n' + guildpermissions.join(' ') + '\n' + guildsettings.join(' ');
+				var text = guildname.join(' ') + '\n' + guildowner.join(' ') + '\n' + guildsize.join(' ') + '\n' + guildpermissions.join(' ') + '\n' + guildsettings.join(' ');
 			}
 			msg.sendChannel( text, embed, true );
 		} else if ( client.guilds.some( guild => guild.members.has(id) ) ) {
@@ -1285,8 +1286,8 @@ function cmd_get(lang, msg, args, line) {
 			var guilds = client.guilds.filter( guild => guild.members.has(id) )
 			guildlist.push('\n' + guilds.map( function(guild) {
 				var member = guild.members.get(id);
-				if ( !username.length ) username.push('User:', member.user.tag + ' `' + member.id + '` ' + member.toString());
-				return guild.name + ' `' + guild.id + '`' + ( member.permissions.has('MANAGE_GUILD') ? '\\*' : '' );
+				if ( !username.length ) username.push('User:', member.user.tag.escapeFormatting() + ' `' + member.id + '` ' + member.toString());
+				return guild.name.escapeFormatting() + ' `' + guild.id + '`' + ( member.permissions.has('MANAGE_GUILD') ? '\\*' : '' );
 			} ).join('\n'));
 			if ( guildlist[1].length > 1000 ) guildlist[1] = guilds.size;
 			if ( msg.showEmbed() ) {
@@ -1300,8 +1301,8 @@ function cmd_get(lang, msg, args, line) {
 			msg.sendChannel( text, embed, true );
 		} else if ( client.guilds.some( guild => guild.channels.filter( chat => chat.type === 'text' ).has(id) ) ) {
 			var channel = client.guilds.find( guild => guild.channels.filter( chat => chat.type === 'text' ).has(id) ).channels.get(id);
-			var channelguild = ['Guild:', channel.guild.name + ' `' + channel.guild.id + '`' + ( pause[channel.guild.id] ? '\\*' : '' )];
-			var channelname = ['Channel:', '#' + channel.name + ' `' + channel.id + '` ' + channel.toString()];
+			var channelguild = ['Guild:', channel.guild.name.escapeFormatting() + ' `' + channel.guild.id + '`' + ( pause[channel.guild.id] ? '\\*' : '' )];
+			var channelname = ['Channel:', '#' + channel.name.escapeFormatting() + ' `' + channel.id + '` ' + channel.toString()];
 			var channelpermissions = ['Missing permissions:', ( channel.memberPermissions(channel.guild.me).has(defaultPermissions) ? '*none*' : '`' + channel.memberPermissions(channel.guild.me).missing(defaultPermissions).join('`, `') + '`' )];
 			var channelwiki = ['Default Wiki:', ( channel.guild.id in settings ? ( settings[channel.guild.id].channels && channel.id in settings[channel.guild.id].channels ? settings[channel.guild.id].channels[channel.id] : settings[channel.guild.id].wiki ) : settings['default'].wiki )];
 			if ( msg.showEmbed() ) {
