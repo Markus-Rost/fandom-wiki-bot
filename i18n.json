@@ -60,7 +60,7 @@
 			"wiki": "the default wiki for this server is:",
 			"wikiinvalid": "please provide a valid link to a Fandom wiki!",
 			"wikichanged": "you changed the default wiki for this server to:",
-			"wikihelp": "Use `%s <wiki>` to change the default wiki.\nLink to the wiki: `http://<wiki>.wikia.com/`",
+			"wikihelp": "Use `%s <wiki>` to change the default wiki.\nLink to the wiki: `https://<wiki>.fandom.com/`",
 			"channel": "the default wiki for this channel is:",
 			"channelchanged": "you changed the default wiki for this channel to:"
 		},
@@ -171,7 +171,7 @@
 			"pause": "**I'm currently paused on this server!**\nOnly these commands can be performed:",
 			"list": [
 				{ "cmd": "<search term>", "desc": "I will answer with a link to a matching article in the wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <search term>", "desc": "I will answer with a link to a matching article in the named Fandom wiki: `http://<wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <search term>", "desc": "I will answer with a link to a matching article in the named Fandom wiki: `https://<wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "User:<username>", "desc": "I will show some information about the user.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "I will answer with a link to the diff in the wiki." },
 				{ "cmd": "diff <page name>", "desc": "I will answer with a link to the last diff on the article in the wiki." },
@@ -228,7 +228,7 @@
 			"wiki": "das Standard-Wiki für diesen Server ist:",
 			"wikiinvalid": "bitte gib einen gültigen Link zu einem Fandom-Wiki an!",
 			"wikichanged": "du hast das Standard-Wiki für diesen Server geändert zu:",
-			"wikihelp": "Nutze `%s <Wiki>` um das Standard-Wiki zu ändern.\nLink zum Wiki: `http://<Wiki>.wikia.com/`",
+			"wikihelp": "Nutze `%s <Wiki>` um das Standard-Wiki zu ändern.\nLink zum Wiki: `https://<Wiki>.fandom.com/`",
 			"channel": "das Standard-Wiki für diesen Kanal ist:",
 			"channelchanged": "du hast das Standard-Wiki für diesen Kanal geändert zu:"
 		},
@@ -340,7 +340,7 @@
 			"pause": "**Ich bin auf diesem Server derzeit pausiert!**\nNur diese Befehle können ausgeführt werden:",
 			"list": [
 				{ "cmd": "<Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im Wiki.", "unsearchable": true },
-				{ "cmd": "!<Wiki> <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im angegebenen Fandom-Wiki: `http://<Wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<Wiki> <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im angegebenen Fandom-Wiki: `https://<Wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "Benutzer:<Benutzername>", "desc": "Ich liste ein paar Informationen über den Benutzer auf.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Ich verlinke auf die Änderung im Wiki." },
 				{ "cmd": "diff <Seitenname>", "desc": "Ich verlinke auf die letzte Änderung an der Seite im Wiki." },
@@ -406,7 +406,7 @@
 			"wiki": "le wiki associé à ce serveur est :",
 			"wikiinvalid": "veuillez fournir un lien valide vers un wiki de Fandom !",
 			"wikichanged": "le wiki par défaut a été changé pour :",
-			"wikihelp": "Utilisez `%s <wiki>` pour changer le wiki par défaut.\nLien du wiki : `http://<wiki>.wikia.com/`",
+			"wikihelp": "Utilisez `%s <wiki>` pour changer le wiki par défaut.\nLien du wiki : `https://<wiki>.fandom.com/`",
 			"channel": "le wiki défini pour ce salon est :",
 			"channelchanged": "le wiki défini pour ce salon sera désormais :"
 		},
@@ -539,7 +539,7 @@
 			"pause": "**Je suis présentement en pause sur ce serveur!**\n Seuls ces commandes sont disponibles :",
 			"list": [
 				{ "cmd": "<terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur Wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki Fandom nommé : `http://<wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki Fandom nommé : `https://<wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "Utilisateur:<nom d'utilisateur>", "desc": "Je vais montrer quelques informations sur l'utilisateur.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Je vais répondre avec un lien vers la diff sur Wiki." },
 				{ "cmd": "diff <nom de la page>", "desc": "Je vais répondre avec un lien vers la dernière diff de l'article sur Wiki." },
@@ -600,7 +600,7 @@
 			"wiki": "de standaard wiki voor deze server is:",
 			"wikiinvalid": "geef a.u.b. een geldige link naar een Fandom wiki!",
 			"wikichanged": "je wijzigde de standaard wiki voor deze server naar:",
-			"wikihelp": "Gebruik `%s <wiki>` om de standaard wiki te wijzigen.\nLink naar de wiki: `https://<wiki>.wikia.com/`",
+			"wikihelp": "Gebruik `%s <wiki>` om de standaard wiki te wijzigen.\nLink naar de wiki: `https://<wiki>.fandom.com/`",
 			"channel": "de standaard wiki voor dit kanaal is:",
 			"channelchanged": "je wijzigde de standaard wiki voor dit kanaal naar:"
 		},
@@ -712,7 +712,7 @@
 			"pause": "**Ik ben momenteel gepauzeerd op deze server!**\nAlleen deze opdrachten kunnen worden uitgevoerd:",
 			"list": [
 				{ "cmd": "<zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de benoemde Fandom wiki: `http://<wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de benoemde Fandom wiki: `https://<wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "Gebruiker:<gebruikersnaam>", "desc": "Ik zal wat informatie over de gebruiker weergeven.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Ik zal antwoorden met een link naar de diff uit de wiki." },
 				{ "cmd": "diff <pagina naam>", "desc": "Ik zal antwoorden met een link naar de laatste diff over het artikel uit de wiki." },
@@ -773,7 +773,7 @@
 			"wiki": "domyślną wiki tego serwera jest:",
 			"wikiinvalid": "podaj poprawny link do wiki na Fandom!",
 			"wikichanged": "zmieniono domyślną wiki dla tego serwera na:",
-			"wikihelp": "Użyj `%s <wiki>` aby zmienić domyślną wiki.\nLink do wiki: `http://<wiki>.wikia.com/`",
+			"wikihelp": "Użyj `%s <wiki>` aby zmienić domyślną wiki.\nLink do wiki: `https://<wiki>.fandom.com/`",
 			"channel": "domyślną wiki tego kanału jest:",
 			"channelchanged": "zmieniono domyślną wiki dla tego kanału na:"
 		},
@@ -884,7 +884,7 @@
 			"pause": "**Moja praca na tym serwerze została wstrzymana!**\nTylko następujące komendy mogą być używane:",
 			"list": [
 				{ "cmd": "<wyszukiwana fraza>", "desc": "Odpowiem linkiem do pasujacego artykułu na Wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na Fandom: `http://<wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "Użytkownik:<nazwa użytkownika>", "desc": "Pokażę informacje na temat użytkownika.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Odpowiem linkiem do podanej zmiany na Wiki." },
 				{ "cmd": "diff <nazwa strony>", "desc": "Odpowiem linkiem do ostatniej zmiany w podanym artykule na Wiki." },
@@ -956,7 +956,7 @@
 			"wiki": "a wiki padrão para este servidor é:",
 			"wikiinvalid": "por favor, forneça um link válido para uma wiki da Fandom!",
 			"wikichanged": "você mudou a wiki padrão para este servidor para:",
-			"wikihelp": "Use `%s <wiki>` para alterar a wiki padrão.\nLink para a wiki: `http://<wiki>.wikia.com/`",
+			"wikihelp": "Use `%s <wiki>` para alterar a wiki padrão.\nLink para a wiki: `https://<wiki>.fandom.com/`",
 			"channel": "a wiki padrão para este canal é:",
 			"channelchanged": "você mudou a wiki padrão para este canal para:"
 		},
@@ -1067,7 +1067,7 @@
 			"pause": "**Estou atualmente em pausa neste servidor!**\nSom estes comandos podem ser executados:",
 			"list": [
 				{ "cmd": "<termo de pesquisa>", "desc": "Eu vou responder com um link para um artigo correspondente no wiki.", "unsearchable": true },
-				{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Fandom: `http://<wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "Usuário:<username>", "desc": "Vou mostrar algumas informações sobre o usuário.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Vou responder com um link para o diff na wiki." },
 				{ "cmd": "diff <page name>", "desc": "Vou responder com um link para o último diff no artigo na wiki." },
@@ -1140,7 +1140,7 @@
 			"wiki": "bu sunucunun varsayılan wikisi:",
 			"wikiinvalid": "lütfen Fandom wikiye geçerli bir bağlantı saylağın!",
 			"wikichanged": "bu sunucunun varsayılan wikisini şuna değiştirdiniz:",
-			"wikihelp": "`%s <wiki>` kullanarak varsayılan wikiyi değiştirebilirsin.\nWiki bağlantısı: `http://<wiki>.wikia.com/`",
+			"wikihelp": "`%s <wiki>` kullanarak varsayılan wikiyi değiştirebilirsin.\nWiki bağlantısı: `https://<wiki>.fandom.com/`",
 			"channel": "bu kanalın varsayılan wikisi:",
 			"channelchanged": "bu kanalın varsayılan wikisini şuna değiştirdiniz:"
 		},
@@ -1249,7 +1249,7 @@
 			"pause": "**Şu an bu sunucuda duraklatılmış durumdayım!**\nSadece bu komutlar gerçekleştirilebilir:",
 			"list": [
 				{ "cmd": "<arama terimi>", "desc": "Wiki'deki eşleşen bir makale bağlantısıyla cevap vereceğim.", "unsearchable": true },
-				{ "cmd": "!<wiki> <arama terimi>", "desc": "Belirtilen Fandom Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `http://<wiki>.wikia.com/`", "unsearchable": true },
+				{ "cmd": "!<wiki> <arama terimi>", "desc": "Belirtilen Fandom Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `https://<wiki>.fandom.com/`", "unsearchable": true },
 				{ "cmd": "Kullanıcı:<kullanıcıadı>", "desc": "Kullanıcı hakkında bazı bilgileri göstereceğim.", "unsearchable": true },
 				{ "cmd": "diff <diff> [<oldid>]", "desc": "Wikideki farkların bağlantısıyla cevap vereceğim." },
 				{ "cmd": "diff <sayfa adı>", "desc": "Wikideki son farkın bağlantısıyla cevap vereceğim." },

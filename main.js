@@ -34,7 +34,7 @@ var ready = {
 const defaultSettings = {
 	"default": {
 		"lang": "en",
-		"wiki": "https://community.wikia.com/"
+		"wiki": "https://community.fandom.com/"
 	}
 }
 var settings = defaultSettings;
@@ -142,9 +142,12 @@ function cmd_settings(lang, msg, args, line) {
 			args[1] = args.slice(1).join(' ').toLowerCase().replace( /^<(.*)>$/, '$1' );
 			if ( args[1] && ( args[0] === 'wiki' || args[0] === 'channel' ) ) {
 				var wikinew = '';
-				var regex = args[1].match( /^(?:https?:\/\/)?(([a-z-]{1,8}\.)?[a-z\d-]{1,30}\.(?:wikia|fandom)\.com(?:(?!\/wiki\/)\/[a-z-]{1,8})?)/ );
-				if ( regex !== null ) wikinew = ( regex[2] ? 'http://' : 'https://' ) + regex[1] + '/';
-				else if ( /^(?:[a-z-]{1,8}\.)?[a-z\d-]{1,30}$/.test( args[1] ) ) wikinew = ( args[1].includes( '.' ) ? 'http://' : 'https://' ) + args[1] + '.wikia.com/';
+				var regex = args[1].match( /^(?:https:\/\/)?([a-z\d-]{1,50}\.fandom\.com(?:(?!\/wiki\/)\/[a-z-]{1,8})?)(?:\/|$)/ );
+				if ( regex !== null ) wikinew = 'https://' + regex[1] + '/';
+				else if ( /^(?:[a-z-]{1,8}\.)?[a-z\d-]{1,50}$/.test(args[1]) ) {
+					if ( args[1].includes( '.' ) ) wikinew = 'https://' + args[1].split('.')[1] + '.fandom.com/' + args[1].split('.')[0] + '/';
+					else wikinew = 'https://' + args[1] + '.fandom.com/';
+				}
 			}
 			var langs = '\n' + lang.settings.langhelp.replaceSave( '%s', process.env.prefix + ' settings lang' ) + ' `' + i18n.allLangs[1].join(', ') + '`';
 			var wikis = '\n' + lang.settings.wikihelp.replaceSave( '%s', process.env.prefix + ' settings wiki' );
@@ -747,7 +750,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 				else if ( body.query.interwiki ) {
 					var inter = body.query.interwiki[0];
 					var intertitle = inter.title.substr(inter.iw.length + 1);
-					var regex = inter.url.match( /^(https?:\/\/([a-z\d\.-]{1,30})\.(?:wikia|fandom)\.com\/(?:(?!wiki\/)([a-z-]{1,8})\/)?)wiki\// );
+					var regex = inter.url.match( /^(https:\/\/([a-z\d-]{1,50})\.fandom\.com\/(?:(?!wiki\/)([a-z-]{1,8})\/)?)wiki\// );
 					if ( regex !== null && selfcall < 3 ) {
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
@@ -1323,7 +1326,7 @@ function cmd_get(lang, msg, args, line) {
  * @returns {String}
  */
 String.prototype.noWiki = function() {
-	return this.replace( /^https?:\/\/((?:[a-z-]{1,8}\.)?[a-z\d-]{1,30}\.(?:wikia|fandom)\.com)\/(?:[a-z-]{1,8}\/)?$/, 'http://community.wikia.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
+	return this.replace( /^https:\/\/([a-z\d-]{1,50}\.fandom\.com)\/(?:[a-z-]{1,8}\/)?$/, 'https://community.fandom.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
 };
 
 /**
@@ -1614,7 +1617,11 @@ client.on( 'message', msg => {
 					if ( ownercmd ) ownercmdmap[aliasInvoke](lang, msg, args, line);
 					else if ( channel.type !== 'text' || !pause[msg.guild.id] || ( msg.isAdmin() && aliasInvoke in pausecmdmap ) ) {
 						if ( aliasInvoke in cmdmap ) cmdmap[aliasInvoke](lang, msg, args, line);
-						else if ( /^!(?:[a-z-]{1,8}\.)?[a-z\d-]{1,30}$/.test(invoke) ) cmd_link(lang, msg, args.join(' '), ( invoke.includes( '.' ) ? 'http://' : 'https://' ) + invoke.substr(1) + '.wikia.com/', ' ' + invoke + ' ');
+						else if ( /^!(?:[a-z-]{1,8}\.)?[a-z\d-]{1,50}$/.test(invoke) ) {
+							if ( invoke.includes( '.' ) ) wiki = 'https://' + invoke.split('.')[1] + '.fandom.com/' + invoke.substr(1).split('.')[0] + '/';
+							else wiki = 'https://' + invoke.substr(1) + '.fandom.com/';
+							cmd_link(lang, msg, args.join(' '), wiki, ' ' + invoke + ' ');
+						}
 						else cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
 					}
 				} else if ( line.hasPrefix() && count === 10 ) {

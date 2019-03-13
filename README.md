@@ -16,7 +16,7 @@ For a full list with all commands use `!wikia help`
 | Command | Description |
 | --- | --- |
 | `!wikia <search term>` | **Wikia-Bot** will answer with a link to a matching article in the wiki. |
-| `!wikia !<wiki> <search term>` | **Wikia-Bot** will answer with a link to a matching article in the named Fandom wiki: `http://<wiki>.wikia.com/` |
+| `!wikia !<wiki> <search term>` | **Wikia-Bot** will answer with a link to a matching article in the named Fandom wiki: `https://<wiki>.fandom.com/` |
 | `!wikia User:<username>` | **Wikia-Bot** will show some information about the user. |
 | `!wikia diff <diff> [<oldid>]` | **Wikia-Bot** will answer with a link to the diff in the wiki. |
 | `!wikia diff <page name>` | **Wikia-Bot** will answer with a link to the last diff on the article in the wiki. |
