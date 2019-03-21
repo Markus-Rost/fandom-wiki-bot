@@ -651,65 +651,80 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 					}
 					else if ( ( querypage.missing !== undefined && querypage.known === undefined && !( noRedirect || querypage.categoryinfo ) ) || querypage.invalid !== undefined ) {
 						request( {
-							uri: wiki + 'api.php?action=query&prop=imageinfo|categoryinfo&generator=search&gsrnamespace=4|12|14|' + Object.values(body.query.namespaces).filter( ns => ns.content !== undefined ).map( ns => ns.id ).join('|') + '&gsrwhat=nearmatch&gsrlimit=1&gsrsearch=' + encodeURIComponent( title ) + '&format=json',
+							uri: wiki + 'api/v1/Search/List?minArticleQuality=0&namespaces=4,12,14,' + Object.values(body.query.namespaces).filter( ns => ns.content !== undefined ).map( ns => ns.id ).join(',') + '&limit=1&query=' + encodeURIComponent( title ) + '&format=json',
 							json: true
-						}, function( srerror, srresponse, srbody ) {
-							if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
-							if ( srerror || !srresponse || srresponse.statusCode !== 200 || !srbody ) {
-								console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
-								msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) + '>' + spoiler );
+						}, function( wserror, wsresponse, wsbody ) {
+							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.items ) {
+								if ( wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
+								else {
+									console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( wserror ? ': ' + wserror : ( wsbody ? ( srbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
+									msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) + '>' + spoiler );
+								}
+								
+								if ( reaction ) reaction.removeEmoji();
 							}
 							else {
-								if ( !srbody.query ) {
-									msg.reactEmoji('🤷');
+								querypage = wsbody.items[0];
+								if ( querypage.ns && !querypage.title.startsWith(body.query.namespaces[querypage.ns]['*'] + ':') ) {
+									querypage.title = body.query.namespaces[querypage.ns]['*'] + ':' + querypage.title;
+								}
+								
+								var text = '';
+								if ( title.replace( /\-/g, ' ' ).toTitle().toLowerCase() === querypage.title.replace( /\-/g, ' ' ).toTitle().toLowerCase() ) {
+									text = '';
+								}
+								else if ( wsbody.total === 1 ) {
+									text = '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' );
 								}
 								else {
-									querypage = Object.values(srbody.query.pages)[0];
-									var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
-									var text = '';
-									var embed = {};
-									if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
-										var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
-										embed = {files:[{
-											attachment: wiki + 'wiki/Special:FilePath/' + filename,
-											name: ( spoiler ? 'SPOILER ' : '' ) + filename
-										}]};
-									}
-						
-									if ( title.replace( /\-/g, ' ' ).toTitle().toLowerCase() === querypage.title.replace( /\-/g, ' ' ).toTitle().toLowerCase() ) {
-										text = '';
-									}
-									else if ( !srbody.continue ) {
-										text = '\n' + lang.search.infopage.replaceSave( '%s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' );
+									text = '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' );
+								}
+								request( {
+									uri: wiki + 'api.php?action=query&prop=imageinfo|categoryinfo&titles=' + encodeURIComponent( querypage.title ) + '&format=json',
+									json: true
+								}, function( srerror, srresponse, srbody ) {
+									if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
+									if ( srerror || !srresponse || srresponse.statusCode !== 200 || !srbody || !srbody.query || !srbody.query.pages ) {
+										console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
+										msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + querypage.title.toTitle() + '>' + spoiler );
 									}
 									else {
-										text = '\n' + lang.search.infosearch.replaceSave( '%1$s', '`' + process.env.prefix + cmd + lang.search.page + ' ' + title + linksuffix + '`' ).replaceSave( '%2$s', '`' + process.env.prefix + cmd + lang.search.search + ' ' + title + linksuffix + '`' );
+										querypage = Object.values(srbody.query.pages)[0];
+										var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+										var embed = {};
+										if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
+											var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
+											embed = {files:[{
+												attachment: wiki + 'wiki/Special:FilePath/' + filename,
+												name: ( spoiler ? 'SPOILER ' : '' ) + filename
+											}]};
+										}
+										
+										if ( querypage.categoryinfo ) {
+											var langCategory = lang.search.category;
+											var category = [langCategory.content];
+											if ( querypage.categoryinfo.size === 0 ) category.push(langCat.empty);
+											if ( querypage.categoryinfo.pages > 0 ) {
+												var pages = querypage.categoryinfo.pages;
+												category.push(langCategory.pages[( pages in langCategory.pages ? pages : 'default' )].replaceSave( '%s', pages ));
+											}
+											if ( querypage.categoryinfo.files > 0 ) {
+												var files = querypage.categoryinfo.files;
+												category.push(langCategory.files[( files in langCategory.files ? files : 'default' )].replaceSave( '%s', files ));
+											}
+											if ( querypage.categoryinfo.subcats > 0 ) {
+												var subcats = querypage.categoryinfo.subcats;
+												category.push(langCategory.subcats[( subcats in langCategory.subcats ? subcats : 'default' )].replaceSave( '%s', subcats ));
+											}
+											text += '\n\n' + category.join('\n');
+										}
+										
+										msg.sendChannel( spoiler + pagelink + text + spoiler, embed );
 									}
 									
-									if ( querypage.categoryinfo ) {
-										var langCategory = lang.search.category;
-										var category = [langCategory.content];
-										if ( querypage.categoryinfo.size === 0 ) category.push(langCat.empty);
-										if ( querypage.categoryinfo.pages > 0 ) {
-											var pages = querypage.categoryinfo.pages;
-											category.push(langCategory.pages[( pages in langCategory.pages ? pages : 'default' )].replaceSave( '%s', pages ));
-										}
-										if ( querypage.categoryinfo.files > 0 ) {
-											var files = querypage.categoryinfo.files;
-											category.push(langCategory.files[( files in langCategory.files ? files : 'default' )].replaceSave( '%s', files ));
-										}
-										if ( querypage.categoryinfo.subcats > 0 ) {
-											var subcats = querypage.categoryinfo.subcats;
-											category.push(langCategory.subcats[( subcats in langCategory.subcats ? subcats : 'default' )].replaceSave( '%s', subcats ));
-										}
-										text += '\n\n' + category.join('\n');
-									}
-									
-									msg.sendChannel( spoiler + pagelink + text + spoiler, embed );
-								}
+									if ( reaction ) reaction.removeEmoji();
+								} );
 							}
-							
-							if ( reaction ) reaction.removeEmoji();
 						} );
 					}
 					else {
