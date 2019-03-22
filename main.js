@@ -695,7 +695,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 										if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 											var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 											embed = {files:[{
-												attachment: wiki + 'wiki/Special:FilePath/' + filename,
+												attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
 												name: ( spoiler ? 'SPOILER ' : '' ) + filename
 											}]};
 										}
@@ -734,7 +734,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 							embed = {files:[{
-								attachment: wiki + 'wiki/Special:FilePath/' + filename,
+								attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
 								name: ( spoiler ? 'SPOILER ' : '' ) + filename
 							}]};
 						}
@@ -902,7 +902,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 							embed = {files:[{
-								attachment: wiki + 'wiki/Special:FilePath/' + filename,
+								attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
 								name: ( spoiler ? 'SPOILER ' : '' ) + filename
 							}]};
 						}
@@ -1005,7 +1005,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 							embed = {files:[{
-								attachment: wiki + 'wiki/Special:FilePath/' + filename,
+								attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
 								name: ( spoiler ? 'SPOILER ' : '' ) + filename
 							}]};
 						}
