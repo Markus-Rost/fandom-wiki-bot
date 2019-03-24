@@ -48,11 +48,11 @@ function getSettings() {
 		json: true
 	}, function( error, response, body ) {
 		if ( error || !response || response.statusCode !== 200 || !body || body.message || body.error ) {
-			console.log( '- Fehler beim Erhalten der Einstellungen' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
+			console.log( '- Error while getting the settings' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
 			ready.settings = false;
 		}
 		else {
-			console.log( '- Einstellungen erfolgreich ausgelesen.' );
+			console.log( '- Settings successfully loaded.' );
 			settings = Object.assign({}, body);
 		}
 		setStatus();
@@ -68,11 +68,11 @@ function setStatus() {
 }
 
 client.on( 'ready', () => {
-	console.log( '- Erfolgreich als ' + client.user.username + ' angemeldet!' );
+	console.log( '- Successfully logged in as ' + client.user.username + '!' );
 	getSettings();
 	
 	if ( !isDebug ) client.setInterval( () => {
-		console.log( '- Anzahl der Server: ' + client.guilds.size );
+		console.log( '- Current server count: ' + client.guilds.size );
 		dbl.postStats(client.guilds.size).catch( () => {} );
 		request.post( {
 			uri: 'https://discord.bots.gg/api/v1/bots/' + client.user.id + '/stats',
@@ -205,7 +205,7 @@ function cmd_settings(lang, msg, args, line) {
 function edit_settings(lang, msg, key, value) {
 	msg.reactEmoji('⏳', true).then( function( reaction ) {
 		if ( settings === defaultSettings ) {
-			console.log( '- Fehler beim Erhalten bestehender Einstellungen.' );
+			console.log( '- Error while getting current settings.' );
 			msg.replyMsg( lang.settings.save_failed, {}, true );
 			if ( reaction ) reaction.removeEmoji();
 		}
@@ -234,7 +234,7 @@ function edit_settings(lang, msg, key, value) {
 				headers: access,
 				body: {
 					branch: 'master',
-					commit_message: client.user.username + ': Einstellungen aktualisiert.',
+					commit_message: client.user.username + ': Settings updated.',
 					actions: [
 						{
 							action: 'update',
@@ -246,14 +246,14 @@ function edit_settings(lang, msg, key, value) {
 				json: true
 			}, function( error, response, body ) {
 				if ( error || !response || response.statusCode !== 201 || !body || body.error ) {
-					console.log( '- Fehler beim Bearbeiten der Einstellungen' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
+					console.log( '- Error while editing the settings' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
 					msg.replyMsg( lang.settings.save_failed, {}, true );
 				}
 				else {
 					settings = Object.assign({}, temp_settings);
 					if ( key === 'lang' ) lang = i18n[value];
 					cmd_settings(lang, msg, [key], 'changed');
-					console.log( '- Einstellungen erfolgreich aktualisiert.' );
+					console.log( '- Settings successfully updated.' );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
@@ -382,7 +382,7 @@ function cmd_test(lang, msg, args, line) {
 		var text = lang.test.default;
 		var x = Math.floor(Math.random() * lang.test.random);
 		if ( x < lang.test.text.length ) text = lang.test.text[x];
-		console.log( '- Test: Voll funktionsfähig!' );
+		console.log( '- Test: Fully functioning!' );
 		var now = Date.now();
 		if ( msg.showEmbed() ) msg.replyMsg( text ).then( edit => {
 			var then = Date.now();
@@ -397,11 +397,11 @@ function cmd_test(lang, msg, args, line) {
 				var ping = ( then - now ) + 'ms';
 				if ( error || !response || response.statusCode !== 200 || !body ) {
 					if ( response && response.request && response.request.uri && response.request.uri.href === lang.link.noWiki() ) {
-						console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+						console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 						ping += ' <:unknown_wiki:505887262077353984>';
 					}
 					else {
-						console.log( '- Fehler beim Erreichen des Wikis' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+						console.log( '- Error while reaching the wiki' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 						ping += ' <:error:505887261200613376>';
 					}
 				}
@@ -410,7 +410,7 @@ function cmd_test(lang, msg, args, line) {
 			} );
 		} );
 	} else {
-		console.log( '- Test: Pausiert!' );
+		console.log( '- Test: Paused!' );
 		msg.replyMsg( lang.test.pause, {}, true );
 	}
 }
@@ -461,9 +461,9 @@ async function cmd_stop(lang, msg, args, line) {
 	if ( args.join(' ').split('\n')[0].isMention(msg.guild) ) {
 		await msg.replyMsg( 'I\'ll destroy myself now!', {}, true );
 		await client.destroy();
-		console.log( '- Ich schalte mich nun aus!' );
+		console.log( '- I\'m now shutting down!' );
 		setTimeout( async () => {
-			console.log( '- Ich brauche zu lange zum Beenden, terminieren!' );
+			console.log( '- I need to long to close, terminating!' );
 			process.exit(1);
 		}, 1000 ).unref();
 	} else if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
@@ -482,11 +482,11 @@ function cmd_pause(lang, msg, args, line) {
 	if ( msg.channel.type === 'text' && args.join(' ').split('\n')[0].isMention(msg.guild) && ( msg.isAdmin() || msg.isOwner() ) ) {
 		if ( pause[msg.guild.id] ) {
 			delete pause[msg.guild.id];
-			console.log( '- Pause beendet.' );
+			console.log( '- Pause ended.' );
 			msg.replyMsg( lang.pause.off, {}, true );
 		} else {
 			msg.replyMsg( lang.pause.on, {}, true );
-			console.log( '- Pause aktiviert.' );
+			console.log( '- Pause started.' );
 			pause[msg.guild.id] = true;
 		}
 	} else if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
@@ -510,7 +510,7 @@ function cmd_delete(lang, msg, args, line) {
 			else {
 				msg.channel.bulkDelete(parseInt(args[0], 10) + 1, true).then( messages => {
 					msg.reply( lang.delete.success.replace( '%s', messages.size - 1 ) ).then( antwort => antwort.deleteMsg(5000), log_error );
-					console.log( '- Die letzten ' + ( messages.size - 1 ) + ' Nachrichten in #' + msg.channel.name + ' wurden von @' + msg.member.displayName + ' gelöscht!' );
+					console.log( '- The last ' + ( messages.size - 1 ) + ' messages in #' + msg.channel.name + ' were deleted by @' + msg.member.displayName + '!' );
 				}, log_error );
 			}
 		}
@@ -592,11 +592,11 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+					console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 					msg.reactEmoji('nowiki');
 				}
 				else {
-					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+					console.log( '- Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( linksuffix || !title ? title.toTitle() + linksuffix : 'Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) ) + '>' + spoiler );
 				}
 				
@@ -626,7 +626,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							json: true
 						}, function( uerror, uresponse, ubody ) {
 							if ( uerror || !uresponse || uresponse.statusCode !== 200 || !ubody || !ubody.query ) {
-								console.log( '- Fehler beim Erhalten der Benutzer' + ( uerror ? ': ' + uerror : ( ubody ? ( ubody.error ? ': ' + ubody.error.info : '.' ) : '.' ) ) );
+								console.log( '- Error while getting the user' + ( uerror ? ': ' + uerror : ( ubody ? ( ubody.error ? ': ' + ubody.error.info : '.' ) : '.' ) ) );
 								msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( contribs + username ).toTitle() + linksuffix + '>' + spoiler );
 								
 								if ( reaction ) reaction.removeEmoji();
@@ -658,7 +658,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.items ) {
 								if ( wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
 								else {
-									console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( wserror ? ': ' + wserror : ( wsbody ? ( srbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
+									console.log( '- Error while getting the search results' + ( wserror ? ': ' + wserror : ( wsbody ? ( srbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
 									msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) + '>' + spoiler );
 								}
 								
@@ -686,7 +686,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 								}, function( srerror, srresponse, srbody ) {
 									if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
 									if ( srerror || !srresponse || srresponse.statusCode !== 200 || !srbody || !srbody.query || !srbody.query.pages ) {
-										console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
+										console.log( '- Error while getting the search results' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
 										msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + querypage.title.toTitle() + '>' + spoiler );
 									}
 									else {
@@ -774,7 +774,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, spoiler, querystring, fragment, selfcall);
 						} else {
 							if ( reaction ) reaction.removeEmoji();
-							console.log( '- Abgebrochen, pausiert.' );
+							console.log( '- Aborted, paused.' );
 						}
 					} else {
 						if ( inter.url.includes( '#' ) ) {
@@ -892,7 +892,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.blocks ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+					console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 					msg.reactEmoji('nowiki');
 				}
 				else if ( body && body.error && ( body.error.code === 'param_ip' || body.error.code === 'cidrtoobroad' ) ) {
@@ -912,7 +912,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					}
 				}
 				else {
-					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+					console.log( '- Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( querypage.noRedirect ? namespace : contribs ) + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 				
@@ -964,7 +964,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 							msg.reactEmoji('error');
 						}
 						else {
-							console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( ucerror ? ': ' + ucerror : ( ucbody ? ( ucbody.error ? ': ' + ucbody.error.info : '.' ) : '.' ) ) );
+							console.log( '- Error while getting the search results' + ( ucerror ? ': ' + ucerror : ( ucbody ? ( ucbody.error ? ': ' + ucbody.error.info : '.' ) : '.' ) ) );
 							msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 						}
 					}
@@ -989,11 +989,11 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.users ) {
 				if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-					console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+					console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 					msg.reactEmoji('nowiki');
 				}
 				else {
-					console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+					console.log( '- Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 			}
@@ -1116,11 +1116,11 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
 					if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-						console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+						console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 						msg.reactEmoji('nowiki');
 					}
 					else {
-						console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+						console.log( '- Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 						msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' + spoiler );
 					}
 					
@@ -1174,11 +1174,11 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
 			if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-				console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+				console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 				msg.reactEmoji('nowiki');
 			}
 			else {
-				console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+				console.log( '- Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 				msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 			}
 		}
@@ -1233,11 +1233,11 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
 			if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-				console.log( '- Dieses Wiki existiert nicht! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
+				console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 				msg.reactEmoji('nowiki');
 			}
 			else {
-				console.log( '- Fehler beim Erhalten der Suchergebnisse' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
+				console.log( '- Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 				msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Random>' + spoiler );
 			}
 		}
@@ -1505,7 +1505,7 @@ Discord.Message.prototype.reactEmoji = function(name, ignorePause = false) {
 		}
 		return this.react(emoji).catch(log_error);
 	} else {
-		console.log( '- Abgebrochen, pausiert.' );
+		console.log( '- Aborted, paused.' );
 		return Promise.resolve();
 	}
 };
@@ -1533,7 +1533,7 @@ Discord.Message.prototype.sendChannel = function(content, options, ignorePause =
 			} else return msg;
 		}, log_error);
 	} else {
-		console.log( '- Abgebrochen, pausiert.' );
+		console.log( '- Aborted, paused.' );
 		return Promise.resolve();
 	}
 };
@@ -1563,7 +1563,7 @@ Discord.Message.prototype.replyMsg = function(content, options, ignorePause = fa
 			} else return msg;
 		}, log_error);
 	} else {
-		console.log( '- Abgebrochen, pausiert.' );
+		console.log( '- Aborted, paused.' );
 		return Promise.resolve();
 	}
 };
@@ -1611,12 +1611,12 @@ client.on( 'message', msg => {
 			if ( ownercmd || permissions.has('MANAGE_MESSAGES') ) {
 				var args = cont.split(' ').slice(2);
 				if ( cont.split(' ')[1].split('\n')[1] ) args.unshift( '', cont.split(' ')[1].split('\n')[1] );
-				if ( !( ownercmd || aliasInvoke in pausecmdmap ) && pause[msg.guild.id] ) console.log( msg.guild.name + ': Pausiert' );
+				if ( !( ownercmd || aliasInvoke in pausecmdmap ) && pause[msg.guild.id] ) console.log( msg.guild.name + ': Paused' );
 				else console.log( ( msg.guild ? msg.guild.name : '@' + author.username ) + ': ' + cont.replace( /\n/g, '\n\u200b' ) );
 				if ( ownercmd ) ownercmdmap[aliasInvoke](lang, msg, args, cont);
 				else if ( !pause[msg.guild.id] || aliasInvoke in pausecmdmap ) multilinecmdmap[aliasInvoke](lang, msg, args, cont);
 			} else {
-				console.log( msg.guild.name + ': Fehlende Berechtigungen - MANAGE_MESSAGES' );
+				console.log( msg.guild.name + ': Missing permissions - MANAGE_MESSAGES' );
 				msg.replyMsg( lang.missingperm + ' `MANAGE_MESSAGES`' );
 			}
 		} else {
@@ -1628,7 +1628,7 @@ client.on( 'message', msg => {
 					var args = line.split(' ').slice(2);
 					aliasInvoke = ( invoke in lang.aliase ) ? lang.aliase[invoke] : invoke;
 					ownercmd = msg.isOwner() && aliasInvoke in ownercmdmap;
-					if ( channel.type === 'text' && pause[msg.guild.id] && !( ( msg.isAdmin() && aliasInvoke in pausecmdmap ) || ownercmd ) ) console.log( msg.guild.name + ': Pausiert' );
+					if ( channel.type === 'text' && pause[msg.guild.id] && !( ( msg.isAdmin() && aliasInvoke in pausecmdmap ) || ownercmd ) ) console.log( msg.guild.name + ': Paused' );
 					else console.log( ( msg.guild ? msg.guild.name : '@' + author.username ) + ': ' + line );
 					if ( ownercmd ) ownercmdmap[aliasInvoke](lang, msg, args, line);
 					else if ( channel.type !== 'text' || !pause[msg.guild.id] || ( msg.isAdmin() && aliasInvoke in pausecmdmap ) ) {
@@ -1642,7 +1642,7 @@ client.on( 'message', msg => {
 					}
 				} else if ( line.hasPrefix() && count === 10 ) {
 					count++;
-					console.log( '- Nachricht enthält zu viele Befehle!' );
+					console.log( '- Message contains too many commands!' );
 					msg.reactEmoji('⚠');
 					msg.sendChannelError( lang.limit.replaceSave( '%s', author.toString() ) );
 				}
@@ -1650,7 +1650,7 @@ client.on( 'message', msg => {
 		}
 	} else if ( msg.isAdmin() || msg.isOwner() ) {
 		var missing = permissions.missing(['SEND_MESSAGES','ADD_REACTIONS','USE_EXTERNAL_EMOJIS','READ_MESSAGE_HISTORY']);
-		console.log( msg.guild.name + ': Fehlende Berechtigungen - ' + missing.join(', ') );
+		console.log( msg.guild.name + ': Missing permissions - ' + missing.join(', ') );
 		if ( !missing.includes( 'SEND_MESSAGES' ) ) msg.replyMsg( lang.missingperm + ' `' + missing.join('`, `') + '`' );
 	}
 } );
@@ -1667,14 +1667,14 @@ client.on( 'voiceStateUpdate', (oldm, newm) => {
 		if ( oldm.voiceChannel ) {
 			var oldrole = oldm.roles.find( role => role.name === lang.channel + ' – ' + oldm.voiceChannel.name );
 			if ( oldrole && oldrole.comparePositionTo(oldm.guild.me.highestRole) < 0 ) {
-				console.log( oldm.guild.name + ': ' + oldm.displayName + ' hat den Sprachkanal "' + oldm.voiceChannel.name + '" verlassen.' );
+				console.log( oldm.guild.name + ': ' + oldm.displayName + ' left the voice channel "' + oldm.voiceChannel.name + '".' );
 				oldm.removeRole( oldrole, lang.left.replaceSave( '%1$s', oldm.displayName ).replaceSave( '%2$s', oldm.voiceChannel.name ) ).catch(log_error);
 			}
 		}
 		if ( newm.voiceChannel ) {
 			var newrole = newm.guild.roles.find( role => role.name === lang.channel + ' – ' + newm.voiceChannel.name );
 			if ( newrole && newrole.comparePositionTo(newm.guild.me.highestRole) < 0 ) {
-				console.log( newm.guild.name + ': ' + newm.displayName + ' hat den Sprachkanal "' + newm.voiceChannel.name + '" betreten.' );
+				console.log( newm.guild.name + ': ' + newm.displayName + ' joined the voice channel "' + newm.voiceChannel.name + '".' );
 				newm.addRole( newrole, lang.join.replaceSave( '%1$s', newm.displayName ).replaceSave( '%2$s', newm.voiceChannel.name ) ).catch(log_error);
 			}
 		}
@@ -1683,18 +1683,18 @@ client.on( 'voiceStateUpdate', (oldm, newm) => {
 
 
 client.on( 'guildCreate', guild => {
-	console.log( '- Ich wurde zu einem Server hinzugefügt.' );
+	console.log( '- I\'ve been added to a server.' );
 } );
 
 client.on( 'guildDelete', guild => {
-	console.log( '- Ich wurde von einem Server entfernt.' );
+	console.log( '- I\'ve been removed from a server.' );
 	if ( !guild.available ) {
-		console.log( '- Dieser Server ist nicht erreichbar.' );
+		console.log( '- ' + guild.name + ': This server isn\'t responding.' );
 		return;
 	}
 	
 	if ( settings === defaultSettings ) {
-		console.log( '- Fehler beim Erhalten bestehender Einstellungen.' );
+		console.log( '- Error while getting current settings.' );
 	}
 	else {
 		var temp_settings = Object.assign({}, settings);
@@ -1706,7 +1706,7 @@ client.on( 'guildDelete', guild => {
 			headers: access,
 			body: {
 				branch: 'master',
-				commit_message: 'Wiki-Bot: Einstellungen entfernt.',
+				commit_message: client.user.username + ': Settings removed',
 				actions: [
 					{
 						action: 'update',
@@ -1718,11 +1718,11 @@ client.on( 'guildDelete', guild => {
 			json: true
 		}, function( error, response, body ) {
 			if ( error || !response || response.statusCode !== 201 || !body || body.error ) {
-				console.log( '- Fehler beim Entfernen der Einstellungen' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
+				console.log( '- Error while removing the settings' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
 			}
 			else {
 				settings = Object.assign({}, temp_settings);
-				console.log( '- Einstellungen erfolgreich entfernt.' );
+				console.log( '- Settings successfully removed.' );
 			}
 		} );
 	}
@@ -1775,12 +1775,12 @@ function log_warn(warning, api = true) {
  */
 async function graceful(code = 1) {
 	stop = true;
-	console.log( '- SIGTERM: Beenden wird vorbereitet...' );
+	console.log( '- SIGTERM: Preparing to close...' );
 	setTimeout( async () => {
-		console.log( '- SIGTERM: Client wird zerstört...' );
+		console.log( '- SIGTERM: Destroying client...' );
 		await client.destroy();
 		setTimeout( async () => {
-			console.log( '- SIGTERM: Beenden dauert zu lange, terminieren!' );
+			console.log( '- SIGTERM: Closing takes too long, terminating!' );
 			process.exit(code);
 		}, 1000 ).unref();
 	}, 5000 ).unref();
