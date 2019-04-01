@@ -1719,7 +1719,7 @@ client.on( 'guildDelete', guild => {
 				console.log( '- Error while removing the settings' + ( error ? ': ' + error : ( body ? ( body.message ? ': ' + body.message : ( body.error ? ': ' + body.error : '.' ) ) : '.' ) ) );
 			}
 			else {
-				settings = JSON.parse(JSON.stringify(temp_settings)):
+				settings = JSON.parse(JSON.stringify(temp_settings));
 				console.log( '- Settings successfully removed.' );
 			}
 		} );
