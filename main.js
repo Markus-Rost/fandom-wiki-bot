@@ -656,7 +656,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							json: true
 						}, function( wserror, wsresponse, wsbody ) {
 							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.items ) {
-								if ( wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
+								if ( wsbody && wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
 								else {
 									console.log( '- ' + ( wsresponse ? wsresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( wserror ? ': ' + wserror : ( wsbody ? ( srbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
 									msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) + '>' + spoiler );
