@@ -161,6 +161,7 @@
 		"list": [
 			{ "cmd": "<terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur Wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki Fandom nommé : `https://<wiki>.fandom.com/`", "unsearchable": true },
+			{ "cmd": "?<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki Wikia nommé : `https://<wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Utilisateur:<nom d'utilisateur>", "desc": "Je vais montrer quelques informations sur l'utilisateur.", "unsearchable": true },
 			{ "cmd": "diff <diff> [<oldid>]", "desc": "Je vais répondre avec un lien vers la diff sur Wiki." },
 			{ "cmd": "diff <nom de la page>", "desc": "Je vais répondre avec un lien vers la dernière diff de l'article sur Wiki." },

@@ -139,6 +139,7 @@
 		"list": [
 			{ "cmd": "<wyszukiwana fraza>", "desc": "Odpowiem linkiem do pasujacego artykułu na Wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },
+			{ "cmd": "?<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na Wikia: `https://<wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Użytkownik:<nazwa użytkownika>", "desc": "Pokażę informacje na temat użytkownika.", "unsearchable": true },
 			{ "cmd": "diff <diff> [<oldid>]", "desc": "Odpowiem linkiem do podanej zmiany na Wiki." },
 			{ "cmd": "diff <nazwa strony>", "desc": "Odpowiem linkiem do ostatniej zmiany w podanym artykule na Wiki." },

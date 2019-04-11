@@ -129,10 +129,10 @@ var pausecmdmap = {
 function cmd_settings(lang, msg, args, line) {
 	if ( msg.isAdmin() ) {
 		if ( msg.guild.id in settings ) {
-			var text = lang.settings.current.replaceSave( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replaceSave( '%2$s', settings[msg.guild.id].wiki + 'wiki/ - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
+			var text = lang.settings.current.replaceSave( '%1$s', '- `' + process.env.prefix + ' settings lang`' ).replaceSave( '%2$s', settings[msg.guild.id].wiki + ' - `' + process.env.prefix + ' settings wiki`' ) + ' - `' + process.env.prefix + ' settings channel`\n';
 			if ( settings[msg.guild.id].channels ) {
 				Object.keys(settings[msg.guild.id].channels).forEach( function(channel) {
-					text += '<#' + channel + '>: <' + settings[msg.guild.id].channels[channel] + 'wiki/>\n';
+					text += '<#' + channel + '>: <' + settings[msg.guild.id].channels[channel] + '>\n';
 				} );
 			} else text += lang.settings.nochannels;
 		} else {
@@ -140,10 +140,10 @@ function cmd_settings(lang, msg, args, line) {
 		}
 		if ( args.length ) {
 			if ( args[0] ) args[0] = args[0].toLowerCase();
-			args[1] = args.slice(1).join(' ').toLowerCase().replace( /^<(.*)>$/, '$1' );
+			args[1] = args.slice(1).join(' ').toLowerCase().trim().replace( /^<(.*)>$/, '$1' );
 			if ( args[1] && ( args[0] === 'wiki' || args[0] === 'channel' ) ) {
 				var wikinew = '';
-				var regex = args[1].match( /^(?:https:\/\/)?([a-z\d-]{1,50}\.fandom\.com(?:(?!\/wiki\/)\/[a-z-]{1,8})?)(?:\/|$)/ );
+				var regex = args[1].match( /^(?:https:\/\/)?([a-z\d-]{1,50}\.(?:fandom\.com|wikia\.org)(?:(?!\/wiki\/)\/[a-z-]{1,8})?)(?:\/|$)/ );
 				if ( regex !== null ) wikinew = 'https://' + regex[1] + '/';
 				else if ( /^(?:[a-z-]{1,8}\.)?[a-z\d-]{1,50}$/.test(args[1]) ) {
 					if ( args[1].includes( '.' ) ) wikinew = 'https://' + args[1].split('.')[1] + '.fandom.com/' + args[1].split('.')[0] + '/';
@@ -167,14 +167,14 @@ function cmd_settings(lang, msg, args, line) {
 					if ( args[1] ) {
 						if ( wikinew ) edit_settings(lang, msg, 'wiki', wikinew);
 						else msg.replyMsg( nowikis, {}, true );
-					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki + 'wiki/' + wikis, {}, true );
+					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki + wikis, {}, true );
 				} else if ( args[0] === 'channel' ) {
 					if ( args[1] ) {
 						if ( wikinew ) edit_settings(lang, msg, 'channel', wikinew);
 						else msg.replyMsg( nochannels, {}, true );
 					} else if ( settings[msg.guild.id].channels && msg.channel.id in settings[msg.guild.id].channels ) {
-						msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].channels[msg.channel.id] + 'wiki/' + channels, {}, true );
-					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki + 'wiki/' + channels, {}, true );
+						msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].channels[msg.channel.id] + channels, {}, true );
+					} else msg.replyMsg( lang.settings[current] + ' ' + settings[msg.guild.id].wiki + channels, {}, true );
 				} else msg.replyMsg( text, {}, true );
 			} else {
 				if ( args[0] === 'lang' ) {
@@ -395,7 +395,7 @@ function cmd_test(lang, msg, args, line) {
 				then = Date.now();
 				if ( body && body.warnings ) log_warn(body.warnings);
 				var ping = ( then - now ) + 'ms';
-				if ( error || !response || response.statusCode !== 200 || !body ) {
+				if ( error || !response || response.statusCode !== 200 || !body || !( body instanceof Object ) ) {
 					if ( response && response.request && response.request.uri && response.request.uri.href === lang.link.noWiki() ) {
 						console.log( '- This wiki doesn\'t exist! ' + ( error ? error.message : ( body ? ( body.error ? body.error.info : '' ) : '' ) ) );
 						ping += ' <:unknown_wiki:505887262077353984>';
@@ -562,12 +562,12 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 	}
 	if ( /\?\w+=/.test(title) ) {
 		var querystart = title.search(/\?\w+=/);
-		querystring = title.substr(querystart + 1) + ( querystring ? '&' + querystring : '' );
-		title = title.substr(0, querystart);
+		querystring = title.substring(querystart + 1) + ( querystring ? '&' + querystring : '' );
+		title = title.substring(0, querystart);
 	}
 	var linksuffix = ( querystring ? '?' + querystring.toTitle() : '' ) + ( fragment ? '#' + fragment.toSection() : '' );
 	if ( title.length > 300 ) {
-		title = title.substr(0, 300);
+		title = title.substring(0, 300);
 		msg.reactEmoji('⚠');
 	}
 	var invoke = title.split(' ')[0].toLowerCase();
@@ -575,11 +575,11 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 	
 	if ( ( invoke === 'random' || invoke === '🎲' || invoke === lang.search.random ) && !args.join('') && !linksuffix ) cmd_random(lang, msg, wiki, reaction, spoiler);
 	else if ( invoke === 'page' || invoke === lang.search.page ) {
-		msg.sendChannel( spoiler + '<' + wiki + 'wiki/' + args.join('_').toTitle() + linksuffix + '>' + spoiler );
+		msg.sendChannel( spoiler + '<' + wiki.toLink() + args.join('_').toTitle() + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
 	else if ( invoke === 'search' || invoke === lang.search.search ) {
-		msg.sendChannel( spoiler + '<' + wiki + 'wiki/Special:Search?search=' + encodeURIComponent( args.join(' ') ).replace( /%20/g, '+' ) + linksuffix + '>' + spoiler );
+		msg.sendChannel( spoiler + '<' + wiki.toLink() + 'Special:Search?search=' + encodeURIComponent( args.join(' ') ).replace( /%20/g, '+' ) + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
 	else if ( invoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
@@ -597,7 +597,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 				}
 				else {
 					console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( linksuffix || !title ? title.toTitle() + linksuffix : 'Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) ) + '>' + spoiler );
+					msg.sendChannelError( spoiler + '<' + wiki.toLink() + ( linksuffix || !title ? title.toTitle() + linksuffix : 'Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) ) + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
@@ -627,7 +627,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						}, function( uerror, uresponse, ubody ) {
 							if ( uerror || !uresponse || uresponse.statusCode !== 200 || !ubody || !ubody.query ) {
 								console.log( '- ' + ( uresponse ? uresponse.statusCode + ': ' : '' ) + 'Error while getting the user' + ( uerror ? ': ' + uerror : ( ubody ? ( ubody.error ? ': ' + ubody.error.info : '.' ) : '.' ) ) );
-								msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( contribs + username ).toTitle() + linksuffix + '>' + spoiler );
+								msg.sendChannelError( spoiler + '<' + wiki.toLink() + ( contribs + username ).toTitle() + linksuffix + '>' + spoiler );
 								
 								if ( reaction ) reaction.removeEmoji();
 							}
@@ -658,8 +658,8 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.items ) {
 								if ( wsbody && wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
 								else {
-									console.log( '- ' + ( wsresponse ? wsresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( wserror ? ': ' + wserror : ( wsbody ? ( srbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
-									msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) + '>' + spoiler );
+									console.log( '- ' + ( wsresponse ? wsresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( wserror ? ': ' + wserror : ( wsbody ? ( wsbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
+									msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Search?search=' + encodeURIComponent( title ).replace( /%20/g, '+' ) + '>' + spoiler );
 								}
 								
 								if ( reaction ) reaction.removeEmoji();
@@ -687,16 +687,16 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 									if ( srbody && srbody.warnings ) log_warn(srbody.warnings);
 									if ( srerror || !srresponse || srresponse.statusCode !== 200 || !srbody || !srbody.query || !srbody.query.pages ) {
 										console.log( '- ' + ( srresponse ? srresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( srerror ? ': ' + srerror : ( srbody ? ( srbody.error ? ': ' + srbody.error.info : '.' ) : '.' ) ) );
-										msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + querypage.title.toTitle() + '>' + spoiler );
+										msg.sendChannelError( spoiler + '<' + wiki.toLink() + querypage.title.toTitle() + '>' + spoiler );
 									}
 									else {
 										querypage = Object.values(srbody.query.pages)[0];
-										var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+										var pagelink = wiki.toLink() + querypage.title.toTitle() + linksuffix;
 										var embed = {};
 										if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 											var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 											embed = {files:[{
-												attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
+												attachment: wiki.toLink() + 'Special:FilePath/' + filename + '?v=' + Date.now(),
 												name: ( spoiler ? 'SPOILER ' : '' ) + filename
 											}]};
 										}
@@ -729,13 +729,13 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						} );
 					}
 					else {
-						var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) );
+						var pagelink = wiki.toLink() + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) );
 						var text = '';
 						var embed = {};
 						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 							embed = {files:[{
-								attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
+								attachment: wiki.toLink() + 'Special:FilePath/' + filename + '?v=' + Date.now(),
 								name: ( spoiler ? 'SPOILER ' : '' ) + filename
 							}]};
 						}
@@ -765,13 +765,13 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 				}
 				else if ( body.query.interwiki ) {
 					var inter = body.query.interwiki[0];
-					var intertitle = inter.title.substr(inter.iw.length + 1);
-					var regex = inter.url.match( /^(https:\/\/([a-z\d-]{1,50})\.fandom\.com\/(?:(?!wiki\/)([a-z-]{1,8})\/)?)wiki\// );
-					if ( regex !== null && selfcall < 3 ) {
+					var intertitle = inter.title.substring(inter.iw.length + 1);
+					var regex = inter.url.match( /^(?:https?:)?\/\/(([a-z\d-]{1,50})\.(?:fandom\.com|wikia\.org)\/(?:(?!wiki\/)([a-z-]{1,8})\/)?)wiki\// );
+					if ( regex !== null && selfcall < 5 ) {
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
 							selfcall++;
-							check_wiki(lang, msg, iwtitle, regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, spoiler, querystring, fragment, selfcall);
+							check_wiki(lang, msg, iwtitle, 'https://' + regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, spoiler, querystring, fragment, selfcall);
 						} else {
 							if ( reaction ) reaction.removeEmoji();
 							console.log( '- Aborted, paused.' );
@@ -784,13 +784,13 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						}
 						if ( querystring ) inter.url += ( inter.url.includes( '?' ) ? '&' : '?' ) + querystring.toTitle() + fragment;
 						msg.sendChannel( spoiler + inter.url.replace( /@(here|everyone)/g, '%40$1' ) + spoiler ).then( message => {
-							if ( message && selfcall === 3 ) message.reactEmoji('⚠');
+							if ( message && selfcall === 5 ) message.reactEmoji('⚠');
 						} );
 						if ( reaction ) reaction.removeEmoji();
 					}
 				}
 				else {
-					msg.sendChannel( spoiler + wiki + 'wiki/' + body.query.general.mainpage.toTitle() + linksuffix + spoiler );
+					msg.sendChannel( spoiler + wiki.toLink() + body.query.general.mainpage.toTitle() + linksuffix + spoiler );
 					
 					if ( reaction ) reaction.removeEmoji();
 				}
@@ -898,12 +898,12 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 				else if ( body && body.error && ( body.error.code === 'param_ip' || body.error.code === 'cidrtoobroad' ) ) {
 					if ( querypage.missing !== undefined || querypage.ns === -1 ) msg.reactEmoji('error');
 					else {
-						var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+						var pagelink = wiki.toLink() + querypage.title.toTitle() + linksuffix;
 						var embed = {};
 						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 							embed = {files:[{
-								attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
+								attachment: wiki.toLink() + 'Special:FilePath/' + filename + '?v=' + Date.now(),
 								name: ( spoiler ? 'SPOILER ' : '' ) + filename
 							}]};
 						}
@@ -913,7 +913,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 				}
 				else {
 					console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + ( querypage.noRedirect ? namespace : contribs ) + username.toTitle() + linksuffix + '>' + spoiler );
+					msg.sendChannelError( spoiler + '<' + wiki.toLink() + ( querypage.noRedirect ? namespace : contribs ) + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 				
 				if ( reaction ) reaction.removeEmoji();
@@ -947,7 +947,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						else if ( range >= 19 ) rangeprefix = username.replace( /^((?:[\dA-F]{1,4}:){1}).+$/, '$1' );
 					}
 					else {
-						var range = parseInt(username.substr(-2, 2), 10);
+						var range = parseInt(username.substring(username.length - 2), 10);
 						if ( range === 32 ) username = username.replace( /^(.+)\/\d{2}$/, '$1' );
 						else if ( range >= 24 ) rangeprefix = username.replace( /^((?:\d{1,3}\.){3}).+$/, '$1' );
 						else if ( range >= 16 ) rangeprefix = username.replace( /^((?:\d{1,3}\.){2}).+$/, '$1' );
@@ -965,13 +965,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						}
 						else {
 							console.log( '- ' + ( ucresponse ? ucresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( ucerror ? ': ' + ucerror : ( ucbody ? ( ucbody.error ? ': ' + ucbody.error.info : '.' ) : '.' ) ) );
-							msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' + spoiler );
+							msg.sendChannelError( spoiler + '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 						}
 					}
 					else {
 						var editcount = [lang.user.info.editcount, ( username.includes( '/' ) ? '~' : '' ) + ucbody.query.usercontribs.length + ( ucbody.continue ? '+' : '' )];
 						
-						var text = '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + editcount.join(' ');
+						var text = '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>\n\n' + editcount.join(' ');
 						if ( blocks.length ) blocks.forEach( block => text += '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() );
 						
 						msg.sendChannel( spoiler + text + spoiler );
@@ -994,19 +994,19 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 				}
 				else {
 					console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-					msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>' + spoiler );
+					msg.sendChannelError( spoiler + '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 				}
 			}
 			else {
 				if ( !body.query.users[0] ) {
 					if ( querypage.missing !== undefined || querypage.ns === -1 ) msg.reactEmoji('🤷');
 					else {
-						var pagelink = wiki + 'wiki/' + querypage.title.toTitle() + linksuffix;
+						var pagelink = wiki.toLink() + querypage.title.toTitle() + linksuffix;
 						var embed = {};
 						if ( querypage.imageinfo && msg.uploadFiles() && !/\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
 							embed = {files:[{
-								attachment: wiki + 'wiki/Special:FilePath/' + filename + '?v=' + Date.now(),
+								attachment: wiki.toLink() + 'Special:FilePath/' + filename + '?v=' + Date.now(),
 								name: ( spoiler ? 'SPOILER ' : '' ) + filename
 							}]};
 						}
@@ -1052,7 +1052,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					var blockreason = body.query.users[0].blockreason;
 					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
 					
-					msg.sendChannel( spoiler + '<' + wiki + 'wiki/' + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) + spoiler );
+					msg.sendChannel( spoiler + '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) + spoiler );
 				}
 			}
 			
@@ -1121,7 +1121,7 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 					}
 					else {
 						console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-						msg.sendChannelError( spoiler + '<' + wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' + spoiler );
+						msg.sendChannelError( spoiler + '<' + wiki.toLink() + title.toTitle() + '?diff=' + diff + ( title ? '' : '&oldid=' + revision ) + '>' + spoiler );
 					}
 					
 					if ( reaction ) reaction.removeEmoji();
@@ -1179,14 +1179,14 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler) {
 			}
 			else {
 				console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-				msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
+				msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 			}
 		}
 		else {
 			if ( body.query.badrevids ) msg.replyMsg( lang.diff.badrev );
 			else if ( body.query.pages && !body.query.pages['-1'] ) {
 				var pages = Object.values(body.query.pages);
-				if ( pages.length !== 1 ) msg.sendChannel( spoiler + '<' + wiki + 'wiki/Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
+				if ( pages.length !== 1 ) msg.sendChannel( spoiler + '<' + wiki.toLink() + 'Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 				else {
 					var title = pages[0].title;
 					var revisions = [];
@@ -1204,7 +1204,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler) {
 						var tagregex = /<a [^>]*title="([^"]+)"[^>]*>(.+)<\/a>/g;
 					}
 					
-					var pagelink = wiki + 'wiki/' + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
+					var pagelink = wiki.toLink() + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
 					var text = '<' + pagelink + '>\n\n' + editor.join(' ') + '\n' + timestamp.join(' ') + '\n' + size.join(' ') + '\n' + comment.join(' ') + ( tags ? '\n' + tags.join(' ').replace( tagregex, '$2' ) : '' );
 					
 					msg.sendChannel( spoiler + text + spoiler );
@@ -1238,10 +1238,10 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 			}
 			else {
 				console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
-				msg.sendChannelError( spoiler + '<' + wiki + 'wiki/Special:Random>' + spoiler );
+				msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Random>' + spoiler );
 			}
 		}
-		else msg.sendChannel( spoiler + '🎲 ' + wiki + 'wiki/' + Object.values(body.query.pages)[0].title.toTitle() + spoiler );
+		else msg.sendChannel( spoiler + '🎲 ' + wiki.toLink() + Object.values(body.query.pages)[0].title.toTitle() + spoiler );
 		
 		if ( reaction ) reaction.removeEmoji();
 	} );
@@ -1342,7 +1342,15 @@ function cmd_get(lang, msg, args, line) {
  * @returns {String}
  */
 String.prototype.noWiki = function() {
-	return this.replace( /^https:\/\/([a-z\d-]{1,50}\.fandom\.com)\/(?:[a-z-]{1,8}\/)?$/, 'https://community.fandom.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
+	return this.replace( /^https:\/\/([a-z\d-]{1,50}\.(?:fandom\.com|wikia\.org))\/(?:[a-z-]{1,8}\/)?$/, 'https://community.fandom.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
+};
+
+/**
+ * Create url for wiki article
+ * @returns {String}
+ */
+String.prototype.toLink = function() {
+	return this + 'wiki/';
 };
 
 /**
@@ -1438,16 +1446,16 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 	var text = this;
 	while ( ( link = /\[\[(?:([^\|\]]+)\|)?([^\]]+)\]\]([a-z]*)/g.exec(text) ) !== null ) {
 		if ( link[1] ) {
-			var page = ( /^(#|\/)/.test(link[1]) ? title.toTitle(true) + ( /^#/.test(link[1]) ? '#' + link[1].substr(1).toSection() : link[1].toTitle(true) ) : link[1].toTitle(true) );
-			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki + 'wiki/' + page + ')' );
+			var page = ( /^(#|\/)/.test(link[1]) ? title.toTitle(true) + ( /^#/.test(link[1]) ? '#' + link[1].substring(1).toSection() : link[1].toTitle(true) ) : link[1].toTitle(true) );
+			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki.toLink() + page + ')' );
 		} else {
-			var page = ( /^(#|\/)/.test(link[2]) ? title.toTitle(true) + ( /^#/.test(link[2]) ? '#' + link[2].substr(1).toSection() : link[2].toTitle(true) ) : link[2].toTitle(true) );
-			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki + 'wiki/' + page + ')' );
+			var page = ( /^(#|\/)/.test(link[2]) ? title.toTitle(true) + ( /^#/.test(link[2]) ? '#' + link[2].substring(1).toSection() : link[2].toTitle(true) ) : link[2].toTitle(true) );
+			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki.toLink() + page + ')' );
 		}
 	}
 	while ( title !== '' && ( link = /\/\*\s*([^\*]+?)\s*\*\/\s*(.)?/g.exec(text) ) !== null ) {
 		var page = title.toTitle(true) + '#' + link[1].toSection();
-		text = text.replaceSave( link[0], '[→](' + wiki + 'wiki/' + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
+		text = text.replaceSave( link[0], '[→](' + wiki.toLink() + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
 	}
 	return text.escapeFormatting();
 };
@@ -1634,8 +1642,13 @@ client.on( 'message', msg => {
 					else if ( channel.type !== 'text' || !pause[msg.guild.id] || ( msg.isAdmin() && aliasInvoke in pausecmdmap ) ) {
 						if ( aliasInvoke in cmdmap ) cmdmap[aliasInvoke](lang, msg, args, line);
 						else if ( /^!(?:[a-z-]{1,8}\.)?[a-z\d-]{1,50}$/.test(invoke) ) {
-							if ( invoke.includes( '.' ) ) wiki = 'https://' + invoke.split('.')[1] + '.fandom.com/' + invoke.substr(1).split('.')[0] + '/';
-							else wiki = 'https://' + invoke.substr(1) + '.fandom.com/';
+							if ( invoke.includes( '.' ) ) wiki = 'https://' + invoke.split('.')[1] + '.fandom.com/' + invoke.substring(1).split('.')[0] + '/';
+							else wiki = 'https://' + invoke.substring(1) + '.fandom.com/';
+							cmd_link(lang, msg, args.join(' '), wiki, ' ' + invoke + ' ');
+						}
+						else if ( /^\?(?:[a-z-]{1,8}\.)?[a-z\d-]{1,50}$/.test(invoke) ) {
+							if ( invoke.includes( '.' ) ) wiki = 'https://' + invoke.split('.')[1] + '.wikia.org/' + invoke.substring(1).split('.')[0] + '/';
+							else wiki = 'https://' + invoke.substring(1) + '.wikia.org/';
 							cmd_link(lang, msg, args.join(' '), wiki, ' ' + invoke + ' ');
 						}
 						else cmd_link(lang, msg, line.split(' ').slice(1).join(' '));

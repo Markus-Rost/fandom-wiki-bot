@@ -137,6 +137,7 @@
 		"list": [
 			{ "cmd": "<zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de benoemde Fandom wiki: `https://<wiki>.fandom.com/`", "unsearchable": true },
+			{ "cmd": "?<wiki> <zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de benoemde Wikia wiki: `https://<wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Gebruiker:<gebruikersnaam>", "desc": "Ik zal wat informatie over de gebruiker weergeven.", "unsearchable": true },
 			{ "cmd": "diff <diff> [<oldid>]", "desc": "Ik zal antwoorden met een link naar de diff uit de wiki." },
 			{ "cmd": "diff <pagina naam>", "desc": "Ik zal antwoorden met een link naar de laatste diff over het artikel uit de wiki." },

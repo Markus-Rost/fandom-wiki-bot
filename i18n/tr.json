@@ -138,6 +138,7 @@
 		"list": [
 			{ "cmd": "<arama terimi>", "desc": "Wiki'deki eşleşen bir makale bağlantısıyla cevap vereceğim.", "unsearchable": true },
 			{ "cmd": "!<wiki> <arama terimi>", "desc": "Belirtilen Fandom Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `https://<wiki>.fandom.com/`", "unsearchable": true },
+			{ "cmd": "?<wiki> <arama terimi>", "desc": "Belirtilen Wikia Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `https://<wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Kullanıcı:<kullanıcıadı>", "desc": "Kullanıcı hakkında bazı bilgileri göstereceğim.", "unsearchable": true },
 			{ "cmd": "diff <diff> [<oldid>]", "desc": "Wikideki farkların bağlantısıyla cevap vereceğim." },
 			{ "cmd": "diff <sayfa adı>", "desc": "Wikideki son farkın bağlantısıyla cevap vereceğim." },

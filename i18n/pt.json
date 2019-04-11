@@ -145,6 +145,7 @@
 		"list": [
 			{ "cmd": "<termo de pesquisa>", "desc": "Eu vou responder com um link para um artigo correspondente no wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },
+			{ "cmd": "?<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Wikia: `https://<wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Usuário:<username>", "desc": "Vou mostrar algumas informações sobre o usuário.", "unsearchable": true },
 			{ "cmd": "diff <diff> [<oldid>]", "desc": "Vou responder com um link para o diff na wiki." },
 			{ "cmd": "diff <page name>", "desc": "Vou responder com um link para o último diff no artigo na wiki." },

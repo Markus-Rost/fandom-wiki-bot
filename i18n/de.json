@@ -139,6 +139,7 @@
 		"list": [
 			{ "cmd": "<Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im Wiki.", "unsearchable": true },
 			{ "cmd": "!<Wiki> <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im angegebenen Fandom-Wiki: `https://<Wiki>.fandom.com/`", "unsearchable": true },
+			{ "cmd": "?<Wiki> <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Artikel im angegebenen Wikia-Wiki: `https://<Wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Benutzer:<Benutzername>", "desc": "Ich liste ein paar Informationen über den Benutzer auf.", "unsearchable": true },
 			{ "cmd": "diff <diff> [<oldid>]", "desc": "Ich verlinke auf die Änderung im Wiki." },
 			{ "cmd": "diff <Seitenname>", "desc": "Ich verlinke auf die letzte Änderung an der Seite im Wiki." },
