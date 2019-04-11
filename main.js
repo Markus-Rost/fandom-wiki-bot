@@ -1134,11 +1134,7 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 					} else if ( body.query.pages && !body.query.pages[-1] ) {
 						var argids = [];
 						var ids = Object.values(body.query.pages)[0].revisions[0].diff;
-						if ( ids.from ) {
-							if ( ids.from > ids.to ) argids = [ids.from, ids.to];
-							else if ( ids.from === ids.to ) argids = [ids.to];
-							else argids = [ids.to, ids.from];
-						}
+						if ( ids.from ) argids = [ids.to, ids.from];
 						else argids = [ids.to];
 						cmd_diffsend(lang, msg, argids, wiki, reaction, spoiler);
 					} else {
@@ -1189,9 +1185,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler) {
 				if ( pages.length !== 1 ) msg.sendChannel( spoiler + '<' + wiki.toLink() + 'Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 				else {
 					var title = pages[0].title;
-					var revisions = [];
-					if ( pages[0].revisions[1] ) revisions = [pages[0].revisions[1], pages[0].revisions[0]];
-					else revisions = [pages[0].revisions[0]];
+					var revisions = pages[0].revisions.sort( (first, second) => first.timestamp < second.timestamp );
 					var diff = revisions[0].revid;
 					var oldid = ( revisions[1] ? revisions[1].revid : 0 );
 					var editor = [lang.diff.info.editor, ( revisions[0].userhidden !== undefined ? lang.diff.hidden : revisions[0].user )];
