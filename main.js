@@ -1529,11 +1529,10 @@ Discord.MessageReaction.prototype.removeEmoji = function() {
  */
 Discord.Message.prototype.sendChannel = function(content, options, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
-		return this.channel.send(content, options).then(msg => {
-			if ( !( msg instanceof Discord.Message ) ) {
-				log_error({name:'Message is not a message',message:'\n\u200b' + util.inspect( msg ).replace( /\n/g, '\n\u200b' )}, true, 'Sending');
-			} else return msg;
-		}, log_error);
+		return this.channel.send(content, options).then( msg => {
+			msg.allowDelete(this.author.id);
+			return msg;
+		}, log_error );
 	} else {
 		console.log( '- Aborted, paused.' );
 		return Promise.resolve();
@@ -1547,7 +1546,11 @@ Discord.Message.prototype.sendChannel = function(content, options, ignorePause =
  * @returns {Promise<Discord.Message|Discord.Message[]>}
  */
 Discord.Message.prototype.sendChannelError = function(content, options) {
-	return this.channel.send(content, options).then( message => message.reactEmoji('error'), log_error );
+	return this.channel.send(content, options).then( msg => {
+		msg.reactEmoji('error');
+		msg.allowDelete(this.author.id);
+		return msg;
+	}, log_error );
 };
 
 /**
@@ -1559,11 +1562,10 @@ Discord.Message.prototype.sendChannelError = function(content, options) {
  */
 Discord.Message.prototype.replyMsg = function(content, options, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
-		return this.reply(content, options).then(msg => {
-			if ( !( msg instanceof Discord.Message ) ) {
-				log_error({name:'Message is not a message',message:'\n\u200b' + util.inspect( msg ).replace( /\n/g, '\n\u200b' )}, true, 'Sending');
-			} else return msg;
-		}, log_error);
+		return this.reply(content, options).then( msg => {
+			msg.allowDelete(this.author.id);
+			return msg;
+		}, log_error );
 	} else {
 		console.log( '- Aborted, paused.' );
 		return Promise.resolve();
@@ -1577,6 +1579,19 @@ Discord.Message.prototype.replyMsg = function(content, options, ignorePause = fa
  */
 Discord.Message.prototype.deleteMsg = function(timeout = 0) {
 	return this.delete(timeout).catch(log_error);
+};
+
+/**
+ * Waits for reaction to delete the message
+ * @param {String} [author] Snowflake of the user who can delete the message
+ * @returns {Promise<Discord.Message>}
+ */
+Discord.Message.prototype.allowDelete = function(author) {
+	return this.awaitReactions( (reaction, user) => reaction.emoji.name === '🗑' && user.id === author, {max:1,time:30000} ).then( reaction => {
+		if ( reaction.size ) {
+			this.deleteMsg();
+		}
+	} );
 };
 
 /**
