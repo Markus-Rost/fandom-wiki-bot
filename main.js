@@ -3,7 +3,7 @@ const util = require('util');
 util.inspect.defaultOptions = {compact:false,breakLength:Infinity};
 
 const Discord = require('discord.js');
-const DBL = require("dblapi.js");
+const DBL = require('dblapi.js');
 var request = require('request');
 
 var client = new Discord.Client( {disableEveryone:true} );
@@ -366,6 +366,77 @@ function cmd_say(lang, msg, args, line) {
 		args[0] = line.split(' ')[1];
 		cmd_help(lang, msg, args, line);
 	}
+}
+
+/**
+ * Filter the reactions to add to the poll
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
+function cmd_umfrage(lang, msg, args, line) {
+	var imgs = [];
+	if ( msg.uploadFiles() ) imgs = msg.attachments.map( function(img) {
+		return {attachment:img.url,name:img.filename};
+	} );
+	if ( args.length || imgs.length ) {
+		var text = args.join(' ').split('\n');
+		args = text.shift().split(' ');
+		if ( text.length ) args.push('\n' + text.join('\n'));
+		var reactions = [];
+		args = args.toEmojis();
+		for ( var i = 0; ( i < args.length || imgs.length ); i++ ) {
+			var reaction = args[i];
+			var custom = /^<a?:/;
+			var pattern = /^[\u0000-\u1FFF]{1,4}$/;
+			if ( !custom.test(reaction) && ( reaction.length > 4 || pattern.test(reaction) ) ) {
+				cmd_sendumfrage(lang, msg, args.slice(i).join(' ').replace( /^\n| (\n)/, '$1' ), reactions, imgs);
+				break;
+			} else if ( reaction === '' ) {
+			} else {
+				if ( custom.test(reaction) ) {
+					reaction = reaction.substring(reaction.lastIndexOf(':') + 1, reaction.length - 1);
+				}
+				reactions[i] = reaction;
+				if ( i === args.length - 1 ) {
+					cmd_sendumfrage(lang, msg, args.slice(i + 1).join(' ').replace( /^\n| (\n)/, '$1' ), reactions, imgs);
+					break;
+				}
+			}
+		}
+	} else {
+		args[0] = line.split(' ')[1];
+		cmd_help(lang, msg, args, line);
+	}
+}
+
+/**
+ * Send a poll
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [text] The text to send
+ * @param {String[]} [reactions] The reactions to add
+ * @param {Object[]} [imgs] The files to send
+ */
+function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
+	msg.channel.send( lang.poll.title + text, {disableEveryone:!msg.member.hasPermission(['MENTION_EVERYONE']),files:imgs} ).then( poll => {
+		msg.deleteMsg();
+		if ( reactions.length ) {
+			reactions.forEach( function(entry) {
+				poll.react(entry).catch( error => {
+					log_error(error);
+					poll.reactEmoji('error');
+				} );
+			} );
+		} else {
+			poll.reactEmoji('support');
+			poll.reactEmoji('oppose');
+		}
+	}, error => {
+		log_error(error);
+		msg.reactEmoji('error');
+	} );
 }
 
 /**
@@ -797,77 +868,6 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 			}
 		} );
 	}
-}
-
-/**
- * Filter the reactions to add to the poll
- * @param {Object} [lang] The language for this guild
- * @param {Discord.Message} [msg] The message
- * @param {String[]} [args] The arguments
- * @param {String} [line] The full line of the message
- */
-function cmd_umfrage(lang, msg, args, line) {
-	var imgs = [];
-	if ( msg.uploadFiles() ) imgs = msg.attachments.map( function(img) {
-		return {attachment:img.url,name:img.filename};
-	} );
-	if ( args.length || imgs.length ) {
-		var text = args.join(' ').split('\n');
-		args = text.shift().split(' ');
-		if ( text.length ) args.push('\n' + text.join('\n'));
-		var reactions = [];
-		args = args.toEmojis();
-		for ( var i = 0; ( i < args.length || imgs.length ); i++ ) {
-			var reaction = args[i];
-			var custom = /^<a?:/;
-			var pattern = /^[\u0000-\u1FFF]{1,4}$/;
-			if ( !custom.test(reaction) && ( reaction.length > 4 || pattern.test(reaction) ) ) {
-				cmd_sendumfrage(lang, msg, args.slice(i).join(' ').replace( /^\n| (\n)/, '$1' ), reactions, imgs);
-				break;
-			} else if ( reaction === '' ) {
-			} else {
-				if ( custom.test(reaction) ) {
-					reaction = reaction.substring(reaction.lastIndexOf(':') + 1, reaction.length - 1);
-				}
-				reactions[i] = reaction;
-				if ( i === args.length - 1 ) {
-					cmd_sendumfrage(lang, msg, args.slice(i + 1).join(' ').replace( /^\n| (\n)/, '$1' ), reactions, imgs);
-					break;
-				}
-			}
-		}
-	} else {
-		args[0] = line.split(' ')[1];
-		cmd_help(lang, msg, args, line);
-	}
-}
-
-/**
- * Send a poll
- * @param {Object} [lang] The language for this guild
- * @param {Discord.Message} [msg] The message
- * @param {String} [text] The text to send
- * @param {String[]} [reactions] The reactions to add
- * @param {Object[]} [imgs] The files to send
- */
-function cmd_sendumfrage(lang, msg, text, reactions, imgs) {
-	msg.channel.send( lang.poll.title + text, {disableEveryone:!msg.member.hasPermission(['MENTION_EVERYONE']),files:imgs} ).then( poll => {
-		msg.deleteMsg();
-		if ( reactions.length ) {
-			reactions.forEach( function(entry) {
-				poll.react(entry).catch( error => {
-					log_error(error);
-					poll.reactEmoji('error');
-				} );
-			} );
-		} else {
-			poll.reactEmoji('support');
-			poll.reactEmoji('oppose');
-		}
-	}, error => {
-		log_error(error);
-		msg.reactEmoji('error');
-	} );
 }
 
 /**
