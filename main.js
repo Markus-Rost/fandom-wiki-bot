@@ -1132,11 +1132,18 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 						
 						if ( reaction ) reaction.removeEmoji();
 					} else if ( body.query.pages && !body.query.pages[-1] ) {
-						var argids = [];
-						var ids = Object.values(body.query.pages)[0].revisions[0].diff;
-						if ( ids.from ) argids = [ids.to, ids.from];
-						else argids = [ids.to];
-						cmd_diffsend(lang, msg, argids, wiki, reaction, spoiler);
+						var revisions = Object.values(body.query.pages)[0].revisions[0];
+						if ( revisions.texthidden === undefined ) {
+							var argids = [];
+							var ids = revisions.diff;
+							if ( ids.from ) argids = [ids.to, ids.from];
+							else argids = [ids.to];
+							cmd_diffsend(lang, msg, argids, wiki, reaction, spoiler);
+						} else {
+							msg.replyMsg( lang.diff.badrev );
+							
+							if ( reaction ) reaction.removeEmoji();
+						}
 					} else {
 						if ( body.query.pages && body.query.pages[-1] ) msg.replyMsg( lang.diff.badrev );
 						else msg.reactEmoji('error');
