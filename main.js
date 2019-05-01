@@ -5,6 +5,7 @@ util.inspect.defaultOptions = {compact:false,breakLength:Infinity};
 const Discord = require('discord.js');
 const DBL = require('dblapi.js');
 var request = require('request');
+var htmlparser = require('htmlparser2');
 
 var client = new Discord.Client( {disableEveryone:true} );
 const dbl = new DBL(process.env.dbltoken);
@@ -1207,13 +1208,19 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler) {
 					var difference = revisions[0].size - ( revisions[1] ? revisions[1].size : 0 );
 					var size = [lang.diff.info.size, lang.diff.info.bytes.replace( '%s', ( difference > 0 ? '+' : '' ) + difference )];
 					var comment = [lang.diff.info.comment, ( revisions[0].commenthidden !== undefined ? lang.diff.hidden : ( revisions[0].comment ? revisions[0].comment.toPlaintext() : lang.diff.nocomment ) )];
-					if ( revisions[0].tags.length ) {
-						var tags = [lang.diff.info.tags, body.query.tags.filter( tag => revisions[0].tags.includes( tag.name ) ).map( tag => tag.displayname ).join(', ')];
-						var tagregex = /<a [^>]*title="([^"]+)"[^>]*>(.+)<\/a>/g;
-					}
+					if ( revisions[0].tags.length ) var tags = [lang.diff.info.tags, body.query.tags.filter( tag => revisions[0].tags.includes( tag.name ) ).map( tag => tag.displayname ).join(', ')];
 					
 					var pagelink = wiki.toLink() + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
-					var text = '<' + pagelink + '>\n\n' + editor.join(' ') + '\n' + timestamp.join(' ') + '\n' + size.join(' ') + '\n' + comment.join(' ') + ( tags ? '\n' + tags.join(' ').replace( tagregex, '$2' ) : '' );
+					var text = '<' + pagelink + '>\n\n' + editor.join(' ') + '\n' + timestamp.join(' ') + '\n' + size.join(' ') + '\n' + comment.join(' ');
+					if ( tags ) {
+						var tagparser = new htmlparser.Parser( {
+							ontext: (htmltext) => {
+								text += htmltext.escapeFormatting();
+							}
+						}, {decodeEntities:true} );
+						tagparser.write( '\n' + tags.join(' ') );
+						tagparser.end();
+					}
 					
 					msg.sendChannel( spoiler + text + spoiler );
 				}
