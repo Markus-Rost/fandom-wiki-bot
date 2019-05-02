@@ -1227,9 +1227,9 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					}
 					
 					request( {
-						uri: 'https://services.fandom.com/user-attribute/user/' + body.query.users[0].userid + '/attr/discord?format=json',
-						json: true
+						uri: 'https://services.fandom.com/user-attribute/user/' + body.query.users[0].userid + '/attr/discord'
 					}, function( perror, presponse, pbody ) {
+						if ( pbody ) pbody = JSON.parse(pbody);
 						if ( perror || !presponse || presponse.statusCode !== 200 || !pbody || pbody.title ) {
 							console.log( '- ' + ( presponse ? presponse.statusCode + ': ' : '' ) + 'Error while getting the user profile' + ( perror ? ': ' + perror : ( pbody ? ': ' + pbody.title : '.' ) ) );
 						}
