@@ -1227,7 +1227,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					}
 					
 					request( {
-						uri: 'https://services.fandom.com/user-attribute/user/' + body.query.users[0].userid + '/attr/discord',
+						uri: 'https://services.fandom.com/user-attribute/user/' + body.query.users[0].userid + '/attr/discord?format=json',
 						json: true
 					}, function( perror, presponse, pbody ) {
 						if ( perror || !presponse || presponse.statusCode !== 200 || !pbody || pbody.title ) {
