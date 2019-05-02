@@ -456,7 +456,7 @@ function cmd_test(lang, msg, args, line) {
 		if ( x < lang.test.text.length ) text = lang.test.text[x];
 		console.log( '- Test: Fully functioning!' );
 		var now = Date.now();
-		if ( msg.showEmbed() ) msg.replyMsg( text ).then( edit => {
+		msg.replyMsg( text ).then( edit => {
 			var then = Date.now();
 			var embed = new Discord.RichEmbed().setTitle( lang.test.time ).addField( 'Discord', ( then - now ) + 'ms' );
 			now = Date.now();
@@ -1004,6 +1004,8 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					console.log( '- ' + ( response ? response.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( error ? ': ' + error : ( body ? ( body.error ? ': ' + body.error.info : '.' ) : '.' ) ) );
 					msg.sendChannelError( spoiler + '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>' + spoiler );
 				}
+				
+				if ( reaction ) reaction.removeEmoji();
 			}
 			else {
 				if ( !body.query.users[0] ) {
@@ -1021,6 +1023,8 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						
 						msg.sendChannel( spoiler + pagelink + spoiler, embed );
 					}
+					
+					if ( reaction ) reaction.removeEmoji();
 				}
 				else {
 					username = body.query.users[0].name;
@@ -1060,11 +1064,25 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					var blockreason = body.query.users[0].blockreason;
 					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
 					
-					msg.sendChannel( spoiler + '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) + spoiler );
+					request( {
+						uri: 'https://services.fandom.com/user-attribute/user/' + body.query.users[0].userid + '/attr/discord',
+						json: true
+					}, function( perror, presponse, pbody ) {
+						if ( perror || !presponse || presponse.statusCode !== 200 || !pbody || pbody.title ) {
+							console.log( '- ' + ( presponse ? presponse.statusCode + ': ' : '' ) + 'Error while getting the user profile' + ( perror ? ': ' + perror : ( pbody ? ': ' + pbody.title : '.' ) ) );
+						}
+						else if ( pbody.value ) {
+							var discordmember = msg.guild.members.find( member => member.user.tag === pbody.value );
+							var discordname = [lang.user.info.discord,pbody.value.escapeFormatting()];
+							if ( discordmember && discordmember.nickname ) discordname[1] += ' (' + discordmember.nickname.escapeFormatting() + ')';
+						}
+						
+						msg.sendChannel( spoiler + '<' + wiki.toLink() + namespace + username.toTitle() + linksuffix + '>\n\n' + gender.join(' ') + '\n' + registration.join(' ') + '\n' + editcount.join(' ') + '\n' + group.join(' ') + ( discordname ? '\n' + discordname.join(' ') : '' ) + ( isBlocked ? '\n\n**' + block[0] + '**\n' + block[1].toPlaintext() : '' ) + spoiler );
+						
+						if ( reaction ) reaction.removeEmoji();
+					} );
 				}
 			}
-			
-			if ( reaction ) reaction.removeEmoji();
 		} );
 	}
 }

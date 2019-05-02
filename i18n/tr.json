@@ -65,7 +65,8 @@
 			"gender": "Cinsiyet:",
 			"registration": "Kayıt tarihi:",
 			"editcount": "Düzenleme sayısı:",
-			"group": "Grup:"
+			"group": "Grup:",
+			"discord": "Discord:"
 		},
 		"block": {
 			"header": "%s şu anda engelli!",
