@@ -809,7 +809,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 											if ( reaction ) reaction.removeEmoji();
 										}
 										else request( {
-											uri: wiki.toLink() + querypage.title.toTitle()
+											uri: wiki.toLink() + encodeURIComponent( querypage.title.replace( / /g, '_' ) )
 										}, function( descerror, descresponse, descbody ) {
 											if ( descerror || !descresponse || descresponse.statusCode !== 200 || !descbody ) {
 												console.log( '- ' + ( descresponse ? descresponse.statusCode + ': ' : '' ) + 'Error while getting the description' + ( descerror ? ': ' + descerror : '.' ) );
@@ -880,7 +880,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							if ( reaction ) reaction.removeEmoji();
 						}
 						else request( {
-							uri: wiki.toLink() + querypage.title.toTitle()
+							uri: wiki.toLink() + encodeURIComponent( querypage.title.replace( / /g, '_' ) )
 						}, function( descerror, descresponse, descbody ) {
 							if ( descerror || !descresponse || descresponse.statusCode !== 200 || !descbody ) {
 								console.log( '- ' + ( descresponse ? descresponse.statusCode + ': ' : '' ) + 'Error while getting the description' + ( descerror ? ': ' + descerror : '.' ) );
@@ -947,7 +947,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						if ( reaction ) reaction.removeEmoji();
 					}
 					else request( {
-						uri: wiki.toLink() + body.query.general.mainpage.toTitle()
+						uri: wiki.toLink() + encodeURIComponent( body.query.general.mainpage.replace( / /g, '_' ) )
 					}, function( descerror, descresponse, descbody ) {
 						if ( descerror || !descresponse || descresponse.statusCode !== 200 || !descbody ) {
 							console.log( '- ' + ( descresponse ? descresponse.statusCode + ': ' : '' ) + 'Error while getting the description' + ( descerror ? ': ' + descerror : '.' ) );
@@ -1012,7 +1012,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						var pagelink = wiki.toLink() + querypage.title.toTitle() + linksuffix;
 						var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink );
 						request( {
-							uri: wiki.toLink() + querypage.title.toTitle()
+							uri: wiki.toLink() + encodeURIComponent( querypage.title.replace( / /g, '_' ) )
 						}, function( descerror, descresponse, descbody ) {
 							if ( descerror || !descresponse || descresponse.statusCode !== 200 || !descbody ) {
 								console.log( '- ' + ( descresponse ? descresponse.statusCode + ': ' : '' ) + 'Error while getting the description' + ( descerror ? ': ' + descerror : '.' ) );
@@ -1149,7 +1149,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						var pagelink = wiki.toLink() + querypage.title.toTitle() + linksuffix;
 						var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink );
 						request( {
-							uri: wiki.toLink() + querypage.title.toTitle()
+							uri: wiki.toLink() + encodeURIComponent( querypage.title.replace( / /g, '_' ) )
 						}, function( descerror, descresponse, descbody ) {
 							if ( descerror || !descresponse || descresponse.statusCode !== 200 || !descbody ) {
 								console.log( '- ' + ( descresponse ? descresponse.statusCode + ': ' : '' ) + 'Error while getting the description' + ( descerror ? ': ' + descerror : '.' ) );
@@ -1723,7 +1723,7 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 				if ( reaction ) reaction.removeEmoji();
 			}
 			else request( {
-				uri: wiki.toLink() + querypage.title.toTitle()
+				uri: wiki.toLink() + encodeURIComponent( querypage.title.replace( / /g, '_' ) )
 			}, function( descerror, descresponse, descbody ) {
 				if ( descerror || !descresponse || descresponse.statusCode !== 200 || !descbody ) {
 					console.log( '- ' + ( descresponse ? descresponse.statusCode + ': ' : '' ) + 'Error while getting the description' + ( descerror ? ': ' + descerror : '.' ) );
