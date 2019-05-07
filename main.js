@@ -1229,20 +1229,25 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					request( {
 						uri: 'https://services.fandom.com/user-attribute/user/' + body.query.users[0].userid + '/attr/discord'
 					}, function( perror, presponse, pbody ) {
-						if ( pbody ) pbody = JSON.parse(pbody);
-						if ( perror || !presponse || presponse.statusCode !== 200 || !pbody || pbody.title ) {
-							console.log( '- ' + ( presponse ? presponse.statusCode + ': ' : '' ) + 'Error while getting the user profile' + ( perror ? ': ' + perror : ( pbody ? ': ' + pbody.title : '.' ) ) );
-						}
-						else if ( pbody.value ) {
-							var discordmember = msg.guild.members.find( member => member.user.tag === pbody.value );
-							var discordname = [lang.user.info.discord,pbody.value.escapeFormatting()];
-							if ( discordmember ) {
-								if ( msg.showEmbed() ) discordname[1] = discordmember.toString();
-								else if ( discordmember.nickname ) discordname[1] += ' (' + discordmember.nickname.escapeFormatting() + ')';
+						try {
+							if ( pbody ) pbody = JSON.parse(pbody);
+							if ( perror || !presponse || presponse.statusCode !== 200 || !pbody || pbody.title ) {
+								if ( !( pbody && pbody.status === 404 ) ) console.log( '- ' + ( presponse ? presponse.statusCode + ': ' : '' ) + 'Error while getting the user profile' + ( perror ? ': ' + perror : ( pbody ? ': ' + pbody.title : '.' ) ) );
 							}
-							
-							if ( msg.showEmbed() ) embed.addField( discordname[0], discordname[1], true );
-							else text += '\n' + discordname.join(' ');
+							else if ( pbody.value ) {
+								var discordmember = msg.guild.members.find( member => member.user.tag === pbody.value );
+								var discordname = [lang.user.info.discord,pbody.value.escapeFormatting()];
+								if ( discordmember ) {
+									if ( msg.showEmbed() ) discordname[1] = discordmember.toString();
+									else if ( discordmember.nickname ) discordname[1] += ' (' + discordmember.nickname.escapeFormatting() + ')';
+								}
+								
+								if ( msg.showEmbed() ) embed.addField( discordname[0], discordname[1], true );
+								else text += '\n' + discordname.join(' ');
+							}
+						}
+						catch ( jsonerror ) {
+							console.log( '- ' + ( presponse ? presponse.statusCode + ': ' : '' ) + 'Error while getting the user profile: ' + ( perror ? perror : jsonerror ) );
 						}
 						
 						if ( isBlocked ) {
