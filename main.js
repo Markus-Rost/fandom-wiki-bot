@@ -516,9 +516,9 @@ async function cmd_eval(lang, msg, args, line) {
 	} catch ( error ) {
 		var text = error.name + ': ' + error.message;
 	}
+	if ( isDebug ) console.log( '--- EVAL START ---\n\u200b' + text.replace( /\n/g, '\n\u200b' ) + '\n--- EVAL END ---' );
 	if ( text.length > 2000 ) msg.reactEmoji('✅', true);
 	else msg.sendChannel( '```js\n' + text + '\n```', {split:{prepend:'```js\n',append:'\n```'}}, true );
-	if ( isDebug ) console.log( '--- EVAL START ---\n\u200b' + text.replace( /\n/g, '\n\u200b' ) + '\n--- EVAL END ---' );
 }
 
 /**
