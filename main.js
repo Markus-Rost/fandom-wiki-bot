@@ -81,7 +81,7 @@ client.on( 'ready', () => {
 			body: {guildCount: client.guilds.size},
 			json: true
 		} );
-	}, 10800000 );
+	}, 10800000 ).unref();
 } );
 	
 	
@@ -212,25 +212,42 @@ function edit_settings(lang, msg, key, value) {
 		}
 		else {
 			var temp_settings = JSON.parse(JSON.stringify(settings));
-			if ( !( msg.guild.id in temp_settings ) ) temp_settings[msg.guild.id] = Object.assign({}, settings['default']);
+			var save = false;
+			if ( !( msg.guild.id in temp_settings ) ) {
+				temp_settings[msg.guild.id] = Object.assign({}, settings['default']);
+				save = true;
+			}
 			if ( key === 'channel' ) {
 				if ( !temp_settings[msg.guild.id].channels ) temp_settings[msg.guild.id].channels = {};
-				temp_settings[msg.guild.id].channels[msg.channel.id] = value;
-			} else temp_settings[msg.guild.id][key] = value;
+				if ( temp_settings[msg.guild.id].channels[msg.channel.id] !== value ) {
+					temp_settings[msg.guild.id].channels[msg.channel.id] = value;
+					save = true;
+				}
+			} else if ( temp_settings[msg.guild.id][key] !== value ) {
+				temp_settings[msg.guild.id][key] = value;
+				save = true;
+			}
 			Object.keys(temp_settings).forEach( function(guild) {
 				if ( !client.guilds.has(guild) && guild !== 'default' ) {
 					delete temp_settings[guild];
+					save = true;
 				} else {
 					var channels = temp_settings[guild].channels;
 					if ( channels ) {
 						Object.keys(channels).forEach( function(channel) {
-							if ( channels[channel] === temp_settings[guild].wiki || !client.guilds.get(guild).channels.has(channel) ) delete channels[channel];
+							if ( channels[channel] === temp_settings[guild].wiki || !client.guilds.get(guild).channels.has(channel) ) {
+								delete channels[channel];
+								save = true;
+							}
 						} );
-						if ( !Object.keys(channels).length ) delete temp_settings[guild].channels;
+						if ( !Object.keys(channels).length ) {
+							delete temp_settings[guild].channels;
+							save = true;
+						}
 					}
 				}
 			} );
-			request.post( {
+			if ( save ) request.post( {
 				uri: process.env.save,
 				headers: access,
 				body: {
@@ -259,6 +276,11 @@ function edit_settings(lang, msg, key, value) {
 				
 				if ( reaction ) reaction.removeEmoji();
 			} );
+			else {
+				cmd_settings(lang, msg, [key], 'changed');
+				
+				if ( reaction ) reaction.removeEmoji();
+			}
 		}
 	} );
 }
@@ -737,7 +759,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.items ) {
 								if ( wsbody && wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
 								else {
-									console.log( '- ' + ( wsresponse ? wsresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( wserror ? ': ' + wserror : ( wsbody ? ( wsbody.exception ? ': ' + wsbody.exception.message : '.' ) : '.' ) ) );
+									console.log( '- ' + ( wsresponse ? wsresponse.statusCode + ': ' : '' ) + 'Error while getting the search results' + ( wserror ? ': ' + wserror : ( wsbody ? ( wsbody.exception ? ': ' + wsbody.exception.details : '.' ) : '.' ) ) );
 									msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Search?search=' + title.toSearch() + '>' + spoiler );
 								}
 								
@@ -2249,10 +2271,14 @@ client.on( 'guildDelete', guild => {
 	}
 	else {
 		var temp_settings = JSON.parse(JSON.stringify(settings));
+		var save = false;
 		Object.keys(temp_settings).forEach( function(guild) {
-			if ( !client.guilds.has(guild) && guild !== 'default' ) delete temp_settings[guild];
+			if ( !client.guilds.has(guild) && guild !== 'default' ) {
+				delete temp_settings[guild];
+				save = true;
+			}
 		} );
-		request.post( {
+		if ( save ) request.post( {
 			uri: process.env.save,
 			headers: access,
 			body: {
@@ -2334,7 +2360,7 @@ async function graceful(code = 1) {
 			console.log( '- SIGTERM: Closing takes too long, terminating!' );
 			process.exit(code);
 		}, 1000 ).unref();
-	}, 5000 ).unref();
+	}, 2000 ).unref();
 }
 
 process.once( 'SIGINT', graceful );
