@@ -53,6 +53,7 @@
 		"groups": [
 			["bot-global", "Fandom bot"],
 			["staff", "Fandom personeli"],
+			["wiki-manager", "Wiki yöneticisi"],
 			["helper", "Fandom yardımcısı"],
 			["bot", "Bot"],
 			["bureaucrat", "Bürokrat"],
@@ -67,7 +68,6 @@
 			["authenticated", "doğrulanmış"],
 			["user", "Kullanıcı"]
 		],
-		"manager": "Wiki yöneticisi",
 		"info": {
 			"gender": "Cinsiyet:",
 			"registration": "Kayıt tarihi:",

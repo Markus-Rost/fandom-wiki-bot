@@ -51,6 +51,7 @@
 		"groups": [
 			["bot-global", "Globaler Bot"],
 			["staff", "Fandom-Mitarbeiter"],
+			["wiki-manager", "Wiki-Manager"],
 			["helper", "Fandom-Helfer"],
 			["bot", "Bot"],
 			["bureaucrat", "Bürokrat"],
@@ -65,7 +66,6 @@
 			["authenticated", "authentifiziert"],
 			["user", "Benutzer"]
 		],
-		"manager": "Wiki-Manager",
 		"info": {
 			"gender": "Geschlecht:",
 			"registration": "Registriert:",
