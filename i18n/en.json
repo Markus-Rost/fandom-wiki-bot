@@ -99,6 +99,7 @@
 		"page": "page",
 		"search": "search",
 		"random": "random",
+		"discussion": "discussion",
 		"infopage": "Not the correct result? Use %s for a direct link.",
 		"infosearch": "Not the correct result? Use %1$s for a direct link or %2$s for a list of all hits.",
 		"category": {
@@ -116,6 +117,14 @@
 				"default": "%s categories",
 				"1": "%s category"
 			}
+		}
+	},
+	"discussion": {
+		"post": "post",
+		"main": "Discussions",
+		"votes": {
+			"default": "%s votes",
+			"1": "%s vote"
 		}
 	},
 	"invite": {
@@ -158,6 +167,8 @@
 			{ "cmd": "🎲", "desc": "I will answer with a link to a random page in the wiki.", "hide": true },
 			{ "cmd": "page <page name>", "desc": "I will answer with a direct link to the article in the wiki.", "hide": true },
 			{ "cmd": "search <search term>", "desc": "I will answer with a direct link to the search page for the article in the wiki.", "hide": true },
+			{ "cmd": "discussion <search term>", "desc": "I will answer with a link to a matching discussion thread in the wiki." },
+			{ "cmd": "discussion post <search term>", "desc": "I will answer with a link to a matching discussion post in the wiki." },
 			{ "cmd": "info", "desc": "I will introduce myself." },
 			{ "cmd": "help", "desc": "I will list all the commands that I understand." },
 			{ "cmd": "help <bot command>", "desc": "Wonder how a command works? Let me explain it to you!" },

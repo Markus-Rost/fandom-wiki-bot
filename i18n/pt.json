@@ -107,6 +107,7 @@
 		"page": "página",
 		"search": "pesquisar",
 		"random": "random",
+		"discussion": "discussão",
 		"infopage": "Não é o resultado correto? Use %s para um link direto.",
 		"infosearch": "Não é o resultado correto? Use %1$s para um link direto ou %2$s para uma lista de todos os acessos.",
 		"category": {
@@ -124,6 +125,14 @@
 				"default": "%s categorias",
 				"1": "%s categoria"
 			}
+		}
+	},
+	"discussion": {
+		"post": "post",
+		"main": "Discussãos",
+		"votes": {
+			"default": "%s votos",
+			"1": "%s voto"
 		}
 	},
 	"invite": {
@@ -156,7 +165,7 @@
 		"pause": "**Estou atualmente em pausa neste servidor!**\nSom estes comandos podem ser executados:",
 		"footer": "Se você recebeu uma resposta indesejada, pode reagir com 🗑 para minha mensagem e eu a apagarei.",
 		"list": [
-			{ "cmd": "<termo de pesquisa>", "desc": "Eu vou responder com um link para um artigo correspondente no wiki.", "unsearchable": true },
+			{ "cmd": "<termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente no wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },
 			{ "cmd": "?<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Wikia: `https://<wiki>.wikia.org/`", "unsearchable": true },
 			{ "cmd": "Usuário:<username>", "desc": "Vou mostrar algumas informações sobre o usuário.", "unsearchable": true },
@@ -168,6 +177,10 @@
 			{ "cmd": "page <nome da página>", "desc": "Vou responder com um link direto para o artigo na wiki.", "hide": true },
 			{ "cmd": "pesquisar <termo de pesquisa>", "desc": "Vou responder com um link direto para a página de busca de artigo na wiki.", "hide": true },
 			{ "cmd": "search <termo de pesquisa>", "desc": "Vou responder com um link direto para a página de busca de artigo na wiki.", "hide": true },
+			{ "cmd": "discussão <termo de pesquisa>", "desc": "Vou responder com um link para um tópico de discussão correspondente na wiki." },
+			{ "cmd": "discussion <search term>", "desc": "Vou responder com um link para um tópico de discussão correspondente na wiki.", "hide": true },
+			{ "cmd": "discussão post <termo de pesquisa>", "desc": "Vou responder com um link para um post de discussão correspondente na wiki." },
+			{ "cmd": "discussion post <search term>", "desc": "Vou responder com um link para um post de discussão correspondente na wiki.", "hide": true },
 			{ "cmd": "info", "desc": "Irei me apresentar." },
 			{ "cmd": "ajuda", "desc": "Vou listar todos os comandos que entendo." },
 			{ "cmd": "ajuda <comando do robô>", "desc": "Quer saber como funciona um comando? Deixe-me explicar isso para você!" },

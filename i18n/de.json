@@ -100,6 +100,7 @@
 		"page": "seite",
 		"search": "suche",
 		"random": "zufall",
+		"discussion": "diskussion",
 		"infopage": "Nicht das richtige Ergebnis? Nutze %s für einen direkten Link.",
 		"infosearch": "Nicht das richtige Ergebnis? Nutze %1$s für einen direkten Link oder %2$s für eine Liste mit allen Treffern.",
 		"category": {
@@ -117,6 +118,14 @@
 				"default": "%s Kategorien",
 				"1": "Eine Kategorie"
 			}
+		}
+	},
+	"discussion": {
+		"post": "post",
+		"main": "Diskussionen",
+		"votes": {
+			"default": "%s Stimmen",
+			"1": "Eine Stimme"
 		}
 	},
 	"invite": {
@@ -163,6 +172,10 @@
 			{ "cmd": "page <Seitenname>", "desc": "Ich antworte mit einem direkten Link zu der angegebenen Seite im Wiki.", "hide": true },
 			{ "cmd": "suche <Suchbegriff>", "desc": "Ich antworte mit einem direkten Link auf die Suchseite zu diesem Begriff im Wiki.", "hide": true },
 			{ "cmd": "search <Suchbegriff>", "desc": "Ich antworte mit einem direkten Link auf die Suchseite zu diesem Begriff im Wiki.", "hide": true },
+			{ "cmd": "diskussion <Suchbegriff>", "desc": "Ich antworte mit einem Link auf ein passendes Diskussionsthema im Wiki." },
+			{ "cmd": "discussion <Suchbegriff>", "desc": "Ich antworte mit einem Link auf ein passendes Diskussionsthema im Wiki.", "hide": true },
+			{ "cmd": "diskussion post <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Diskussionsbeitrag im Wiki." },
+			{ "cmd": "discussion post <Suchbegriff>", "desc": "Ich antworte mit einem Link auf einen passenden Diskussionsbeitrag im Wiki.", "hide": true },
 			{ "cmd": "info", "desc": "Ich erzähle etwas über mich." },
 			{ "cmd": "hilfe", "desc": "Ich liste alle Befehle auf." },
 			{ "cmd": "hilfe <Bot-Befehl>", "desc": "Frage mich, wie ein Befehl funktioniert." },

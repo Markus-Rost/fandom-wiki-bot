@@ -102,6 +102,7 @@
 		"page": "sayfa",
 		"search": "arama",
 		"random": "random",
+		"discussion": "tartışma",
 		"infopage": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s kullan.",
 		"infosearch": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s, tüm isabetlerin listesi için %2$s kullan.",
 		"category": {
@@ -117,6 +118,13 @@
 				"default": "%s kategoriler",
 				"1": "%s kategori"
 			}
+		}
+	},
+	"discussion": {
+		"post": "gönderisi",
+		"main": "Tartışmalar",
+		"votes": {
+			"default": "%s oy"
 		}
 	},
 	"invite": {
@@ -157,10 +165,14 @@
 			{ "cmd": "diff <sayfa adı>", "desc": "Wikideki son farkın bağlantısıyla cevap vereceğim." },
 			{ "cmd": "random", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim." },
 			{ "cmd": "🎲", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim.", "hide": true },
-			{ "cmd": "sayfa <sayfa adı>", "desc": "I will answer with a direct link to the article in the wiki.", "hide": true },
-			{ "cmd": "page <sayfa adı>", "desc": "I will answer with a direct link to the article in the wiki.", "hide": true },
+			{ "cmd": "sayfa <sayfa adı>", "desc": "Makalenin wikideki bağlantısıyla cevap vereceğim.", "hide": true },
+			{ "cmd": "page <sayfa adı>", "desc": "Makalenin wikideki bağlantısıyla cevap vereceğim.", "hide": true },
 			{ "cmd": "arama <arama terimi>", "desc": "Wikideki makalenin arama sayfasına doğrudan bir bağlantı ile cevap vereceğim.", "hide": true },
 			{ "cmd": "search <arama terimi>", "desc": "Wikideki makalenin arama sayfasına doğrudan bir bağlantı ile cevap vereceğim.", "hide": true },
+			{ "cmd": "tartışma <arama terimi>", "desc": "Wikideki eşleşen tartışma konusunun bağlantısıyla cevap vereceğim." },
+			{ "cmd": "discussion <arama terimi>", "desc": "Wikideki eşleşen tartışma konusunun bağlantısıyla cevap vereceğim.", "hide": true },
+			{ "cmd": "tartışma gönderisi <arama terimi>", "desc": "Wikideki eşleşen tartışma gönderisinin bağlantısıyla cevap vereceğim." },
+			{ "cmd": "discussion post <arama terimi>", "desc": "Wikideki eşleşen tartışma gönderisinin bağlantısıyla cevap vereceğim.", "hide": true },
 			{ "cmd": "bilgi", "desc": "Kendimi tanıtacağım." },
 			{ "cmd": "info", "desc": "Kendimi tanıtacağım.", "hide": true },
 			{ "cmd": "yardım", "desc": "Anladığım tüm komutları listeleyeceğim." },

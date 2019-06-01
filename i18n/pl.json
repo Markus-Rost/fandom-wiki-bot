@@ -101,6 +101,7 @@
 		"page": "strona",
 		"search": "szukaj",
 		"random": "random",
+		"discussion": "dyskusja",
 		"infopage": "Nie to czego szukałeś? Użyj %s dla bezpośredniego linku.",
 		"infosearch": "Nie to czego szukałeś? Użyj %1$s dla bezpośredniego linku lub %2$s dla listy wszystkich wyników.",
 		"category": {
@@ -108,16 +109,48 @@
 			"empty": "*Ta kategoria jest pusta*",
 			"pages": {
 				"default": "%s stron",
-				"1": "%s strona"
+				"1": "%s strona",
+				"*2": "%s strony",
+				"*3": "%s strony",
+				"*4": "%s strony",
+				"*12": "%s stron",
+				"*13": "%s stron",
+				"*14": "%s stron"
 			},
 			"files": {
 				"default": "%s plików",
-				"1": "%s plik"
+				"1": "%s plik",
+				"*2": "%s pliki",
+				"*3": "%s pliki",
+				"*4": "%s pliki",
+				"*12": "%s plików",
+				"*13": "%s plików",
+				"*14": "%s plików"
 			},
 			"subcats": {
 				"default": "%s kategorii",
-				"1": "%s kategoria"
+				"1": "%s kategoria",
+				"*2": "%s katerorie",
+				"*3": "%s katerorie",
+				"*4": "%s katerorie",
+				"*12": "%s kategorii",
+				"*13": "%s kategorii",
+				"*14": "%s kategorii"
 			}
+		}
+	},
+	"discussion": {
+		"post": "post",
+		"main": "Dyskusje",
+		"votes": {
+			"default": "%s głosów",
+			"1": "%s głos",
+			"*2": "%s głosy",
+			"*3": "%s głosy",
+			"*4": "%s głosy",
+			"*12": "%s głosów",
+			"*13": "%s głosów",
+			"*14": "%s głosów"
 		}
 	},
 	"invite": {
@@ -162,6 +195,10 @@
 			{ "cmd": "page <nazwa strony>", "desc": "Odpowiem linkiem do podanego artykułu na Wiki.", "hide": true },
 			{ "cmd": "szukaj <wyszukiwana fraza>", "desc": "Odpowiem linkiem do strony wyszukiwania z podaną frazą na Wiki.", "hide": true },
 			{ "cmd": "search <wyszukiwana fraza>", "desc": "Odpowiem linkiem do strony wyszukiwania z podaną frazą na Wiki.", "hide": true },
+			{ "cmd": "dyskusja <wyszukiwana fraza>", "desc": "Odpowiem z linkiem do odpowiadającego wątku dyskusji na wiki." },
+			{ "cmd": "discussion <wyszukiwana fraza>", "desc": "Odpowiem z linkiem do odpowiadającego wątku dyskusji na wiki.", "hide": true },
+			{ "cmd": "dyskusja post <wyszukiwana fraza>", "desc": "Odpowiem z linkiem do odpowiadającego postu na wiki." },
+			{ "cmd": "discussion post <wyszukiwana fraza>", "desc": "Odpowiem z linkiem do odpowiadającego postu na wiki.", "hide": true },
 			{ "cmd": "info", "desc": "Przedstawie sie." },
 			{ "cmd": "pomoc", "desc": "Wylistuję wszystkie komendy, które rozumiem." },
 			{ "cmd": "pomoc <komenda bota>", "desc": "Wyłumaczę działanie komendy!" },
