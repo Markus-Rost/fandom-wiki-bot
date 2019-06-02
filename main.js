@@ -1418,29 +1418,54 @@ function cmd_discussion(lang, msg, wiki, title, query, reaction, spoiler) {
 					else if ( /^\d+$/.test(title) ) {
 						request( {
 							uri: 'https://services.fandom.com/discussion/' + query.wikidesc.id + '/posts/' + title + '?format=json'
-						}, function( therror, thresponse, thbody ) {
+						}, function( perror, presponse, pbody ) {
 							try {
-								if ( thbody ) thbody = JSON.parse(thbody);
-								if ( therror || !thresponse || thresponse.statusCode !== 200 || !thbody || thbody.id !== title ) {
-									if ( thbody && thbody.status === 404 ) {
+								if ( pbody ) pbody = JSON.parse(pbody);
+								if ( perror || !presponse || presponse.statusCode !== 200 || !pbody || pbody.id !== title ) {
+									if ( pbody && pbody.title === 'The requested resource was not found.' ) {
 										if ( posts.some( post => post.rawContent.toLowerCase().includes( title.toLowerCase() ) ) ) {
 											cmd_discussionsend(lang, msg, wiki, posts.find( post => post.rawContent.toLowerCase().includes( title.toLowerCase() ) ), embed, spoiler);
 										}
 										else msg.reactEmoji('🤷');
 									}
 									else {
-										console.log( '- ' + ( thresponse && thresponse.statusCode ) + ': Error while getting the post: ' + ( therror || thbody && thbody.title ) );
+										console.log( '- ' + ( presponse && presponse.statusCode ) + ': Error while getting the post: ' + ( perror || pbody && pbody.title ) );
 										msg.sendChannelError( spoiler + '<' + wiki + 'f' + '>' + spoiler );
 									}
+									
+									if ( reaction ) reaction.removeEmoji();
 								}
-								else cmd_discussionsend(lang, msg, wiki, thbody, embed, spoiler);
+								else if ( pbody.title ) {
+									cmd_discussionsend(lang, msg, wiki, pbody, embed, spoiler);
+									
+									if ( reaction ) reaction.removeEmoji();
+								}
+								else request( {
+									uri: 'https://services.fandom.com/discussion/' + query.wikidesc.id + '/threads/' + pbody.threadId + '?format=json'
+								}, function( therror, thresponse, thbody ) {
+									try {
+										if ( thbody ) thbody = JSON.parse(thbody);
+										if ( therror || !thresponse || thresponse.statusCode !== 200 || !thbody || thbody.id !== pbody.threadId ) {
+											console.log( '- ' + ( thresponse && thresponse.statusCode ) + ': Error while getting the thread: ' + ( therror || thbody && thbody.title ) );
+											msg.sendChannelError( spoiler + '<' + wiki + 'f/p/' + pbody.threadId + '>' + spoiler );
+										}
+										else embed.setTitle( thbody.title.escapeFormatting() );
+									}
+									catch ( jsonerror ) {
+										console.log( '- ' + ( thresponse && thresponse.statusCode ) + ': Error while getting the thread: ' + ( therror || jsonerror ) );
+										msg.sendChannelError( spoiler + '<' + wiki + 'f/p/' + pbody.threadId + '>' + spoiler );
+									}
+									cmd_discussionsend(lang, msg, wiki, pbody, embed, spoiler);
+									
+									if ( reaction ) reaction.removeEmoji();
+								} );
 							}
 							catch ( jsonerror ) {
-								console.log( '- ' + ( thresponse && thresponse.statusCode ) + ': Error while getting the post: ' + ( therror || jsonerror ) );
+								console.log( '- ' + ( presponse && presponse.statusCode ) + ': Error while getting the post: ' + ( perror || jsonerror ) );
 								msg.sendChannelError( spoiler + '<' + wiki + 'f' + '>' + spoiler );
+								
+								if ( reaction ) reaction.removeEmoji();
 							}
-							
-							if ( reaction ) reaction.removeEmoji();
 						} );
 					}
 					else if ( posts.some( post => post.rawContent.toLowerCase().includes( title.toLowerCase() ) ) ) {
@@ -1574,13 +1599,13 @@ function cmd_discussion(lang, msg, wiki, title, query, reaction, spoiler) {
  * @param {String} [spoiler] The pipes if the message is a spoiler
  */
 function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
-	if ( discussion.threadId ) {
-		var pagelink = wiki + 'f/p/' + discussion.threadId + '/r/' + discussion.id;
-		embed.setTitle( discussion._embedded.thread[0].title.escapeFormatting() );
+	if ( discussion.title ) {
+		embed.setTitle( discussion.title.escapeFormatting() );
+		var pagelink = wiki + 'f/p/' + ( discussion.threadId || discussion.id );
 	}
 	else {
-		var pagelink = wiki + 'f/p/' + discussion.id;
-		embed.setTitle( discussion.title.escapeFormatting() );
+		if ( discussion._embedded.thread ) embed.setTitle( discussion._embedded.thread[0].title.escapeFormatting() );
+		var pagelink = wiki + 'f/p/' + discussion.threadId + '/r/' + discussion.id;
 	}
 	var text = '<' + pagelink + '>';
 	embed.setURL( pagelink ).setFooter( discussion.createdBy.name, discussion.createdBy.avatarUrl ).setTimestamp( discussion.creationDate.epochSecond * 1000 );
@@ -1598,6 +1623,7 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
 				}, {decodeEntities:true} );
 				parser.write( discussion.renderedContent );
 				parser.end();
+				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
 				embed.setDescription( description );
 			}
 			break;
@@ -1608,18 +1634,24 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
 			discussion.poll.answers.forEach( answer => embed.addField( answer.text.escapeFormatting(), ( lang.discussion.votes[answer.votes] || lang.discussion.votes['*' + answer.votes % 100] || lang.discussion.votes['*' + answer.votes % 10] || lang.discussion.votes.default ).replace( '%s', answer.votes ), true ) );
 			break;
 		case 'LINK':
-			embed.setDescription( '[' + discussion.rawContent.escapeFormatting() + '](' + discussion.rawContent.replace( / /g, '_' ).replace( /(\(|\))/g, '\\$1' ) + ')' );
+			if ( discussion.rawContent.length > 2000 ) embed.setDescription( discussion.rawContent.escapeFormatting().substring(0, 2000) + '\u2026' );
+			else if ( discussion.rawContent.length > 1000 ) embed.setDescription( '[' + discussion.rawContent.escapeFormatting().substring(0, 2000 - discussion.rawContent.length) + '\u2026](' + discussion.rawContent.replace( / /g, '_' ).replace( /(\(|\))/g, '\\$1' ) + ')' );
+			else embed.setDescription( '[' + discussion.rawContent.escapeFormatting() + '](' + discussion.rawContent.replace( / /g, '_' ).replace( /(\(|\))/g, '\\$1' ) + ')' );
 			if ( discussion._embedded.openGraph ) {
 				var link = discussion._embedded.openGraph[0];
-				embed.setThumbnail( link.imageUrl )
+				embed.setThumbnail( link.imageUrl );
 				if ( link.title && link.description ) {
 					var name = link.title.escapeFormatting();
-					if ( name.length > 2000 ) name = name.substring(0, 2000) + '\u2026';
+					if ( name.length > 250 ) name = name.substring(0, 250) + '\u2026';
 					var description = link.description.escapeFormatting();
-					if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
+					if ( description.length > 1000 ) description = description.substring(0, 1000) + '\u2026';
 					embed.addField( name, description );
 				}
 			}
+			break;
+		case 'QUIZ':
+			embed.setDescription( discussion.quiz.title.escapeFormatting() );
+			if ( discussion._embedded.openGraph ) embed.setThumbnail( discussion._embedded.openGraph[0].imageUrl );
 			break;
 		default:
 			if ( discussion.renderedContent ) {
@@ -1634,6 +1666,12 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
 				}, {decodeEntities:true} );
 				parser.write( discussion.renderedContent );
 				parser.end();
+				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
+				embed.setDescription( description );
+			}
+			else {
+				var description = discussion.rawContent.escapeFormatting();
+				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
 				embed.setDescription( description );
 			}
 			if ( discussion._embedded.contentImages.length ) embed.setImage( discussion._embedded.contentImages[0].url );
