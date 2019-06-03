@@ -101,6 +101,7 @@
 		"page": "page",
 		"search": "chercher",
 		"random": "random",
+		"discussion": "discussion",
 		"infopage": "Pas le bon résultat ? Utilisez %s pour un lien direct.",
 		"infosearch": "Pas le bon résultat ? Utilisez %1$s pour un lien direct ou %2$s pour une liste de toutes les correspondances.",
 		"category": {
@@ -118,6 +119,14 @@
 				"default": "%s catégories",
 				"1": "%s catégorie"
 			}
+		}
+	},
+	"discussion": {
+		"post": "post",
+		"main": "Discussions",
+		"votes": {
+			"default": "%s votes",
+			"1": "%s vote"
 		}
 	},
 	"invite": {
@@ -183,6 +192,10 @@
 			{ "cmd": "page <nom de la page>", "desc": "Je vais répondre avec un lien vers l'article sur Wiki.", "hide": true },
 			{ "cmd": "chercher <terme de recherche>", "desc": "Je vais répondre avec un lien vers la page de recherche de l'article sur Wiki.", "hide": true },
 			{ "cmd": "search <terme de recherche>", "desc": "Je vais répondre avec un lien vers la page de recherche de l'article sur Wiki.", "hide": true },
+			{ "cmd": "discussion <search term>", "desc": "I will answer with a link to a matching discussion thread in the wiki." },
+			{ "cmd": "discussion <search term>", "desc": "I will answer with a link to a matching discussion thread in the wiki.", "hide": true },
+			{ "cmd": "discussion post <search term>", "desc": "I will answer with a link to a matching discussion post in the wiki." },
+			{ "cmd": "discussion post <search term>", "desc": "I will answer with a link to a matching discussion post in the wiki.", "hide": true },
 			{ "cmd": "info", "desc": "Je vais me présenter." },
 			{ "cmd": "aide", "desc": "Je vais lister toutes les commandes que je comprends." },
 			{ "cmd": "aide <commande de robot>", "desc": "Tu te demandes comment une commande fonctionne ? Laisse-moi te l'expliquer !" },

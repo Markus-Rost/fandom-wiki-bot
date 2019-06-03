@@ -98,6 +98,7 @@
 		"page": "pagina",
 		"search": "zoeken",
 		"random": "willekeurig",
+		"discussion": "discussie",
 		"infopage": "Niet het gewenste resultaat? Gebruik %s voor een rechtstreekse link.",
 		"infosearch": "Niet het gewenste resultaat? Gebruik %1$s voor een rechtstreekse link of %2$s voor een lijst van alle overeenkomsten.",
 		"category": {
@@ -115,6 +116,14 @@
 				"default": "%s categorieën",
 				"1": "%s categorie"
 			}
+		}
+	},
+	"discussion": {
+		"post": "bericht",
+		"main": "Discussies",
+		"votes": {
+			"default": "%s stemmen",
+			"1": "%s stem"
 		}
 	},
 	"invite": {
@@ -161,6 +170,10 @@
 			{ "cmd": "page <pagina naam>", "desc": "Ik zal antwoorden met een rechtstreekse link naar het artikel uit de wiki.", "hide": true },
 			{ "cmd": "zoeken <zoek term>", "desc": "Ik zal antwoorden met een rechtstreekse link naar de zoekpagina van het artikel uit de wiki.", "hide": true },
 			{ "cmd": "search <zoek term>", "desc": "Ik zal antwoorden met een rechtstreekse link naar de zoekpagina van het artikel uit de wiki.", "hide": true },
+			{ "cmd": "discussie <zoek term>", "desc": "Ik zal antwoorden met een link naar een overeenkomende discussie sectie op de wiki." },
+			{ "cmd": "discussion <zoek term>", "desc": "Ik zal antwoorden met een link naar een overeenkomende discussie sectie op de wiki.", "hide": true },
+			{ "cmd": "discussie bericht <zoek term>", "desc": "Ik zal antwoorden met een link naar een overeenkomend discussie bericht op de wiki." },
+			{ "cmd": "discussion post <zoek term>", "desc": "Ik zal antwoorden met een link naar een overeenkomend discussie bericht op de wiki.", "hide": true },
 			{ "cmd": "info", "desc": "Ik zal mezelf introduceren." },
 			{ "cmd": "help", "desc": "Ik zal alle opdrachten opsommen die ik begrijp." },
 			{ "cmd": "help <bot command>", "desc": "Vraag je je af hoe een opdracht werkt? Laat het me aan je uitleggen!" },
