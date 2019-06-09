@@ -59,7 +59,7 @@ function getSettings() {
 		}
 		else {
 			console.log( '- Settings successfully loaded.' );
-			if ( body['default'] ) settings = JSON.parse(JSON.stringify(body));
+			if ( body.default ) settings = JSON.parse(JSON.stringify(body));
 			else if ( settings === defaultSettings ) settings = JSON.parse(JSON.stringify(defaultSettings));
 		}
 		setStatus();
@@ -1884,7 +1884,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler, compare) {
 				msg.reactEmoji('nowiki');
 			}
 			else {
-				console.log( '- ' + ( response && response.statusCode ) + ': Error while getting the search results' + ( error || body && body.error && body.error.info ) );
+				console.log( '- ' + ( response && response.statusCode ) + ': Error while getting the search results: ' + ( error || body && body.error && body.error.info ) );
 				msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Diff/' + ( args[1] ? args[1] + '/' : '' ) + args[0] + '>' + spoiler );
 			}
 			
@@ -2488,7 +2488,8 @@ Discord.MessageReaction.prototype.removeEmoji = function() {
 Discord.Message.prototype.sendChannel = function(content, options, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
 		return this.channel.send(content, options).then( msg => {
-			msg.allowDelete(this.author.id);
+			if ( msg.length ) msg.forEach( message => message.allowDelete(this.author.id) );
+			else msg.allowDelete(this.author.id);
 			return msg;
 		}, log_error );
 	} else {
@@ -2505,8 +2506,14 @@ Discord.Message.prototype.sendChannel = function(content, options, ignorePause =
  */
 Discord.Message.prototype.sendChannelError = function(content, options) {
 	return this.channel.send(content, options).then( msg => {
-		msg.reactEmoji('error');
-		msg.allowDelete(this.author.id);
+		if ( msg.length ) msg.forEach( message => {
+			message.reactEmoji('error');
+			message.allowDelete(this.author.id);
+		} );
+		else {
+			msg.reactEmoji('error');
+			msg.allowDelete(this.author.id);
+		}
 		return msg;
 	}, log_error );
 };
@@ -2521,7 +2528,8 @@ Discord.Message.prototype.sendChannelError = function(content, options) {
 Discord.Message.prototype.replyMsg = function(content, options, ignorePause = false) {
 	if ( this.channel.type !== 'text' || !pause[this.guild.id] || ( ignorePause && ( this.isAdmin() || this.isOwner() ) ) ) {
 		return this.reply(content, options).then( msg => {
-			msg.allowDelete(this.author.id);
+			if ( msg.length ) msg.forEach( message => message.allowDelete(this.author.id) );
+			else msg.allowDelete(this.author.id);
 			return msg;
 		}, log_error );
 	} else {
@@ -2558,7 +2566,7 @@ Discord.Message.prototype.allowDelete = function(author) {
  * @returns {Boolean}
  */
 String.prototype.hasPrefix = function(flags = '') {
-	return RegExp( '^' + process.env.prefix + '(?: |$)', flags ).test(this.toLowerCase());
+	return RegExp( '^' + process.env.prefix + '(?: |$)', flags ).test(this.replace(/\u200b/g, '').toLowerCase());
 };
 
 client.on( 'message', msg => {
@@ -2621,7 +2629,7 @@ client.on( 'message', msg => {
 					count++;
 					console.log( '- Message contains too many commands!' );
 					msg.reactEmoji('⚠');
-					msg.sendChannelError( lang.limit.replaceSave( '%s', author.toString() ) );
+					msg.sendChannelError( lang.limit.replaceSave( '%s', author ) );
 				}
 			} );
 		}

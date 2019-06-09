@@ -49,7 +49,7 @@
 		},
 		"dateformat": "de-DE",
 		"groups": [
-			["bot-global", "Globaler Bot"],
+			["bot-global", "Fandom-Bot"],
 			["staff", "Fandom-Mitarbeiter"],
 			["wiki-manager", "Wiki-Manager"],
 			["helper", "Fandom-Helfer"],
