@@ -3,10 +3,17 @@
 		"MarkusRost"
 	],
 	"lang": "de",
+	"dateformat": "de-DE",
 	"aliase": {
 		"purge": "delete",
 		"hilfe": "help",
-		"umfrage": "poll"
+		"umfrage": "poll",
+		"seite": "page",
+		"suche": "search",
+		"🎲": "random",
+		"zufall": "random",
+		"übersicht": "overview",
+		"diskussion": "discussion"
 	},
 	"missingperm": "mir fehlen einige Berechtigungen für diesen Befehl:",
 	"limit": "🚨 **Stop, du hast ein Limit erreicht!** 🚨\n\n%s, deine Nachricht enthält zu viele Befehle!",
@@ -41,13 +48,24 @@
 		"join": "%1$s hat den Sprachkanal \"%2$s\" betreten.",
 		"left": "%1$s hat den Sprachkanal \"%2$s\" verlassen."
 	},
+	"overview": {
+		"inaccurate": "Statistiken können ungenau sein",
+		"vertical": "Hub:",
+		"topic": "Thema:",
+		"founder": "Gründer:",
+		"created": "Erstellt:",
+		"articles": "Artikel:",
+		"pages": "Seiten insgesamt:",
+		"edits": "Bearbeitungen:",
+		"users": "Aktive Benutzer:",
+		"none": "*Niemand*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "Unbekannt",
 			"male": "Männlich",
 			"female": "Weiblich"
 		},
-		"dateformat": "de-DE",
 		"groups": [
 			["bot-global", "Fandom-Bot"],
 			["staff", "Fandom-Mitarbeiter"],
@@ -97,10 +115,6 @@
 		}
 	},
 	"search": {
-		"page": "seite",
-		"search": "suche",
-		"random": "zufall",
-		"discussion": "diskussion",
 		"infopage": "Nicht das richtige Ergebnis? Nutze %s für einen direkten Link.",
 		"infosearch": "Nicht das richtige Ergebnis? Nutze %1$s für einen direkten Link oder %2$s für eine Liste mit allen Treffern.",
 		"category": {
@@ -168,6 +182,8 @@
 			{ "cmd": "zufall", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki." },
 			{ "cmd": "random", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki.", "hide": true },
 			{ "cmd": "🎲", "desc": "Ich antworte mit einem Link auf eine zufällige Seite im Wiki.", "hide": true },
+			{ "cmd": "übersicht", "desc": "Ich liste ein paar Informationen und Statistiken über das Wiki auf." },
+			{ "cmd": "overview", "desc": "Ich liste ein paar Informationen und Statistiken über das Wiki auf.", "hide": true },
 			{ "cmd": "seite <Seitenname>", "desc": "Ich antworte mit einem direkten Link zu der angegebenen Seite im Wiki.", "hide": true },
 			{ "cmd": "page <Seitenname>", "desc": "Ich antworte mit einem direkten Link zu der angegebenen Seite im Wiki.", "hide": true },
 			{ "cmd": "suche <Suchbegriff>", "desc": "Ich antworte mit einem direkten Link auf die Suchseite zu diesem Begriff im Wiki.", "hide": true },

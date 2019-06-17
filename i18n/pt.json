@@ -4,6 +4,7 @@
 		"Jhonabf"
 	],
 	"lang": "pt",
+	"dateformat": "pt-PT",
 	"aliase": {
 		"purge": "delete",
 		"ajuda": "help",
@@ -13,7 +14,11 @@
 		"excluir": "delete",
 		"purgue": "delete",
 		"purgar": "delete",
-		"limpar": "delete"
+		"limpar": "delete",
+		"página": "page",
+		"pesquisar": "search",
+		"🎲": "random",
+		"discussão": "discussion"
 	},
 	"missingperm": "eu estou perdendo algumas permissões para este comando:",
 	"limit": "🚨 **Pare, você atingiu um limite!** 🚨\n\n%s, sua mensagem continha muitos comandos!",
@@ -48,13 +53,24 @@
 		"join": "%1$s juntou-se ao canal de voz \"%2$s\".",
 		"left": "%1$s deixou o canal de voz \"%2$s\"."
 	},
+	"overview": {
+		"inaccurate": "Estatísticas podem ser imprecisas",
+		"vertical": "Vertical:",
+		"topic": "Tópico:",
+		"founder": "Fundador:",
+		"created": "Criado:",
+		"articles": "Artigos:",
+		"pages": "Total de páginas:",
+		"edits": "Edições:",
+		"users": "Usuário ativos:",
+		"none": "*nenhum*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "Desconhecido",
 			"male": "Masculino",
 			"female": "Feminino"
 		},
-		"dateformat": "pt-PT",
 		"groups": [
 			["bot-global", "Robô do Fandom"],
 			["staff", "Staff do Fandom"],
@@ -104,10 +120,6 @@
 		}
 	},
 	"search": {
-		"page": "página",
-		"search": "pesquisar",
-		"random": "random",
-		"discussion": "discussão",
 		"infopage": "Não é o resultado correto? Use %s para um link direto.",
 		"infosearch": "Não é o resultado correto? Use %1$s para um link direto ou %2$s para uma lista de todos os acessos.",
 		"category": {
@@ -173,6 +185,7 @@
 			{ "cmd": "diff <page name>", "desc": "Vou responder com um link para o último diff no artigo na wiki." },
 			{ "cmd": "random", "desc": "Vou responder com um link para uma página aleatória na wiki." },
 			{ "cmd": "🎲", "desc": "Vou responder com um link para uma página aleatória na wiki.", "hide": true },
+			{ "cmd": "overview", "desc": "Vou mostrar algumas informações e estatísticas sobre a wiki." },
 			{ "cmd": "página <nome da página>", "desc": "Vou responder com um link direto para o artigo na wiki.", "hide": true },
 			{ "cmd": "page <nome da página>", "desc": "Vou responder com um link direto para o artigo na wiki.", "hide": true },
 			{ "cmd": "pesquisar <termo de pesquisa>", "desc": "Vou responder com um link direto para a página de busca de artigo na wiki.", "hide": true },

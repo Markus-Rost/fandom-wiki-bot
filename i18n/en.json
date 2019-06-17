@@ -4,8 +4,10 @@
 		"violine1101"
 	],
 	"lang": "en",
+	"dateformat": "en-US",
 	"aliase": {
-		"purge": "delete"
+		"purge": "delete",
+		"🎲": "random"
 	},
 	"missingperm": "I'm missing some permissions for this command:",
 	"limit": "🚨 **Stop, you hit a limit!** 🚨\n\n%s, your message contained too many commands!",
@@ -40,13 +42,24 @@
 		"join": "%1$s joined the voice channel \"%2$s\".",
 		"left": "%1$s left the voice channel \"%2$s\"."
 	},
+	"overview": {
+		"inaccurate": "Statistics may be inaccurate",
+		"vertical": "Vertical:",
+		"topic": "Topic:",
+		"founder": "Founder:",
+		"created": "Created:",
+		"articles": "Articles:",
+		"pages": "Total pages:",
+		"edits": "Edits:",
+		"users": "Active users:",
+		"none": "*none*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "Unknown",
 			"male": "Male",
 			"female": "Female"
 		},
-		"dateformat": "en-US",
 		"groups": [
 			["bot-global", "Global bot"],
 			["staff", "Fandom staff"],
@@ -96,10 +109,6 @@
 		}
 	},
 	"search": {
-		"page": "page",
-		"search": "search",
-		"random": "random",
-		"discussion": "discussion",
 		"infopage": "Not the correct result? Use %s for a direct link.",
 		"infosearch": "Not the correct result? Use %1$s for a direct link or %2$s for a list of all hits.",
 		"category": {
@@ -165,6 +174,7 @@
 			{ "cmd": "diff <page name>", "desc": "I will answer with a link to the last diff on the article in the wiki." },
 			{ "cmd": "random", "desc": "I will answer with a link to a random page in the wiki." },
 			{ "cmd": "🎲", "desc": "I will answer with a link to a random page in the wiki.", "hide": true },
+			{ "cmd": "overview", "desc": "I will show some information and statistics about the wiki." },
 			{ "cmd": "page <page name>", "desc": "I will answer with a direct link to the article in the wiki.", "hide": true },
 			{ "cmd": "search <search term>", "desc": "I will answer with a direct link to the search page for the article in the wiki.", "hide": true },
 			{ "cmd": "discussion <search term>", "desc": "I will answer with a link to a matching discussion thread in the wiki." },

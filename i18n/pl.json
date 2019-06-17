@@ -3,11 +3,16 @@
 		"Frisk"
 	],
 	"lang": "pl",
+	"dateformat": "pl-PL",
 	"aliase": {
 		"purge": "delete",
 		"pomoc": "help",
 		"ankieta": "poll",
-		"usuń": "delete"
+		"usuń": "delete",
+		"strona": "page",
+		"szukaj": "search",
+		"🎲": "random",
+		"dyskusja": "discussion"
 	},
 	"missingperm": "Brakuje mi upawnień:",
 	"limit": "🚨 **Chwila moment! Osiągnięto limit!** 🚨\n\n%s, Twoja wiadomość zawiera zbyt wiele komend!",
@@ -42,13 +47,24 @@
 		"join": "%1$s dołączył do \"%2$s\".",
 		"left": "%1$s wyszedł z \"%2$s\"."
 	},
+	"overview": {
+		"inaccurate": "Statystuki mogą być niedokładne",
+		"vertical": "Hub:",
+		"topic": "Temat:",
+		"founder": "Założyciel:",
+		"created": "Stworzona:",
+		"articles": "Artykułów:",
+		"pages": "Stron:",
+		"edits": "Edycji:",
+		"users": "Aktywnych użytkowników:",
+		"none": "*brak*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "Nieznane",
 			"male": "Mężczyzna",
 			"female": "Kobieta"
 		},
-		"dateformat": "pl-PL",
 		"groups": [
 			["bot-global", "bot Fandom"],
 			["staff", "personel Fandom"],
@@ -98,10 +114,6 @@
 		}
 	},
 	"search": {
-		"page": "strona",
-		"search": "szukaj",
-		"random": "random",
-		"discussion": "dyskusja",
 		"infopage": "Nie to czego szukałeś? Użyj %s dla bezpośredniego linku.",
 		"infosearch": "Nie to czego szukałeś? Użyj %1$s dla bezpośredniego linku lub %2$s dla listy wszystkich wyników.",
 		"category": {
@@ -191,6 +203,7 @@
 			{ "cmd": "diff <nazwa strony>", "desc": "Odpowiem linkiem do ostatniej zmiany w podanym artykule na Wiki." },
 			{ "cmd": "random", "desc": "Odpowiem linkiem do losowej strony na wiki." },
 			{ "cmd": "🎲", "desc": "Odpowiem linkiem do losowej strony na wiki.", "hide": true },
+			{ "cmd": "overview", "desc": "Pokażę informacje oraz statystyki na temat wiki." },
 			{ "cmd": "strona <nazwa strony>", "desc": "Odpowiem linkiem do podanego artykułu na Wiki.", "hide": true },
 			{ "cmd": "page <nazwa strony>", "desc": "Odpowiem linkiem do podanego artykułu na Wiki.", "hide": true },
 			{ "cmd": "szukaj <wyszukiwana fraza>", "desc": "Odpowiem linkiem do strony wyszukiwania z podaną frazą na Wiki.", "hide": true },

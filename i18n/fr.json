@@ -4,10 +4,13 @@
 		"JSBM"
 	],
 	"lang": "fr",
+	"dateformat": "fr-FR",
 	"aliase": {
 		"purge": "delete",
 		"sondage": "poll",
-		"aide": "help"
+		"aide": "help",
+		"chercher": "search",
+		"🎲": "random"
 	},
 	"missingperm": "Il me manque certaines permissions pour cette commande :",
 	"limit": "🚨 **Halte ! Vous avez dépassé la limite !** 🚨\n\n%s, votre message contient beaucoup trop de commandes !",
@@ -42,13 +45,24 @@
 		"join": "%1$s a rejoint le salon vocal \"%2$s\".",
 		"left": "%1$s a quitté le salon vocal \"%2$s\"."
 	},
+	"overview": {
+		"inaccurate": "Les statistiques peuvent être inexactes",
+		"vertical": "Vertical :",
+		"topic": "Sujet :",
+		"founder": "Fondateur :",
+		"created": "Créé :",
+		"articles": "Articles :",
+		"pages": "Nombre de pages total :",
+		"edits": "Modifications :",
+		"users": "Utilisateurs actifs :",
+		"none": "*aucun*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "Inconnu",
 			"male": "Homme",
 			"female": "Femme"
 		},
-		"dateformat": "fr-FR",
 		"groups": [
 			["bot-global", "Robot de Fandom"],
 			["staff", "Staff de Fandom"],
@@ -98,10 +112,6 @@
 		}
 	},
 	"search": {
-		"page": "page",
-		"search": "chercher",
-		"random": "random",
-		"discussion": "discussion",
 		"infopage": "Pas le bon résultat ? Utilisez %s pour un lien direct.",
 		"infosearch": "Pas le bon résultat ? Utilisez %1$s pour un lien direct ou %2$s pour une liste de toutes les correspondances.",
 		"category": {
@@ -189,13 +199,12 @@
 			{ "cmd": "diff <nom de la page>", "desc": "Je vais répondre avec un lien vers la dernière diff de l'article sur Wiki." },
 			{ "cmd": "random", "desc": "Je vais répondre avec un lien vers une page du Wiki au hasard." },
 			{ "cmd": "🎲", "desc": "Je vais répondre avec un lien vers une page du Wiki au hasard.", "hide": true },
+			{ "cmd": "overview", "desc": "Je vais afficher certaines informations et statistiques à propos du wiki." },
 			{ "cmd": "page <nom de la page>", "desc": "Je vais répondre avec un lien vers l'article sur Wiki.", "hide": true },
 			{ "cmd": "chercher <terme de recherche>", "desc": "Je vais répondre avec un lien vers la page de recherche de l'article sur Wiki.", "hide": true },
 			{ "cmd": "search <terme de recherche>", "desc": "Je vais répondre avec un lien vers la page de recherche de l'article sur Wiki.", "hide": true },
-			{ "cmd": "discussion <search term>", "desc": "I will answer with a link to a matching discussion thread in the wiki." },
-			{ "cmd": "discussion <search term>", "desc": "I will answer with a link to a matching discussion thread in the wiki.", "hide": true },
-			{ "cmd": "discussion post <search term>", "desc": "I will answer with a link to a matching discussion post in the wiki." },
-			{ "cmd": "discussion post <search term>", "desc": "I will answer with a link to a matching discussion post in the wiki.", "hide": true },
+			{ "cmd": "discussion <terme de recherche>", "desc": "Je répondrais avec un lien vers un fil de discussion correspondant sur le wiki." },
+			{ "cmd": "discussion post <terme de recherche>", "desc": "Je répondrais avec un lien vers un message de discussion correspondant sur le wiki." },
 			{ "cmd": "info", "desc": "Je vais me présenter." },
 			{ "cmd": "aide", "desc": "Je vais lister toutes les commandes que je comprends." },
 			{ "cmd": "aide <commande de robot>", "desc": "Tu te demandes comment une commande fonctionne ? Laisse-moi te l'expliquer !" },

@@ -3,8 +3,15 @@
 		"Jack_McKalling"
 	],
 	"lang": "nl",
+	"dateformat": "nl-NL",
 	"aliase": {
-		"purge": "delete"
+		"purge": "delete",
+		"pagina": "page",
+		"zoeken": "search",
+		"🎲": "random",
+		"willekeurig": "random",
+		"overzicht": "overview",
+		"discussie": "discussion"
 	},
 	"missingperm": "Ik mis een aantal permissies voor deze opdracht:",
 	"limit": "🚨 **Stop, je hebt een limiet bereikt!** 🚨\n\n%s, je bericht bevatte te veel opdrachten!",
@@ -39,13 +46,24 @@
 		"join": "%1$s kwam het spraakkanaal \"%2$s\" binnen.",
 		"left": "%1$s verlaatte het spraakkanaal \"%2$s\"."
 	},
+	"overview": {
+		"inaccurate": "Statistieken zijn mogelijk inaccuraat",
+		"vertical": "Vertical:",
+		"topic": "Thema:",
+		"founder": "Oprichter:",
+		"created": "Gecreëerd:",
+		"articles": "Artikelen:",
+		"pages": "Totaal pagina's:",
+		"edits": "Bewerkingen:",
+		"users": "Actieve gebruikers:",
+		"none": "*niemand*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "Onbekend",
 			"male": "Man",
 			"female": "Vrouw"
 		},
-		"dateformat": "nl-NL",
 		"groups": [
 			["bot-global", "Fandom bot"],
 			["staff", "Fandom staff"],
@@ -95,10 +113,6 @@
 		}
 	},
 	"search": {
-		"page": "pagina",
-		"search": "zoeken",
-		"random": "willekeurig",
-		"discussion": "discussie",
 		"infopage": "Niet het gewenste resultaat? Gebruik %s voor een rechtstreekse link.",
 		"infosearch": "Niet het gewenste resultaat? Gebruik %1$s voor een rechtstreekse link of %2$s voor een lijst van alle overeenkomsten.",
 		"category": {
@@ -166,6 +180,8 @@
 			{ "cmd": "willekeurig", "desc": "Ik zal antwoorden met een link naar een willekeurige pagina uit de wiki." },
 			{ "cmd": "random", "desc": "Ik zal antwoorden met een link naar een willekeurige pagina uit de wiki.", "hide": true },
 			{ "cmd": "🎲", "desc": "Ik zal antwoorden met een link naar een willekeurige pagina uit de wiki.", "hide": true },
+			{ "cmd": "overzicht", "desc": "Ik zal wat informatie en statistieken over de wiki weergeven." },
+			{ "cmd": "overview", "desc": "Ik zal wat informatie en statistieken over de wiki weergeven.", "hide": true },
 			{ "cmd": "pagina <pagina naam>", "desc": "Ik zal antwoorden met een rechtstreekse link naar het artikel uit de wiki.", "hide": true },
 			{ "cmd": "page <pagina naam>", "desc": "Ik zal antwoorden met een rechtstreekse link naar het artikel uit de wiki.", "hide": true },
 			{ "cmd": "zoeken <zoek term>", "desc": "Ik zal antwoorden met een rechtstreekse link naar de zoekpagina van het artikel uit de wiki.", "hide": true },

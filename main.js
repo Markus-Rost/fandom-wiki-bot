@@ -491,8 +491,8 @@ function cmd_test(lang, msg, args, line) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				var ping = ( then - now ) + 'ms';
 				if ( error || !response || response.statusCode !== 200 || !body || !( body instanceof Object ) ) {
-					if ( response && response.request && response.request.uri && response.request.uri.href === msg.channel.getWiki().noWiki() ) {
-						console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+					if ( response && response.request && response.request.uri && msg.channel.getWiki().noWiki(response.request.uri.href) ) {
+						console.log( '- This wiki doesn\'t exist!' );
 						ping += ' <:unknown_wiki:505887262077353984>';
 					}
 					else {
@@ -666,19 +666,21 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 		msg.reactEmoji('⚠');
 	}
 	var invoke = title.split(' ')[0].toLowerCase();
+	var aliasInvoke = ( lang.aliase[invoke] || invoke );
 	var args = title.split(' ').slice(1);
 	
-	if ( ( invoke === 'random' || invoke === '🎲' || invoke === lang.search.random ) && !args.join('') && !linksuffix ) cmd_random(lang, msg, wiki, reaction, spoiler);
-	else if ( invoke === 'page' || invoke === lang.search.page ) {
+	if ( aliasInvoke === 'random' && !args.join('') && !linksuffix ) cmd_random(lang, msg, wiki, reaction, spoiler);
+	else if ( aliasInvoke === 'overview' && !args.join('') && !linksuffix ) cmd_overview(lang, msg, wiki, reaction, spoiler);
+	else if ( aliasInvoke === 'page' ) {
 		msg.sendChannel( spoiler + '<' + wiki.toLink() + args.join('_').toTitle() + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
-	else if ( invoke === 'search' || invoke === lang.search.search ) {
+	else if ( aliasInvoke === 'search' ) {
 		linksuffix = ( linksuffix.startsWith( '?' ) ? '&' + linksuffix.substring(1) : linksuffix );
 		msg.sendChannel( spoiler + '<' + wiki.toLink() + 'Special:Search?search=' + args.join(' ').toSearch() + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
-	else if ( invoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
+	else if ( aliasInvoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
 	else {
 		var noRedirect = ( /(?:^|&)redirect=no(?:&|$)/.test(querystring) || /(?:^|&)action=(?!view(?:&|$))/.test(querystring) );
 		request( {
@@ -687,8 +689,8 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-				if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-					console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 				}
 				else {
@@ -808,7 +810,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						} );
 					}
 					else if ( ( querypage.missing !== undefined && querypage.known === undefined && !( noRedirect || querypage.categoryinfo ) ) || querypage.invalid !== undefined ) {
-						if ( ( invoke === 'discussion' || invoke === lang.search.discussion ) && !linksuffix ) cmd_discussion(lang, msg, wiki, args.join(' '), body.query, reaction, spoiler);
+						if ( aliasInvoke === 'discussion' && !linksuffix ) cmd_discussion(lang, msg, wiki, args.join(' '), body.query, reaction, spoiler);
 						else request( {
 							uri: wiki + 'api/v1/Search/List?minArticleQuality=0&namespaces=4,12,14,' + Object.values(body.query.namespaces).filter( ns => ns.content !== undefined ).map( ns => ns.id ).join(',') + '&limit=10&query=' + encodeURIComponent( title ) + '&format=json',
 							json: true
@@ -1075,8 +1077,8 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.blocks ) {
-				if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-					console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 					
 					if ( reaction ) reaction.removeEmoji();
@@ -1131,14 +1133,14 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 				if ( !querypage.noRedirect || ( querypage.missing === undefined && querypage.ns !== -1 ) ) namespace = contribs;
 				var blocks = body.query.blocks.map( function(block) {
 					var isBlocked = false;
-					var blockedtimestamp = new Date(block.timestamp).toLocaleString(lang.user.dateformat, timeoptions);
+					var blockedtimestamp = new Date(block.timestamp).toLocaleString(lang.dateformat, timeoptions);
 					var blockexpiry = block.expiry;
 					if ( blockexpiry === 'infinity' ) {
 						blockexpiry = lang.user.block.until_infinity;
 						isBlocked = true;
 					} else if ( blockexpiry ) {
 						if ( Date.parse(blockexpiry) > Date.now() ) isBlocked = true;
-						blockexpiry = new Date(blockexpiry).toLocaleString(lang.user.dateformat, timeoptions);
+						blockexpiry = new Date(blockexpiry).toLocaleString(lang.dateformat, timeoptions);
 					}
 					if ( isBlocked ) return [lang.user.block.header.replaceSave( '%s', block.user ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replaceSave( '%4$s', block.reason )];
 				} ).filter( block => block !== undefined );
@@ -1206,8 +1208,8 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.users ) {
-				if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-					console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 				}
 				else {
@@ -1270,7 +1272,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						default: 
 							gender.push(lang.user.gender.unknown);
 					}
-					var registration = [lang.user.info.registration, new Date(body.query.users[0].registration).toLocaleString(lang.user.dateformat, timeoptions)];
+					var registration = [lang.user.info.registration, new Date(body.query.users[0].registration).toLocaleString(lang.dateformat, timeoptions)];
 					var editcount = [lang.user.info.editcount, body.query.users[0].editcount];
 					var groups = body.query.users[0].groups;
 					var group = [lang.user.info.group];
@@ -1281,14 +1283,14 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						}
 					}
 					var isBlocked = false;
-					var blockedtimestamp = new Date(body.query.users[0].blockedtimestamp).toLocaleString(lang.user.dateformat, timeoptions);
+					var blockedtimestamp = new Date(body.query.users[0].blockedtimestamp).toLocaleString(lang.dateformat, timeoptions);
 					var blockexpiry = body.query.users[0].blockexpiry;
 					if ( blockexpiry === 'infinity' ) {
 						blockexpiry = lang.user.block.until_infinity;
 						isBlocked = true;
 					} else if ( blockexpiry ) {
 						var blockexpirydate = blockexpiry.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2,3})/, '$1-$2-$3T$4:$5:$6Z');
-						blockexpiry = new Date(blockexpirydate).toLocaleString(lang.user.dateformat, timeoptions);
+						blockexpiry = new Date(blockexpirydate).toLocaleString(lang.dateformat, timeoptions);
 						if ( Date.parse(blockexpirydate) > Date.now() ) isBlocked = true;
 					}
 					var blockedby = '[[User:' + body.query.users[0].blockedby + '|' + body.query.users[0].blockedby + ']]';
@@ -1328,7 +1330,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 									if ( msg.showEmbed() ) embed.addField( discordname[0], discordname[1], true );
 									else text += '\n' + discordname.join(' ');
 								}
-								if ( avatarfield && avatarfield.value ) embed.setThumbnail( avatarfield.value );
+								if ( msg.showEmbed() && avatarfield && avatarfield.value ) embed.setThumbnail( avatarfield.value );
 							}
 						}
 						catch ( jsonerror ) {
@@ -1734,8 +1736,8 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 			}, function( error, response, body ) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-					if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-						console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+					if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+						console.log( '- This wiki doesn\'t exist!' );
 						msg.reactEmoji('nowiki');
 					}
 					else {
@@ -1879,8 +1881,8 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler, compare) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-			if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-				console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
 			else {
@@ -1909,7 +1911,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler, compare) {
 					var diff = revisions[0].revid;
 					var oldid = ( revisions[1] ? revisions[1].revid : 0 );
 					var editor = [lang.diff.info.editor, ( revisions[0].userhidden !== undefined ? lang.diff.hidden : revisions[0].user )];
-					var timestamp = [lang.diff.info.timestamp, new Date(revisions[0].timestamp).toLocaleString(lang.user.dateformat, timeoptions)];
+					var timestamp = [lang.diff.info.timestamp, new Date(revisions[0].timestamp).toLocaleString(lang.dateformat, timeoptions)];
 					var difference = revisions[0].size - ( revisions[1] ? revisions[1].size : 0 );
 					var size = [lang.diff.info.size, lang.diff.info.bytes.replace( '%s', ( difference > 0 ? '+' : '' ) + difference )];
 					var comment = [lang.diff.info.comment, ( revisions[0].commenthidden !== undefined ? lang.diff.hidden : ( revisions[0].comment ? revisions[0].comment.toFormatting(msg.showEmbed(), wiki, title) : lang.diff.nocomment ) )];
@@ -2114,8 +2116,8 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
-			if ( response && response.request && response.request.uri && response.request.uri.href === wiki.noWiki() ) {
-				console.log( '- This wiki doesn\'t exist! ' + ( error || body && body.error && body.error.info ) );
+			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
 			else {
@@ -2166,6 +2168,101 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 				if ( reaction ) reaction.removeEmoji();
 			} );
 		}
+	} );
+}
+
+/**
+ * Send a overview of a wiki with some statistics
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [wiki] The current wiki
+ * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler] The pipes if the message is a spoiler
+ */
+function cmd_overview(lang, msg, wiki, reaction, spoiler) {
+	request( {
+		uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general|statistics|wikidesc&titles=Special:Statistics&format=json',
+		json: true
+	}, function( error, response, body ) {
+		if ( body && body.warnings ) log_warn(body.warnings);
+		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
+			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+				console.log( '- This wiki doesn\'t exist!' );
+				msg.reactEmoji('nowiki');
+			}
+			else {
+				console.log( '- ' + ( response && response.statusCode ) + ': Error while getting the search results: ' + ( error || body && body.error && body.error.info ) );
+				msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Statistics>' + spoiler );
+			}
+			
+			if ( reaction ) reaction.removeEmoji();
+		}
+		else request( {
+			uri: 'https://community.fandom.com/api/v1/Wikis/Details?ids=' + body.query.wikidesc.id + '&format=json',
+			json: true
+		}, function( overror, ovresponse, ovbody ) {
+			if ( overror || !ovresponse || ovresponse.statusCode !== 200 || !ovbody || ovbody.exception || !ovbody.items || !ovbody.items[body.query.wikidesc.id] ) {
+				console.log( '- ' + ( ovresponse && ovresponse.statusCode ) + ': Error while getting the wiki details: ' + ( overror || ovbody && ovbody.exception && ovbody.exception.details ) );
+				msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Statistics>' + spoiler );
+				
+				if ( reaction ) reaction.removeEmoji();
+			}
+			else {
+				var site = ovbody.items[body.query.wikidesc.id];
+				
+				var vertical = [lang.overview.vertical, site.hub];
+				var topic = [lang.overview.topic, site.topic];
+				var founder = [lang.overview.founder, site.founding_user_id];
+				var created = [lang.overview.created, new Date(site.creation_date).toLocaleString(lang.dateformat, timeoptions)];
+				var articles = [lang.overview.articles, body.query.statistics.articles];
+				var pages = [lang.overview.pages, body.query.statistics.pages];
+				var edits = [lang.overview.edits, body.query.statistics.edits];
+				var users = [lang.overview.users, body.query.statistics.activeusers];
+				
+				var title = body.query.pages['-1'].title;
+				var pagelink = wiki.toLink() + title.toTitle();
+				if ( msg.showEmbed() ) {
+					var text = '<' + pagelink + '>';
+					var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( title.escapeFormatting() ).setURL( pagelink ).setThumbnail( site.wordmark ).addField( vertical[0], vertical[1], true ).addField( topic[0], topic[1], true );
+				}
+				else {
+					var embed = {};
+					var text = '<' + pagelink + '>\n\n' + vertical.join(' ') + '\n' + topic.join(' ');
+				}
+				
+				if ( founder[1] !== "0" ) request( {
+					uri: wiki + 'api.php?action=query&list=users&usprop=&usids=' + founder[1] + '&format=json',
+					json: true
+				}, function( userror, usresponse, usbody ) {
+					if ( usbody && usbody.warnings ) log_warn(usbody.warnings);
+					if ( userror || !usresponse || usresponse.statusCode !== 200 || !usbody || !usbody.query || !usbody.query.users || !usbody.query.users[0] ) {
+						console.log( '- ' + ( usresponse && usresponse.statusCode ) + ': Error while getting the wiki founder: ' + ( userror || usbody && usbody.error && usbody.error.info ) );
+						founder[1] = 'ID: ' + founder[1];
+					}
+					else {
+						var user = usbody.query.users[0].name;
+						if ( msg.showEmbed() ) founder[1] = '[' + user + '](' + wiki.toLink() + 'User:' + user.toTitle(true) + ')';
+						else founder[1] = user;
+					}
+					
+					if ( msg.showEmbed() ) embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).setFooter( lang.overview.inaccurate );
+					else text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
+					
+					msg.sendChannel( spoiler + text + spoiler, embed );
+					
+					if ( reaction ) reaction.removeEmoji();
+				} );
+				else {
+					founder[1] = lang.overview.none;
+					if ( msg.showEmbed() ) embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).setFooter( lang.overview.inaccurate );
+					else text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
+					
+					msg.sendChannel( spoiler + text + spoiler, embed );
+					
+					if ( reaction ) reaction.removeEmoji();
+				}
+			}
+		} );
 	} );
 }
 
@@ -2260,11 +2357,16 @@ function cmd_get(lang, msg, args, line) {
 }
 
 /**
- * Create url for non existing wiki
- * @returns {String}
+ * Check if the wiki does not exist
+ * @param {String} [href] The link
+ * @returns {Boolean}
  */
-String.prototype.noWiki = function() {
-	return this.replace( /^https:\/\/([a-z\d-]{1,50}\.(?:fandom\.com|wikia\.org))\/(?:[a-z-]{1,8}\/)?$/, 'https://community.fandom.com/wiki/Community_Central:Not_a_valid_community?from=$1' );
+String.prototype.noWiki = function(href) {
+	if ( !href ) return false;
+	else return [
+		this.replace( /^https:\/\/([a-z\d-]{1,50}\.(?:fandom\.com|wikia\.org))\/(?:[a-z-]{1,8}\/)?$/, 'https://community.fandom.com/wiki/Community_Central:Not_a_valid_community?from=$1' ),
+		this + 'language-wikis'
+	].includes( href );
 };
 
 /**
@@ -2277,6 +2379,7 @@ String.prototype.toLink = function() {
 
 /**
  * If string is a mention
+ * @param {Discord.Guild} [guild] The guild the message is from
  * @returns {Boolean}
  */
 String.prototype.isMention = function(guild) {
@@ -2353,6 +2456,7 @@ Array.prototype.toEmojis = function() {
 
 /**
  * Format string for links
+ * @param {Boolean} [isMarkdown=false] If the link is used in markdown formatting
  * @returns {String}
  */
 String.prototype.toTitle = function(isMarkdown = false) {
@@ -2570,7 +2674,7 @@ String.prototype.hasPrefix = function(flags = '') {
 };
 
 client.on( 'message', msg => {
-	if ( stop || !msg.content.hasPrefix('m') || msg.webhookID || msg.author.id === client.user.id ) return;
+	if ( stop || msg.type !== 'DEFAULT' || !msg.content.hasPrefix('m') || msg.webhookID || msg.author.id === client.user.id ) return;
 	
 	var cont = msg.content;
 	var author = msg.author;
@@ -2722,7 +2826,9 @@ client.login(process.env.token).catch( error => log_error(error, true, 'LOGIN-')
 client.on( 'error', error => log_error(error, true) );
 client.on( 'warn', warning => log_warn(warning, false) );
 
-if ( isDebug ) client.on( 'debug', debug => console.log( '- Debug: ' + debug ) );
+if ( isDebug ) client.on( 'debug', debug => {
+	if ( isDebug ) console.log( '- Debug: ' + debug );
+} );
 
 
 /**

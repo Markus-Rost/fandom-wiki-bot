@@ -3,12 +3,17 @@
 		"Doğukan Karakaş"
 	],
 	"lang": "tr",
+	"dateformat": "tr-TR",
 	"aliase": {
 		"purge": "delete",
 		"temizleme": "delete",
 		"bilgi": "info",
 		"yardım": "help",
-		"anket": "poll"
+		"anket": "poll",
+		"sayfa": "page",
+		"arama": "search",
+		"🎲": "random",
+		"tartışma": "discussion"
 	},
 	"missingperm": "Bu komutu uygulamak için ihtiyacım olan birkaç izin eksik:",
 	"limit": "🚨 **Dur, limite ulaştın!** 🚨\n\n%s, mesajın çok fazla komut içeriyor!",
@@ -43,13 +48,24 @@
 		"join": "%1$s ses kanalına katıldı \"%2$s\".",
 		"left": "%1$s ses kanalından ayrıldı \"%2$s\"."
 	},
+	"overview": {
+		"inaccurate": "İstatistikler yanlış olabilir",
+		"vertical": "Dikey:",
+		"topic": "Konu:",
+		"founder": "Kurucu:",
+		"created": "Oluşturuldu:",
+		"articles": "Makaleler:",
+		"pages": "Toplam sayfalar:",
+		"edits": "Düzenlemeler:",
+		"users": "Aktif kullanıcılar:",
+		"none": "*hiçbiri*"
+	},
 	"user": {
 		"gender": {
 			"unknown": "meçhul",
 			"male": "erkek",
 			"female": "kadın"
 		},
-		"dateformat": "tr-TR",
 		"groups": [
 			["bot-global", "Fandom bot"],
 			["staff", "Fandom personeli"],
@@ -99,10 +115,6 @@
 		}
 	},
 	"search": {
-		"page": "sayfa",
-		"search": "arama",
-		"random": "random",
-		"discussion": "tartışma",
 		"infopage": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %s kullan.",
 		"infosearch": "Doğru sonucu alamadın mı? Doğrudan bir bağlantı için %1$s, tüm isabetlerin listesi için %2$s kullan.",
 		"category": {
@@ -165,6 +177,7 @@
 			{ "cmd": "diff <sayfa adı>", "desc": "Wikideki son farkın bağlantısıyla cevap vereceğim." },
 			{ "cmd": "random", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim." },
 			{ "cmd": "🎲", "desc": "Wiki'deki rastgele bir sayfanın bağlantısı ile cevap vereceğim.", "hide": true },
+			{ "cmd": "overview", "desc": "Wiki ile ilgili bazı bilgileri ve istatistikleri göstereceğim." },
 			{ "cmd": "sayfa <sayfa adı>", "desc": "Makalenin wikideki bağlantısıyla cevap vereceğim.", "hide": true },
 			{ "cmd": "page <sayfa adı>", "desc": "Makalenin wikideki bağlantısıyla cevap vereceğim.", "hide": true },
 			{ "cmd": "arama <arama terimi>", "desc": "Wikideki makalenin arama sayfasına doğrudan bir bağlantı ile cevap vereceğim.", "hide": true },
