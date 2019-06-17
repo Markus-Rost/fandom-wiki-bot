@@ -22,8 +22,8 @@ For a full list with all commands use `!wikia help`
 | `!wikia diff <page name>` | **Wikia-Bot** will answer with a link to the last diff on the article in the wiki. |
 | `!wikia random` | **Wikia-Bot** will answer with a link to a random page in the wiki. |
 | `!wikia overview` | **Wikia-Bot** will show some information and statistics about the wiki. |
-| `!wikia page <page name>` | **Wikia-Bot** will answer with a link to the article in the wiki. |
-| `!wikia search <search term>` | **Wikia-Bot** will answer with a link to the search page for the article in the wiki. |
+| `!wikia discussion <search term>` | **Wikia-Bot** will answer with a link to a matching discussion thread in the wiki. |
+| `!wikia discussion post <search term>` | **Wikia-Bot** will answer with a link to a matching discussion post in the wiki. |
 | `!wikia info` | **Wikia-Bot** will introduce himself. |
 | `!wikia help` | **Wikia-Bot** will list all the commands that he understands. |
 | `!wikia help <bot command>` | **Wikia-Bot** will explain the command. |
