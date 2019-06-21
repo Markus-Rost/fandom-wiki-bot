@@ -318,6 +318,21 @@ function cmd_helpserver(lang, msg) {
 }
 
 /**
+ * Send an invite for the bot
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String[]} [args] The arguments
+ * @param {String} [line] The full line of the message
+ */
+function cmd_invite(lang, msg, args, line) {
+	if ( args.join('') ) {
+		cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
+	} else {
+		client.generateInvite(defaultPermissions).then( invite => msg.sendChannel( lang.invite.bot + '\n<' + invite + '>' ), log_error );
+	}
+}
+
+/**
  * Show the bot help
  * @param {Object} [lang] The language for this guild
  * @param {Discord.Message} [msg] The message
@@ -512,21 +527,6 @@ function cmd_test(lang, msg, args, line) {
 }
 
 /**
- * Send an invite for the bot
- * @param {Object} [lang] The language for this guild
- * @param {Discord.Message} [msg] The message
- * @param {String[]} [args] The arguments
- * @param {String} [line] The full line of the message
- */
-function cmd_invite(lang, msg, args, line) {
-	if ( args.join('') ) {
-		cmd_link(lang, msg, line.split(' ').slice(1).join(' '));
-	} else {
-		client.generateInvite(defaultPermissions).then( invite => msg.sendChannel( lang.invite.bot + '\n<' + invite + '>' ), log_error );
-	}
-}
-
-/**
  * Evaluate code
  * @async
  * @param {Object} [lang] The language for this guild
@@ -538,7 +538,7 @@ async function cmd_eval(lang, msg, args, line) {
 	try {
 		var text = util.inspect( await eval( args.join(' ') ) );
 	} catch ( error ) {
-		var text = error.name + ': ' + error.message;
+		var text = error.toString();
 	}
 	if ( isDebug ) console.log( '--- EVAL START ---\n' + text + '\n--- EVAL END ---' );
 	if ( text.length > 2000 ) msg.reactEmoji('✅', true);
@@ -1318,11 +1318,11 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 							}
 							else {
 								var profile = pbody._embedded.properties;
-								var discordfield = profile.find( field => field.name === 'discord' );
+								var discordfield = profile.find( field => field.name === 'discordHandle' );
 								var avatarfield = profile.find( field => field.name === 'avatar' );
 								if ( discordfield && discordfield.value ) {
-									var discordmember = msg.guild.members.find( member => member.user.tag === pbody.value );
-									var discordname = [lang.user.info.discord,pbody.value.escapeFormatting()];
+									var discordmember = msg.guild.members.find( member => member.user.tag === discordfield.value );
+									var discordname = [lang.user.info.discord,discordfield.value.escapeFormatting()];
 									if ( discordmember ) {
 										if ( msg.showEmbed() ) discordname[1] = discordmember.toString();
 										else if ( discordmember.nickname ) discordname[1] += ' (' + discordmember.nickname.escapeFormatting() + ')';
@@ -2843,8 +2843,8 @@ function log_error(error, isBig = false, type = '') {
 	if ( isDebug ) {
 		console.error( '--- ' + type + 'ERROR START ' + time + ' ---\n' + util.inspect( error ) + '\n--- ' + type + 'ERROR END ' + time + ' ---' );
 	} else {
-		if ( isBig ) console.log( '--- ' + type + 'ERROR: ' + time + ' ---\n- ' + error.name + ': ' + error.message );
-		else console.log( '- ' + error.name + ': ' + error.message );
+		if ( isBig ) console.log( '--- ' + type + 'ERROR: ' + time + ' ---\n- ' + error );
+		else console.log( '- ' + error );
 	}
 }
 
