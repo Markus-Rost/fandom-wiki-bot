@@ -93,7 +93,10 @@
 		},
 		"block": {
 			"header": "%s şu anda engelli!",
-			"text": "%1$s'dan %2$s'a kadar %1$s tarafından \"%4$s\" nedeniyle engellendi.",
+			"text": "%1$s platformundan %3$s tarafından \"%4$s\" nedeniyle %2$s süresinde engellendiniz.",
+			"noreason": "%1$s platformundan %3$s tarafından %2$s tarihine kadar engellendiniz.",
+			"nofromtext": "\"%4$s\" nedeniyle %3$s tarafından %2$s tarihine kadar engellendiniz.",
+			"nofromnoreason": "%3$s tarafından %2$s tarihine kadar engellendiniz.",
 			"until_infinity": "bütün günlerin sonu"
 		}
 	},

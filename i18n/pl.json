@@ -92,7 +92,10 @@
 		},
 		"block": {
 			"header": "%s jest obecnie zablokowany!",
-			"text": "Zablokowany %1$s do %2$s przez %3$s z powodu \"%4$s\".",
+			"text": "Zablokowano %1$s do %2$s przez %3$s z powodem \"%4$s\".",
+			"noreason": "Zablokowano %1$s do %2$s przez %3$s.",
+			"nofromtext": "Zablokowano do %2$s przez %3$s z powodem \"%4$s\".",
+			"nofromnoreason": "Zablokowano do %2$s przez %3$s.",
 			"until_infinity": "do końca wszechświata"
 		}
 	},

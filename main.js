@@ -87,7 +87,7 @@ client.on( 'ready', () => {
 			headers: {Authorization: process.env.dbggtoken},
 			body: {guildCount: client.guilds.size},
 			json: true
-		} );
+		}, () => {} );
 	}, 10800000 ).unref();
 } );
 	
@@ -195,9 +195,9 @@ function cmd_settings(lang, msg, args, line) {
 						if ( wikinew ) edit_settings(lang, msg, 'wiki', wikinew);
 						else msg.replyMsg( nowikis, {}, true );
 					} else msg.replyMsg( lang.settings.wikimissing + wikis, {}, true );
-				} else msg.replyMsg( text, {}, true );
+				} else msg.replyMsg( text, {split:true}, true );
 			}
-		} else msg.replyMsg( text, {}, true );
+		} else msg.replyMsg( text, {split:true}, true );
 	} else {
 		msg.reactEmoji('❌');
 	}
@@ -816,8 +816,8 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							uri: wiki + 'api/v1/Search/List?minArticleQuality=0&namespaces=4,12,14,' + Object.values(body.query.namespaces).filter( ns => ns.content !== undefined ).map( ns => ns.id ).join(',') + '&limit=10&query=' + encodeURIComponent( title ) + '&format=json',
 							json: true
 						}, function( wserror, wsresponse, wsbody ) {
-							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.items ) {
-								if ( wsbody && wsbody.exception && wsbody.exception.code === 404 ) msg.reactEmoji('🤷');
+							if ( wserror || !wsresponse || wsresponse.statusCode !== 200 || !wsbody || wsbody.exception || !wsbody.total || !wsbody.items || !wsbody.items.length ) {
+								if ( wsbody && ( !wsbody.total || ( wsbody.items && !wsbody.items.length ) || ( wsbody.exception && wsbody.exception.code === 404 ) ) ) msg.reactEmoji('🤷');
 								else {
 									console.log( '- ' + ( wsresponse && wsresponse.statusCode ) + ': Error while getting the search results: ' + ( wserror || wsbody && wsbody.exception && wsbody.exception.details ) );
 									msg.sendChannelError( spoiler + '<' + wiki.toLink() + 'Special:Search?search=' + title.toSearch() + '>' + spoiler );
@@ -994,12 +994,12 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 				else if ( body.query.interwiki ) {
 					var inter = body.query.interwiki[0];
 					var intertitle = inter.title.substring(inter.iw.length + 1);
-					var regex = inter.url.match( /^(?:https?:)?\/\/(([a-z\d-]{1,50})\.(?:fandom\.com|wikia\.org)\/(?:(?!wiki\/)([a-z-]{1,8})\/)?)wiki\// );
+					var regex = inter.url.match( /^(?:https?:)?\/\/(([a-z\d-]{1,50})\.(?:fandom\.com|wikia\.org)(?:(?!\/wiki\/)\/([a-z-]{1,8}))?)(?:\/wiki\/|\/?$)/ );
 					if ( regex !== null && selfcall < 5 ) {
 						if ( msg.channel.type !== 'text' || !pause[msg.guild.id] ) {
 							var iwtitle = decodeURIComponent( inter.url.replace( regex[0], '' ) ).replace( /\_/g, ' ' ).replaceSave( intertitle.replace( /\_/g, ' ' ), intertitle );
 							selfcall++;
-							check_wiki(lang, msg, iwtitle, 'https://' + regex[1], ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, spoiler, querystring, fragment, selfcall);
+							check_wiki(lang, msg, iwtitle, 'https://' + regex[1] + '/', ' !' + ( regex[3] ? regex[3] + '.' : '' ) + regex[2] + ' ', reaction, spoiler, querystring, fragment, selfcall);
 						} else {
 							if ( reaction ) reaction.removeEmoji();
 							console.log( '- Aborted, paused.' );
@@ -1143,7 +1143,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						if ( Date.parse(blockexpiry) > Date.now() ) isBlocked = true;
 						blockexpiry = new Date(blockexpiry).toLocaleString(lang.dateformat, timeoptions);
 					}
-					if ( isBlocked ) return [lang.user.block.header.replaceSave( '%s', block.user ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replaceSave( '%4$s', block.reason )];
+					if ( isBlocked ) return [lang.user.block.header.replaceSave( '%s', block.user ), lang.user.block[( block.reason ? 'text' : 'noreason' )].replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replaceSave( '%4$s', block.reason )];
 				} ).filter( block => block !== undefined );
 				if ( username.includes( '/' ) ) {
 					var rangeprefix = username;
@@ -1296,7 +1296,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					}
 					var blockedby = '[[User:' + body.query.users[0].blockedby + '|' + body.query.users[0].blockedby + ']]';
 					var blockreason = body.query.users[0].blockreason;
-					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block.text.replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
+					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block['nofrom' + ( blockreason ? 'text' : 'noreason' )].replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
 					
 					var pagelink = wiki.toLink() + namespace + username.toTitle() + linksuffix;
 					if ( msg.showEmbed() ) {
@@ -1321,8 +1321,12 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 								var discordfield = profile.find( field => field.name === 'discordHandle' );
 								var avatarfield = profile.find( field => field.name === 'avatar' );
 								if ( discordfield && discordfield.value ) {
-									var discordmember = msg.guild.members.find( member => member.user.tag === discordfield.value );
-									var discordname = [lang.user.info.discord,discordfield.value.escapeFormatting()];
+									discordfield.value = htmlToPlain( discordfield.value );
+									var discordmember = msg.guild.members.find( member => {
+										return member.user.tag.escapeFormatting() === discordfield.value.replace( /^\s*([^@#:]{2,32}?)\s*#(\d{4,6})\s*$/, '$1#$2' );
+									} );
+									if ( !discordmember && /^\d+$/.test(discordfield.value) ) discordmember = msg.guild.members.get(discordfield.value);
+									var discordname = [lang.user.info.discord,discordfield.value];
 									if ( discordmember ) {
 										if ( msg.showEmbed() ) discordname[1] = discordmember.toString();
 										else if ( discordmember.nickname ) discordname[1] += ' (' + discordmember.nickname.escapeFormatting() + ')';
@@ -2164,7 +2168,7 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 					embed.setThumbnail( thumbnail );
 				}
 				
-				msg.sendChannel( spoiler + '🎲 <' + pagelink + '>' + spoiler, embed );
+				msg.sendChannel( '🎲 ' + spoiler + '<' + pagelink + '>' + spoiler, embed );
 				
 				if ( reaction ) reaction.removeEmoji();
 			} );
@@ -2312,13 +2316,16 @@ function cmd_get(lang, msg, args, line) {
 			var guildsettings = ['Settings:', ( guild.id in settings ? '```json\n' + JSON.stringify( settings[guild.id], null, '\t' ) + '\n```' : '*default*' )];
 			if ( msg.showEmbed() ) {
 				var text = '';
-				var embed = new Discord.RichEmbed().addField( guildname[0], guildname[1] ).addField( guildowner[0], guildowner[1] ).addField( guildsize[0], guildsize[1] ).addField( guildpermissions[0], guildpermissions[1] ).addField( guildsettings[0], guildsettings[1] );
+				var embed = new Discord.RichEmbed().addField( guildname[0], guildname[1] ).addField( guildowner[0], guildowner[1] ).addField( guildsize[0], guildsize[1] ).addField( guildpermissions[0], guildpermissions[1] );
+				var split = Discord.Util.splitMessage( guildsettings[1], {maxLength:1000,prepend:'```json\n{',append:'\n```'} );
+				if ( split.length < guildsettings[1].length ) split.forEach( guildsettingspart => embed.addField( guildsettings[0], guildsettingspart ) );
+				else embed.addField( guildsettings[0], split );
 			}
 			else {
 				var embed = {};
 				var text = guildname.join(' ') + '\n' + guildowner.join(' ') + '\n' + guildsize.join(' ') + '\n' + guildpermissions.join(' ') + '\n' + guildsettings.join(' ');
 			}
-			msg.sendChannel( text, embed, true );
+			msg.sendChannel( text, {embed,split:{prepend:'```json\n{',append:'\n```'}}, true );
 		} else if ( client.guilds.some( guild => guild.members.has(id) ) ) {
 			var username = [];
 			var guildlist = ['Guilds:'];

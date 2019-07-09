@@ -90,7 +90,10 @@
 		},
 		"block": {
 			"header": "%s est actuellement bloqué !",
-			"text": "Bloqué le %1$s jusqu'au %2$s par %3$s avec la raison \"%4$s\".",
+			"text": "Bloqué le %1$s jusqu'au %2$s par %3$s avec la raison « %4$s ».",
+			"noreason": "Bloqué le %1$s jusqu'au %2$s par %3$s.",
+			"nofromtext": "Bloqué jusqu'au %2$s par %3$s avec la raison « %4$s ».",
+			"nofromnoreason": "Bloqué jusqu'au %2$s par %3$s.",
 			"until_infinity": "moment de la fin des jours"
 		}
 	},
