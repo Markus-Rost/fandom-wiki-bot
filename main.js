@@ -858,7 +858,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 										var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink );
 										if ( querypage.imageinfo ) {
 											var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
-											var pageimage = wiki.toLink() + 'Special:FilePath/' + filename + '?v=' + Date.now();
+											var pageimage = wiki.toLink() + 'Special:FilePath/' + filename.toTitle() + '?v=' + Date.now();
 											if ( msg.showEmbed() && /\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) embed.setImage( pageimage );
 											else if ( msg.uploadFiles() ) embed.attachFiles( [{attachment:pageimage,name:( spoiler ? 'SPOILER ' : '' ) + filename}] );
 										}
@@ -929,7 +929,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink );
 						if ( querypage.imageinfo ) {
 							var filename = querypage.title.replace( body.query.namespaces['6']['*'] + ':', '' );
-							var pageimage = wiki.toLink() + 'Special:FilePath/' + filename + '?v=' + Date.now();
+							var pageimage = wiki.toLink() + 'Special:FilePath/' + filename.toTitle() + '?v=' + Date.now();
 							if ( msg.showEmbed() && /\.(?:png|jpg|jpeg|gif)$/.test(querypage.title.toLowerCase()) ) embed.setImage( pageimage );
 							else if ( msg.uploadFiles() ) embed.attachFiles( [{attachment:pageimage,name:( spoiler ? 'SPOILER ' : '' ) + filename}] );
 						}
