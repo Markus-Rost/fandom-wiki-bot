@@ -1321,7 +1321,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 								var discordfield = profile.find( field => field.name === 'discordHandle' );
 								var avatarfield = profile.find( field => field.name === 'avatar' );
 								if ( discordfield && discordfield.value ) {
-									discordfield.value = htmlToPlain( discordfield.value );
+									var parser = new htmlparser.Parser( {
+										ontext: (htmltext) => {
+											discordfield.value = htmltext.escapeFormatting();
+										}
+									}, {decodeEntities:true} );
+									parser.write( discordfield.value );
+									parser.end();
 									var discordmember = msg.guild.members.find( member => {
 										return member.user.tag.escapeFormatting() === discordfield.value.replace( /^\s*([^@#:]{2,32}?)\s*#(\d{4,6})\s*$/, '$1#$2' );
 									} );
