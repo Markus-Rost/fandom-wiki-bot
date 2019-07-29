@@ -65,6 +65,7 @@
 			["staff", "Fandom staff"],
 			["wiki-manager", "Wiki manager"],
 			["helper", "Fandom helper"],
+			["content-team-member", "Content Team Member"],
 			["bot", "Bot"],
 			["bureaucrat", "Bureaucrat"],
 			["sysop", "Administrator"],
@@ -136,6 +137,7 @@
 	"discussion": {
 		"post": "post",
 		"main": "Discussions",
+		"image": "View Image",
 		"votes": {
 			"default": "%s votes",
 			"1": "%s vote"

@@ -71,6 +71,7 @@
 			["staff", "Fandom personeli"],
 			["wiki-manager", "Wiki yöneticisi"],
 			["helper", "Fandom yardımcısı"],
+			["content-team-member", "İçerik Takımı Üyesi"],
 			["bot", "Bot"],
 			["bureaucrat", "Bürokrat"],
 			["sysop", "Yönetici"],
@@ -140,6 +141,7 @@
 	"discussion": {
 		"post": "gönderisi",
 		"main": "Tartışmalar",
+		"image": "Resmi gör",
 		"votes": {
 			"default": "%s oy"
 		}

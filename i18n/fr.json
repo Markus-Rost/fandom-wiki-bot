@@ -68,6 +68,7 @@
 			["staff", "Staff de Fandom"],
 			["wiki-manager", "Gestionnaire du wiki"],
 			["helper", "Assistant de Fandom"],
+			["content-team-member", "Membre de l'équipe Contenu"],
 			["bot", "Robot"],
 			["bureaucrat", "Bureaucrate"],
 			["sysop", "Administrateur"],
@@ -139,8 +140,10 @@
 	"discussion": {
 		"post": "post",
 		"main": "Discussions",
+		"image": "Afficher l'image",
 		"votes": {
 			"default": "%s votes",
+			"0": "%s vote",
 			"1": "%s vote"
 		}
 	},

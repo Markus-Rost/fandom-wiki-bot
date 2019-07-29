@@ -1328,7 +1328,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 									}, {decodeEntities:true} );
 									parser.write( discordfield.value );
 									parser.end();
-									var discordmember = msg.guild.members.find( member => {
+									if ( msg.channel.type === 'text' ) var discordmember = msg.guild.members.find( member => {
 										return member.user.tag.escapeFormatting() === discordfield.value.replace( /^\s*([^@#:]{2,32}?)\s*#(\d{4,6})\s*$/, '$1#$2' );
 									} );
 									if ( !discordmember && /^\d+$/.test(discordfield.value) ) discordmember = msg.guild.members.get(discordfield.value);
@@ -1622,53 +1622,42 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
 	}
 	var text = '<' + pagelink + '>';
 	embed.setURL( pagelink ).setFooter( discussion.createdBy.name, discussion.createdBy.avatarUrl ).setTimestamp( discussion.creationDate.epochSecond * 1000 );
+	var description = '';
 	switch ( discussion.funnel ) {
-		case 'TEXT':
-			if ( discussion.renderedContent ) {
-				var description = '';
-				var parser = new htmlparser.Parser( {
-					ontext: (htmltext) => {
-						description += htmltext.escapeFormatting();
-					},
-					onclosetag: (tagname) => {
-						if ( tagname === 'p' ) description += '\n';
-					}
-				}, {decodeEntities:true} );
-				parser.write( discussion.renderedContent );
-				parser.end();
-				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
-				embed.setDescription( description );
-			}
-			break;
 		case 'IMAGE':
 			embed.setImage( discussion._embedded.contentImages[0].url );
 			break;
 		case 'POLL':
 			discussion.poll.answers.forEach( answer => embed.addField( answer.text.escapeFormatting(), ( lang.discussion.votes[answer.votes] || lang.discussion.votes['*' + answer.votes % 100] || lang.discussion.votes['*' + answer.votes % 10] || lang.discussion.votes.default ).replace( '%s', answer.votes ), true ) );
 			break;
-		case 'LINK':
-			if ( discussion.rawContent.length > 2000 ) embed.setDescription( discussion.rawContent.escapeFormatting().substring(0, 2000) + '\u2026' );
-			else if ( discussion.rawContent.length > 1000 ) embed.setDescription( '[' + discussion.rawContent.escapeFormatting().substring(0, 2000 - discussion.rawContent.length) + '\u2026](' + discussion.rawContent.replace( / /g, '_' ).replace( /(\(|\))/g, '\\$1' ) + ')' );
-			else embed.setDescription( '[' + discussion.rawContent.escapeFormatting() + '](' + discussion.rawContent.replace( / /g, '_' ).replace( /(\(|\))/g, '\\$1' ) + ')' );
-			if ( discussion._embedded.openGraph ) {
-				var link = discussion._embedded.openGraph[0];
-				embed.setThumbnail( link.imageUrl );
-				if ( link.title && link.description ) {
-					var name = link.title.escapeFormatting();
-					if ( name.length > 250 ) name = name.substring(0, 250) + '\u2026';
-					var description = link.description.escapeFormatting();
-					if ( description.length > 1000 ) description = description.substring(0, 1000) + '\u2026';
-					embed.addField( name, description );
-				}
-			}
-			break;
 		case 'QUIZ':
-			embed.setDescription( discussion.quiz.title.escapeFormatting() );
+			description = discussion.quiz.title.escapeFormatting();
 			if ( discussion._embedded.openGraph ) embed.setThumbnail( discussion._embedded.openGraph[0].imageUrl );
 			break;
 		default:
-			if ( discussion.renderedContent ) {
-				var description = '';
+			if ( discussion.jsonModel ) {
+				try {
+					description = discussion_formatting(JSON.parse(discussion.jsonModel)).replace( /(?:\*\*\*\*|(?<!\\)\_\_)/g, '' );
+					if ( discussion._embedded.contentImages.length ) {
+						if ( description.trim() === '{@0}' ) {
+							embed.setImage( discussion._embedded.contentImages[0].url );
+							description = '';
+						}
+						else {
+							description = description.replace( /\{\@(\d+)\}/g, (match, n) => {
+								return '[__' + lang.discussion.image.escapeFormatting() + '__](' + discussion._embedded.contentImages[n].url + ')';
+							} );
+							embed.setThumbnail( discussion._embedded.contentImages[0].url );
+						}
+					}
+					else embed.setThumbnail( wiki.toLink() + 'Special:FilePath/Wiki-wordmark.png' );
+				}
+				catch ( jsonerror ) {
+					console.log( '- Error while getting the formatting: ' + jsonerror );
+					description = discussion.rawContent.escapeFormatting();
+				}
+			}
+			else if ( discussion.renderedContent ) {
 				var parser = new htmlparser.Parser( {
 					ontext: (htmltext) => {
 						description += htmltext.escapeFormatting();
@@ -1679,16 +1668,13 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
 				}, {decodeEntities:true} );
 				parser.write( discussion.renderedContent );
 				parser.end();
-				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
-				embed.setDescription( description );
 			}
 			else {
-				var description = discussion.rawContent.escapeFormatting();
-				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
-				embed.setDescription( description );
+				description = discussion.rawContent.escapeFormatting();
 			}
-			if ( discussion._embedded.contentImages.length ) embed.setImage( discussion._embedded.contentImages[0].url );
 	}
+	if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
+	embed.setDescription( description );
 	
 	msg.sendChannel( spoiler + text + spoiler, embed );
 }
@@ -2371,6 +2357,70 @@ function cmd_get(lang, msg, args, line) {
 }
 
 /**
+ * Turn the JSON object into formatted text
+ * @param {Object} [jsonModel] The JSON object
+ * @returns {String}
+ */
+function discussion_formatting(jsonModel) {
+	var description = '';
+	switch ( jsonModel.type ) {
+		case 'doc':
+			if ( jsonModel.content ) jsonModel.content.forEach( content => description += discussion_formatting(content) );
+			break;
+		case 'paragraph':
+			if ( jsonModel.content ) jsonModel.content.forEach( content => description += discussion_formatting(content) );
+			description += '\n';
+			break;
+		case 'text':
+			var prepend = '';
+			var append = '';
+			if ( jsonModel.marks ) {
+				jsonModel.marks.forEach( mark => {
+					switch ( mark.type ) {
+						case 'link':
+							prepend += '[';
+							append = '](' + mark.attrs.href + ')' + append;
+							break;
+						case 'strong':
+							prepend += '**';
+							append = '**' + append;
+							break;
+						case 'em':
+							prepend += '_';
+							append = '_' + append;
+							break;
+					}
+				} );
+			}
+			description += prepend + jsonModel.text.escapeFormatting() + append;
+			break;
+		case 'image':
+			description += '{@' + jsonModel.attrs.id + '}\n';
+			break;
+		case 'code_block':
+			description += '```\n';
+			if ( jsonModel.content ) jsonModel.content.forEach( content => description += discussion_formatting(content) );
+			description += '\n```\n';
+			break;
+		case 'bulletList':
+			jsonModel.content.forEach( listItem => {
+				description += ' • ';
+				if ( listItem.content ) listItem.content.forEach( content => description += discussion_formatting(content) );
+			} );
+			break;
+		case 'orderedList':
+			var n = 1;
+			jsonModel.content.forEach( listItem => {
+				description += ' ' + n + '. ';
+				n++;
+				if ( listItem.content ) listItem.content.forEach( content => description += discussion_formatting(content) );
+			} );
+			break;
+	}
+	return description;
+}
+
+/**
  * Check if the wiki does not exist
  * @param {String} [href] The link
  * @returns {Boolean}
@@ -2671,7 +2721,7 @@ Discord.Message.prototype.deleteMsg = function(timeout = 0) {
  * @returns {Promise<Discord.Message>}
  */
 Discord.Message.prototype.allowDelete = function(author) {
-	return this.awaitReactions( (reaction, user) => reaction.emoji.name === '🗑' && user.id === author, {max:1,time:30000} ).then( reaction => {
+	return this.awaitReactions( (reaction, user) => reaction.emoji.name === '🗑' && user.id === author, {max:1,time:60000} ).then( reaction => {
 		if ( reaction.size ) {
 			this.deleteMsg();
 		}

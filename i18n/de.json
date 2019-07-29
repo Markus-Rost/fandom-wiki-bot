@@ -71,6 +71,7 @@
 			["staff", "Fandom-Mitarbeiter"],
 			["wiki-manager", "Wiki-Manager"],
 			["helper", "Fandom-Helfer"],
+			["content-team-member", "Redaktionsmitglied"],
 			["bot", "Bot"],
 			["bureaucrat", "Bürokrat"],
 			["sysop", "Administrator"],
@@ -81,7 +82,7 @@
 			["global-discussions-moderator", "Globaler Diskussions-Moderator"],
 			["chatmoderator", "Chat-Moderator"],
 			["rollback", "zurücksetzen"],
-			["authenticated", "authentifiziert"],
+			["authenticated", "offiziell"],
 			["user", "Benutzer"]
 		],
 		"info": {
@@ -142,6 +143,7 @@
 	"discussion": {
 		"post": "post",
 		"main": "Diskussionen",
+		"image": "Bild öffnen",
 		"votes": {
 			"default": "%s Stimmen",
 			"1": "Eine Stimme"

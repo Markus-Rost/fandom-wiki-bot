@@ -69,6 +69,7 @@
 			["staff", "Fandom staff"],
 			["wiki-manager", "Wiki manager"],
 			["helper", "Fandom helper"],
+			["content-team-member", "Content Team Member"],
 			["bot", "Bot"],
 			["bureaucrat", "Bureaucraat"],
 			["sysop", "Beheerder"],
@@ -140,6 +141,7 @@
 	"discussion": {
 		"post": "bericht",
 		"main": "Discussies",
+		"image": "Bekijk afbeelding",
 		"votes": {
 			"default": "%s stemmen",
 			"1": "%s stem"
