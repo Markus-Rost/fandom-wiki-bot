@@ -21,7 +21,10 @@
 			"português": "pt",
 			"tr": "tr",
 			"turkish": "tr",
-			"turkçe": "tr"
+			"turkçe": "tr",
+			"ru": "ru",
+      			"russian": "ru",
+      			"русский": "ru"
 		},
 		{
 			"en": "English",
@@ -30,7 +33,8 @@
 			"nl": "Dutch",
 			"pl": "Polish",
 			"pt": "Portuguese",
-			"tr": "Turkish"
+			"tr": "Turkish",
+			"ru": "Russian"
 		}
 	]
 }
