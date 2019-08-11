@@ -681,7 +681,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 		msg.sendChannel( spoiler + '<' + wiki.toLink() + 'Special:Search?search=' + args.join(' ').toSearch() + linksuffix + '>' + spoiler );
 		if ( reaction ) reaction.removeEmoji();
 	}
-	else if ( aliasInvoke === 'diff' && args.join('') ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
+	else if ( aliasInvoke === 'diff' && args.join('') && !linksuffix ) cmd_diff(lang, msg, args, wiki, reaction, spoiler);
 	else {
 		var noRedirect = ( /(?:^|&)redirect=no(?:&|$)/.test(querystring) || /(?:^|&)action=(?!view(?:&|$))/.test(querystring) );
 		request( {
@@ -923,8 +923,14 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 							}
 						} );
 					}
+					else if ( querypage.ns === -1 ) {
+						var pagelink = wiki.toLink() + querypage.title.toTitle() + linksuffix;
+						var embed =  new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink ).setThumbnail( wiki.toLink() + 'Special:FilePath/Wiki-wordmark.png' );
+						var specialpage = body.query.specialpagealiases.find( sp => body.query.namespaces['-1']['*'] + ':' + sp.aliases[0].replace( /\_/g, ' ' ) === querypage.title.split('/')[0] ).realname.toLowerCase();
+						special_page(lang, msg, querypage.title, specialpage, embed, wiki, reaction, spoiler);
+					}
 					else {
-						var pagelink = wiki.toLink() + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : ( fragment ? '#' + fragment.toSection() : '' ) );
+						var pagelink = wiki.toLink() + querypage.title.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( fragment ? '#' + fragment.toSection() : ( body.query.redirects && body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : '' ) );
 						var text = '';
 						var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink );
 						if ( querypage.imageinfo ) {
@@ -1017,6 +1023,14 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						if ( reaction ) reaction.removeEmoji();
 					}
 				}
+				else if ( body.query.redirects ) {
+					var pagelink = wiki.toLink() + body.query.redirects[0].to.toTitle() + ( querystring ? '?' + querystring.toTitle() : '' ) + ( fragment ? '#' + fragment.toSection() : ( body.query.redirects[0].tofragment ? '#' + body.query.redirects[0].tofragment.toSection() : '' ) );
+					var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( body.query.redirects[0].to.escapeFormatting() ).setURL( pagelink ).setThumbnail( wiki.toLink() + 'Special:FilePath/Wiki-wordmark.png' );
+					
+					msg.sendChannel( spoiler + '<' + pagelink + '>' + spoiler, embed );
+					
+					if ( reaction ) reaction.removeEmoji();;
+				}
 				else {
 					var pagelink = wiki.toLink() + body.query.general.mainpage.toTitle() + linksuffix;
 					var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( body.query.general.mainpage.escapeFormatting() ).setURL( pagelink ).setThumbnail( wiki.toLink() + 'Special:FilePath/Wiki-wordmark.png' );
@@ -1055,6 +1069,50 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 			}
 		} );
 	}
+}
+
+/**
+ * Send information about a special page
+ * @param {Object} [lang] The language for this guild
+ * @param {Discord.Message} [msg] The message
+ * @param {String} [title] The title of the special page
+ * @param {String} [specialpage] The name of the special page
+ * @param {Discord.RichEmbed} [embed] The embed for the special page
+ * @param {String} [wiki] The current wiki
+ * @param {Discord.MessageReaction} [reaction] The waiting reaction
+ * @param {String} [spoiler] The pipes if the message is a spoiler
+ */
+function special_page(lang, msg, title, specialpage, embed, wiki, reaction, spoiler) {
+	var overwrites = {
+		randompage: (lang, msg, args, embed, wiki, reaction, spoiler) => cmd_random(lang, msg, wiki, reaction, spoiler),
+		diff: (lang, msg, args, embed, wiki, reaction, spoiler) => cmd_diff(lang, msg, args, wiki, reaction, spoiler, embed),
+		statistics: (lang, msg, args, embed, wiki, reaction, spoiler) => cmd_overview(lang, msg, wiki, reaction, spoiler)
+	}
+	if ( specialpage in overwrites ) {
+		var args = title.split('/').slice(1,3);
+		overwrites[specialpage](lang, msg, args, embed, wiki, reaction, spoiler);
+		return;
+	}
+	request( {
+		uri: wiki + 'api.php?action=query&meta=allmessages&amenableparser=true&amtitle=' + encodeURIComponent( title ) + '&ammessages=' + encodeURIComponent( specialpage ) + '-summary&format=json',
+		json: true
+	}, function( error, response, body ) {
+		if ( body && body.warnings ) log_warn(body.warnings);
+		if ( error || !response || response.statusCode !== 200 || !body ) {
+			console.log( '- ' + ( response && response.statusCode ) + ': Error while getting the special page: ' + ( error || body && body.error && body.error.info ) );
+		}
+		else {
+			if ( body.query.allmessages[0]['*'] ) {
+				var description = body.query.allmessages[0]['*'].toPlaintext();
+				if ( description.length > 2000 ) description = description.substring(0, 2000) + '\u2026';
+				embed.setDescription( description );
+			}
+		}
+		
+		msg.sendChannel( spoiler + '<' + embed.url + '>' + spoiler, embed );
+		
+		if ( reaction ) reaction.removeEmoji();
+	} );
 }
 
 /**
@@ -1186,7 +1244,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						var pagelink = wiki.toLink() + namespace + username.toTitle() + linksuffix;
 						if ( msg.showEmbed() ) {
 							var text = '<' + pagelink + '>';
-							var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( username ).setURL( pagelink ).addField( editcount[0], '[' + editcount[1] + '](' + wiki.toLink() + contribs + username.toTitle() + ')' );
+							var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( username ).setURL( pagelink ).addField( editcount[0], '[' + editcount[1] + '](' + wiki.toLink() + contribs + username.toTitle(true) + ')' );
 							if ( blocks.length ) blocks.forEach( block => embed.addField( block[0], block[1].toMarkdown(wiki) ) );
 						}
 						else {
@@ -1301,7 +1359,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					var pagelink = wiki.toLink() + namespace + username.toTitle() + linksuffix;
 					if ( msg.showEmbed() ) {
 						var text = '<' + pagelink + '>';
-						var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( username.escapeFormatting() ).setURL( pagelink ).addField( editcount[0], '[' + editcount[1] + '](' + wiki.toLink() + contribs + username.toTitle() + ')', true ).addField( group[0], group[1], true ).addField( gender[0], gender[1], true ).addField( registration[0], registration[1], true );
+						var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( username.escapeFormatting() ).setURL( pagelink ).addField( editcount[0], '[' + editcount[1] + '](' + wiki.toLink() + contribs + username.toTitle(true) + ')', true ).addField( group[0], group[1], true ).addField( gender[0], gender[1], true ).addField( registration[0], registration[1], true );
 					}
 					else {
 						var embed = {};
@@ -1637,7 +1695,7 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
 		default:
 			if ( discussion.jsonModel ) {
 				try {
-					description = discussion_formatting(JSON.parse(discussion.jsonModel)).replace( /(?:\*\*\*\*|(?<!\\)\_\_)/g, '' );
+					description = discussion_formatting(JSON.parse(discussion.jsonModel)).replace( /(?:\*\*\*\*|(?<!\\)\_\_)/g, '' ).replace( /{@wiki}/g, wiki );
 					if ( discussion._embedded.contentImages.length ) {
 						if ( description.trim() === '{@0}' ) {
 							embed.setImage( discussion._embedded.contentImages[0].url );
@@ -1687,8 +1745,9 @@ function cmd_discussionsend(lang, msg, wiki, discussion, embed, spoiler) {
  * @param {String} [wiki] The current wiki
  * @param {Discord.MessageReaction} [reaction] The waiting reaction
  * @param {String} [spoiler] The pipes if the message is a spoiler
+ * @param {Discord.RichEmbed} [embed] The embed for the special page
  */
-function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
+function cmd_diff(lang, msg, args, wiki, reaction, spoiler, embed) {
 	if ( args[0] ) {
 		var error = false;
 		var title = '';
@@ -1857,7 +1916,9 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler) {
 		}
 	}
 	else {
-		msg.reactEmoji('error');
+		if ( embed ) msg.sendChannel( spoiler + '<' + embed.url + '>' + spoiler, embed );
+		else msg.reactEmoji('error');
+		
 		if ( reaction ) reaction.removeEmoji();
 	}
 }
@@ -1917,7 +1978,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler, compare) {
 					var pagelink = wiki.toLink() + title.toTitle() + '?diff=' + diff + '&oldid=' + oldid;
 					if ( msg.showEmbed() ) {
 						var text = '<' + pagelink + '>';
-						var editorlink = '[' + editor[1] + '](' + wiki.toLink() + 'User:' + editor[1].toTitle() + ')';
+						var editorlink = '[' + editor[1] + '](' + wiki.toLink() + 'User:' + editor[1].toTitle(true) + ')';
 						if ( revisions[0].anon !== undefined ) {
 							editorlink = '[' + editor[1] + '](' + wiki.toLink() + 'Special:Contributions/' + editor[1].toTitle(true) + ')';
 						}
@@ -2377,6 +2438,10 @@ function discussion_formatting(jsonModel) {
 			if ( jsonModel.marks ) {
 				jsonModel.marks.forEach( mark => {
 					switch ( mark.type ) {
+						case 'mention':
+							prepend += '[';
+							append = ']({@wiki}f/u/' + mark.attrs.userId + ')' + append;
+							break;
 						case 'link':
 							prepend += '[';
 							append = '](' + mark.attrs.href + ')' + append;
@@ -2939,7 +3004,7 @@ function log_warn(warning, api = true) {
  * @async
  * @param {Number} [code=1] The exit code
  */
-async function graceful(code = 1) {
+async function graceful(code = 0) {
 	stop = true;
 	console.log( '- SIGTERM: Preparing to close...' );
 	setTimeout( async () => {
