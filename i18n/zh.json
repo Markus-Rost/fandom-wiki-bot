@@ -43,8 +43,8 @@
 	},
 	"overview": {
 		"inaccurate": "统计信息可能出错",
-		"vertical": "垂直:",
-		"topic": "主题:",
+		"vertical": "主题:",
+		"topic": "分类:",
 		"founder": "创始人:",
 		"created": "创建日期:",
 		"articles": "文章总数:",
