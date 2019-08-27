@@ -76,7 +76,7 @@ function setStatus(hardreset) {
 }
 
 client.on( 'ready', () => {
-	console.log( '- Successfully logged in as ' + client.user.username + '!' );
+	console.log( '\n- Successfully logged in as ' + client.user.username + '!' );
 	getSettings();
 	
 	if ( !isDebug ) client.setInterval( () => {
@@ -507,7 +507,7 @@ function cmd_test(lang, msg, args, line) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				var ping = ( then - now ) + 'ms';
 				if ( error || !response || response.statusCode !== 200 || !body || !( body instanceof Object ) ) {
-					if ( response && response.request && response.request.uri && msg.channel.getWiki().noWiki(response.request.uri.href) ) {
+					if ( response && response.request && response.request.uri && msg.channel.getWiki().noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 						console.log( '- This wiki doesn\'t exist!' );
 						ping += ' <:unknown_wiki:505887262077353984>';
 					}
@@ -690,7 +690,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 				}
@@ -1136,7 +1136,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.blocks ) {
-				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 					
@@ -1201,7 +1201,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						if ( Date.parse(blockexpiry) > Date.now() ) isBlocked = true;
 						blockexpiry = new Date(blockexpiry).toLocaleString(lang.dateformat, timeoptions);
 					}
-					if ( isBlocked ) return [lang.user.block.header.replaceSave( '%s', block.user ), lang.user.block[( block.reason ? 'text' : 'noreason' )].replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replaceSave( '%4$s', block.reason )];
+					if ( isBlocked ) return [lang.user.block.header.replaceSave( '%s', block.user ).escapeFormatting(), lang.user.block[( block.reason ? 'text' : 'noreason' )].replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', '[[User:' + block.by + '|' + block.by + ']]' ).replaceSave( '%4$s', block.reason )];
 				} ).filter( block => block !== undefined );
 				if ( username.includes( '/' ) ) {
 					var rangeprefix = username;
@@ -1267,7 +1267,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.users ) {
-				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 				}
@@ -1348,13 +1348,13 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 						blockexpiry = lang.user.block.until_infinity;
 						isBlocked = true;
 					} else if ( blockexpiry ) {
-						var blockexpirydate = blockexpiry.replace(/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2,3})/, '$1-$2-$3T$4:$5:$6Z');
+						var blockexpirydate = blockexpiry.replace( /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2,3})/, '$1-$2-$3T$4:$5:$6Z' );
 						blockexpiry = new Date(blockexpirydate).toLocaleString(lang.dateformat, timeoptions);
 						if ( Date.parse(blockexpirydate) > Date.now() ) isBlocked = true;
 					}
 					var blockedby = '[[User:' + body.query.users[0].blockedby + '|' + body.query.users[0].blockedby + ']]';
 					var blockreason = body.query.users[0].blockreason;
-					var block = [lang.user.block.header.replaceSave( '%s', username ), lang.user.block['nofrom' + ( blockreason ? 'text' : 'noreason' )].replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
+					var block = [lang.user.block.header.replaceSave( '%s', username ).escapeFormatting(), lang.user.block['nofrom' + ( blockreason ? 'text' : 'noreason' )].replaceSave( '%1$s', blockedtimestamp ).replaceSave( '%2$s', blockexpiry ).replaceSave( '%3$s', blockedby ).replaceSave( '%4$s', blockreason )];
 					
 					var pagelink = wiki.toLink() + namespace + username.toTitle() + linksuffix;
 					if ( msg.showEmbed() ) {
@@ -1792,7 +1792,7 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler, embed) {
 			}, function( error, response, body ) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-					if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+					if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 						console.log( '- This wiki doesn\'t exist!' );
 						msg.reactEmoji('nowiki');
 					}
@@ -1939,7 +1939,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler, compare) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
@@ -2174,7 +2174,7 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
-			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
@@ -2244,7 +2244,7 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
-			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) ) {
+			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
 				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
@@ -2799,7 +2799,7 @@ Discord.Message.prototype.allowDelete = function(author) {
  * @returns {Boolean}
  */
 String.prototype.hasPrefix = function(flags = '') {
-	return RegExp( '^' + process.env.prefix + '(?: |$)', flags ).test(this.replace(/\u200b/g, '').toLowerCase());
+	return RegExp( '^' + process.env.prefix + '(?: |$)', flags ).test(this.replace( /\u200b/g, '' ).toLowerCase());
 };
 
 client.on( 'message', msg => {
@@ -2834,7 +2834,7 @@ client.on( 'message', msg => {
 			}
 		} else {
 			var count = 0;
-			msg.cleanContent.replace(/\u200b/g, '').split('\n').forEach( function(line) {
+			msg.cleanContent.replace( /\u200b/g, '' ).split('\n').forEach( function(line) {
 				if ( line.hasPrefix() && count < 10 ) {
 					count++;
 					invoke = ( line.split(' ')[1] ? line.split(' ')[1].toLowerCase() : '' );
