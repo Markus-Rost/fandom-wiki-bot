@@ -63,6 +63,8 @@
 		"pages": "Total de páginas:",
 		"edits": "Edições:",
 		"users": "Usuário ativos:",
+		"description": "Description:",
+		"image": "Image:",
 		"none": "*nenhum*"
 	},
 	"user": {

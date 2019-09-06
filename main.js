@@ -507,7 +507,7 @@ function cmd_test(lang, msg, args, line) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				var ping = ( then - now ) + 'ms';
 				if ( error || !response || response.statusCode !== 200 || !body || !( body instanceof Object ) ) {
-					if ( response && response.request && response.request.uri && msg.channel.getWiki().noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+					if ( response && ( response.request && response.request.uri && msg.channel.getWiki().noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 						console.log( '- This wiki doesn\'t exist!' );
 						ping += ' <:unknown_wiki:505887262077353984>';
 					}
@@ -690,7 +690,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+				if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 				}
@@ -1136,7 +1136,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.blocks ) {
-				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+				if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 					
@@ -1267,7 +1267,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
 			if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.users ) {
-				if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+				if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 					console.log( '- This wiki doesn\'t exist!' );
 					msg.reactEmoji('nowiki');
 				}
@@ -1792,7 +1792,7 @@ function cmd_diff(lang, msg, args, wiki, reaction, spoiler, embed) {
 			}, function( error, response, body ) {
 				if ( body && body.warnings ) log_warn(body.warnings);
 				if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-					if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+					if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 						console.log( '- This wiki doesn\'t exist!' );
 						msg.reactEmoji('nowiki');
 					}
@@ -1939,7 +1939,7 @@ function cmd_diffsend(lang, msg, args, wiki, reaction, spoiler, compare) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query ) {
-			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+			if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
@@ -2174,7 +2174,7 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
-			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+			if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
@@ -2244,7 +2244,7 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 	}, function( error, response, body ) {
 		if ( body && body.warnings ) log_warn(body.warnings);
 		if ( error || !response || response.statusCode !== 200 || !body || !body.query || !body.query.pages ) {
-			if ( response && response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) {
+			if ( response && ( response.request && response.request.uri && wiki.noWiki(response.request.uri.href) || response.statusCode === 410 ) ) {
 				console.log( '- This wiki doesn\'t exist!' );
 				msg.reactEmoji('nowiki');
 			}
@@ -2276,6 +2276,14 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 				var pages = [lang.overview.pages, body.query.statistics.pages];
 				var edits = [lang.overview.edits, body.query.statistics.edits];
 				var users = [lang.overview.users, body.query.statistics.activeusers];
+				var description = [lang.overview.description, site.desc];
+				var image = [lang.overview.image, site.image];
+				
+				if ( !description[1] ) description[1] = '-';
+				else if ( description[1].length > 1000 ) description[1] = description[1].substring(0, 1000) + '\u2026';
+				description[1] = description[1].escapeFormatting();
+				if ( !image[1] ) image[1] = '-';
+				else if ( image[1].startsWith( '/' ) ) image[1] = wiki.substring(0, wiki.length - 1) + image[1];
 				
 				var title = body.query.pages['-1'].title;
 				var pagelink = wiki.toLink() + title.toTitle();
@@ -2303,8 +2311,14 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 						else founder[1] = user;
 					}
 					
-					if ( msg.showEmbed() ) embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).setFooter( lang.overview.inaccurate );
-					else text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
+					if ( msg.showEmbed() ) {
+						embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).addField( description[0], description[1] ).addField( image[0], image[1] ).setFooter( lang.overview.inaccurate );
+						if ( image[1] !== '-' ) embed.setImage( image[1] );
+					}
+					else {
+						text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n' + description.join(' ') + '\n' + image.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
+						if ( image[1] !== '-' && msg.uploadFiles() ) embed.files = [image[1]];
+					}
 					
 					msg.sendChannel( spoiler + text + spoiler, embed );
 					
@@ -2312,8 +2326,14 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 				} );
 				else {
 					founder[1] = lang.overview.none;
-					if ( msg.showEmbed() ) embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).setFooter( lang.overview.inaccurate );
-					else text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
+					if ( msg.showEmbed() ) {
+						embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).addField( description[0], description[1] ).addField( image[0], image[1] ).setFooter( lang.overview.inaccurate );
+						if ( image[1] !== '-' ) embed.setImage( image[1] );
+					}
+					else {
+						text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n' + description.join(' ') + '\n' + image.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
+						if ( image[1] !== '-' && msg.uploadFiles() ) embed.files = [image[1]];
+					}
 					
 					msg.sendChannel( spoiler + text + spoiler, embed );
 					

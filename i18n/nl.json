@@ -56,6 +56,8 @@
 		"pages": "Totaal pagina's:",
 		"edits": "Bewerkingen:",
 		"users": "Actieve gebruikers:",
+		"description": "Description:",
+		"image": "Image:",
 		"none": "*niemand*"
 	},
 	"user": {

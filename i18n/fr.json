@@ -55,6 +55,8 @@
 		"pages": "Nombre de pages total :",
 		"edits": "Modifications :",
 		"users": "Utilisateurs actifs :",
+		"description": "Description:",
+		"image": "Image:",
 		"none": "*aucun*"
 	},
 	"user": {
