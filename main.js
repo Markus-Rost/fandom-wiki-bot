@@ -2279,11 +2279,11 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 				var description = [lang.overview.description, site.desc];
 				var image = [lang.overview.image, site.image];
 				
-				if ( !description[1] ) description[1] = '-';
-				else if ( description[1].length > 1000 ) description[1] = description[1].substring(0, 1000) + '\u2026';
-				description[1] = description[1].escapeFormatting();
-				if ( !image[1] ) image[1] = '-';
-				else if ( image[1].startsWith( '/' ) ) image[1] = wiki.substring(0, wiki.length - 1) + image[1];
+				if ( description[1] ) {
+					description[1] = description[1].escapeFormatting();
+					if ( description[1].length > 1000 ) description[1] = description[1].substring(0, 1000) + '\u2026';
+				}
+				if ( image[1] && image[1].startsWith( '/' ) ) image[1] = wiki.substring(0, wiki.length - 1) + image[1];
 				
 				var title = body.query.pages['-1'].title;
 				var pagelink = wiki.toLink() + title.toTitle();
@@ -2296,7 +2296,7 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 					var text = '<' + pagelink + '>\n\n' + vertical.join(' ') + '\n' + topic.join(' ');
 				}
 				
-				if ( founder[1] !== "0" ) request( {
+				if ( founder[1] ) request( {
 					uri: wiki + 'api.php?action=query&list=users&usprop=&usids=' + founder[1] + '&format=json',
 					json: true
 				}, function( userror, usresponse, usbody ) {
@@ -2312,12 +2312,18 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 					}
 					
 					if ( msg.showEmbed() ) {
-						embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).addField( description[0], description[1] ).addField( image[0], image[1] ).setFooter( lang.overview.inaccurate );
-						if ( image[1] !== '-' ) embed.setImage( image[1] );
+						embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).setFooter( lang.overview.inaccurate );
+						if ( description[1] ) embed.addField( description[0], description[1] );
+						if ( image[1] ) embed.addField( image[0], image[1] ).setImage( image[1] );
 					}
 					else {
-						text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n' + description.join(' ') + '\n' + image.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
-						if ( image[1] !== '-' && msg.uploadFiles() ) embed.files = [image[1]];
+						text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ');
+						if ( description[1] ) text += '\n' + description.join(' ');
+						if ( image[1] ) {
+							text += '\n' + image.join(' ');
+							if ( msg.uploadFiles() ) embed.files = [image[1]];
+						}
+						text += '\n\n*' + lang.overview.inaccurate + '*';
 					}
 					
 					msg.sendChannel( spoiler + text + spoiler, embed );
@@ -2327,12 +2333,18 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 				else {
 					founder[1] = lang.overview.none;
 					if ( msg.showEmbed() ) {
-						embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).addField( description[0], description[1] ).addField( image[0], image[1] ).setFooter( lang.overview.inaccurate );
-						if ( image[1] !== '-' ) embed.setImage( image[1] );
+						embed.addField( founder[0], founder[1], true ).addField( created[0], created[1], true ).addField( articles[0], articles[1], true ).addField( pages[0], pages[1], true ).addField( edits[0], edits[1], true ).addField( users[0], users[1], true ).setFooter( lang.overview.inaccurate );
+						if ( description[1] ) embed.addField( description[0], description[1] );
+						if ( image[1] ) embed.addField( image[0], image[1] ).setImage( image[1] );
 					}
 					else {
-						text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ') + '\n' + description.join(' ') + '\n' + image.join(' ') + '\n\n*' + lang.overview.inaccurate + '*';
-						if ( image[1] !== '-' && msg.uploadFiles() ) embed.files = [image[1]];
+						text += '\n' + founder.join(' ') + '\n' + created.join(' ') + '\n' + articles.join(' ') + '\n' + pages.join(' ') + '\n' + edits.join(' ') + '\n' + users.join(' ');
+						if ( description[1] ) text += '\n' + description.join(' ');
+						if ( image[1] ) {
+							text += '\n' + image.join(' ');
+							if ( msg.uploadFiles() ) embed.files = [image[1]];
+						}
+						text += '\n\n*' + lang.overview.inaccurate + '*';
 					}
 					
 					msg.sendChannel( spoiler + text + spoiler, embed );
