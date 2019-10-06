@@ -2187,7 +2187,7 @@ function cmd_random(lang, msg, wiki, reaction, spoiler) {
 			if ( reaction ) reaction.removeEmoji();
 		}
 		else {
-			querypage = Object.values(body.query.pages)[0];
+			var querypage = Object.values(body.query.pages)[0];
 			var pagelink = wiki.toLink() + querypage.title.toTitle();
 			var embed = new Discord.RichEmbed().setAuthor( body.query.general.sitename ).setTitle( querypage.title.escapeFormatting() ).setURL( pagelink );
 			if ( querypage.title === body.query.general.mainpage && body.query.allmessages[0]['*'] ) {
@@ -2604,7 +2604,7 @@ Array.prototype.toEmojis = function() {
 	if ( regex.test(text) ) {
 		regex.lastIndex = 0;
 		var emojis = client.emojis;
-		while ( ( entry = regex.exec(text) ) !== null ) {
+		while ( ( var entry = regex.exec(text) ) !== null ) {
 			if ( emojis.has(entry[2]) ) {
 				text = text.replaceSave(entry[0], emojis.get(entry[2]).toString());
 			} else {
@@ -2662,7 +2662,7 @@ String.prototype.toFormatting = function(showEmbed = false, ...args) {
  */
 String.prototype.toMarkdown = function(wiki, title = '') {
 	var text = this;
-	while ( ( link = /\[\[(?:([^\|\]]+)\|)?([^\]]+)\]\]([a-z]*)/g.exec(text) ) !== null ) {
+	while ( ( var link = /\[\[(?:([^\|\]]+)\|)?([^\]]+)\]\]([a-z]*)/g.exec(text) ) !== null ) {
 		if ( link[1] ) {
 			var page = ( /^(#|\/)/.test(link[1]) ? title.toTitle(true) + ( /^#/.test(link[1]) ? '#' + link[1].substring(1).toSection() : link[1].toTitle(true) ) : link[1].toTitle(true) );
 			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki.toLink() + page + ')' );
@@ -2671,7 +2671,7 @@ String.prototype.toMarkdown = function(wiki, title = '') {
 			text = text.replaceSave( link[0], '[' + link[2] + link[3] + '](' + wiki.toLink() + page + ')' );
 		}
 	}
-	while ( title !== '' && ( link = /\/\*\s*([^\*]+?)\s*\*\/\s*(.)?/g.exec(text) ) !== null ) {
+	while ( title !== '' && ( var link = /\/\*\s*([^\*]+?)\s*\*\/\s*(.)?/g.exec(text) ) !== null ) {
 		var page = title.toTitle(true) + '#' + link[1].toSection();
 		text = text.replaceSave( link[0], '[→](' + wiki.toLink() + page + ')' + link[1] + ( link[2] ? ': ' + link[2] : '' ) );
 	}
