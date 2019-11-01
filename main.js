@@ -71,7 +71,7 @@ function setStatus(hardreset) {
 	else if ( hardreset === true ) client.user.setStatus('invisible').then(setStatus, log_error);
 	else {
 		client.user.setStatus('online').catch(log_error);
-		client.user.setActivity( process.env.prefix + ' help' ).catch(log_error);
+		client.user.setActivity( process.env.prefix + ' info' ).catch(log_error);
 	}
 }
 
@@ -1263,7 +1263,7 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 		} );
 	} else {
 		request( {
-			uri: wiki + 'api.php?action=query&meta=siteinfo&siprop=general&list=users&usprop=blockinfo|groups|editcount|registration|gender&ususers=' + encodeURIComponent( username ) + '&format=json',
+			uri: wiki + 'api.php?action=query&meta=allmessages|siteinfo&ammessages=custom-Wiki_Manager&amenableparser=true&siprop=general&list=users&usprop=blockinfo|groups|editcount|registration|gender&ususers=' + encodeURIComponent( username ) + '&format=json',
 			json: true
 		}, function( error, response, body ) {
 			if ( body && body.warnings ) log_warn(body.warnings);
@@ -1338,7 +1338,10 @@ function cmd_user(lang, msg, namespace, username, wiki, linksuffix, querypage, c
 					var group = [lang.user.info.group];
 					for ( var i = 0; i < lang.user.groups.length; i++ ) {
 						if ( groups.includes( lang.user.groups[i][0] ) ) {
-							group.push(lang.user.groups[i][1]);
+							if ( lang.user.groups[i][0] === 'wiki-manager' && body.query.allmessages[0]['*'] === username ) {
+								group.push('**' + lang.user.groups[i][1] + '**');
+							}
+							else group.push(lang.user.groups[i][1]);
 							break;
 						}
 					}
@@ -2297,7 +2300,7 @@ function cmd_overview(lang, msg, wiki, reaction, spoiler) {
 					var text = '<' + pagelink + '>\n\n' + vertical.join(' ') + '\n' + topic.join(' ');
 				}
 				
-				if ( founder[1] ) request( {
+				if ( founder[1] > 0 ) request( {
 					uri: wiki + 'api.php?action=query&list=users&usprop=&usids=' + founder[1] + '&format=json',
 					json: true
 				}, function( userror, usresponse, usbody ) {
@@ -2703,7 +2706,7 @@ String.prototype.escapeFormatting = function() {
  * @returns {string}
  */
 String.prototype.replaceSave = function(pattern, replacement) {
-	return this.replace( pattern, ( typeof replacement === 'string' ? replacement.replace( '$', '$$$$' ) : replacement ) );
+	return this.replace( pattern, ( typeof replacement === 'string' ? replacement.replace( /\$/g, '$$$$' ) : replacement ) );
 };
 
 /**
