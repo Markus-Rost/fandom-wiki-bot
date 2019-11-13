@@ -304,7 +304,6 @@ function cmd_info(lang, msg, args, line) {
 	else {
 		msg.sendChannel( lang.disclaimer.replaceSave( '%s', ( msg.channel.type === 'text' && msg.guild.members.get(process.env.owner) || '*MarkusRost*' ) ) + '\n<https://www.patreon.com/WikiBot>' );
 		cmd_helpserver(lang, msg);
-		cmd_invite(lang, msg, args, line);
 	}
 }
 
@@ -314,7 +313,7 @@ function cmd_info(lang, msg, args, line) {
  * @param {Discord.Message} [msg] The message
  */
 function cmd_helpserver(lang, msg) {
-	msg.sendChannel( lang.helpserver + '\n' + process.env.invite );
+	msg.sendChannel( '**' + lang.warning + '**\nhttps://discordapp.com/oauth2/authorize?client_id=461189216198590464&permissions=268954688&scope=bot\n\n' + lang.helpserver + '\n' + process.env.invite );
 }
 
 /**
@@ -343,8 +342,8 @@ function cmd_help(lang, msg, args, line) {
 	if ( msg.channel.type === 'text' && pause[msg.guild.id] && ( args.join('') || !msg.isAdmin() ) ) return;
 	if ( msg.isAdmin() && !( msg.guild.id in settings ) && settings !== defaultSettings ) {
 		cmd_settings(lang, msg, [], line);
-		cmd_helpserver(lang, msg);
 	}
+	cmd_helpserver(lang, msg);
 	var cmds = lang.help.list;
 	var cmdintro = '🔹 `' + process.env.prefix + ' ';
 	if ( args.join('') ) {
@@ -664,7 +663,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 	var linksuffix = ( querystring ? '?' + querystring.toTitle() : '' ) + ( fragment ? '#' + fragment.toSection() : '' );
 	if ( title.length > 300 ) {
 		title = title.substring(0, 300);
-		msg.reactEmoji('⚠');
+		msg.reactEmoji('⚠️');
 	}
 	var invoke = title.split(' ')[0].toLowerCase();
 	var aliasInvoke = ( lang.aliase[invoke] || invoke );
@@ -1019,7 +1018,7 @@ function check_wiki(lang, msg, title, wiki, cmd, reaction, spoiler = '', queryst
 						}
 						if ( querystring ) inter.url += ( inter.url.includes( '?' ) ? '&' : '?' ) + querystring.toTitle();
 						msg.sendChannel( spoiler + ' ' + inter.url.replace( /@(here|everyone)/g, '%40$1' ) + fragment + ' ' + spoiler ).then( message => {
-							if ( message && selfcall === 5 ) message.reactEmoji('⚠');
+							if ( message && selfcall === 5 ) message.reactEmoji('⚠️');
 						} );
 						if ( reaction ) reaction.removeEmoji();
 					}
@@ -2824,7 +2823,7 @@ Discord.Message.prototype.deleteMsg = function(timeout = 0) {
  * @returns {Promise<Discord.Message>}
  */
 Discord.Message.prototype.allowDelete = function(author) {
-	return this.awaitReactions( (reaction, user) => reaction.emoji.name === '🗑' && user.id === author, {max:1,time:60000} ).then( reaction => {
+	return this.awaitReactions( (reaction, user) => reaction.emoji.name === '🗑️' && user.id === author, {max:1,time:60000} ).then( reaction => {
 		if ( reaction.size ) {
 			this.deleteMsg();
 		}
@@ -2850,7 +2849,7 @@ client.on( 'message', msg => {
 	
 	if ( !ready.settings && settings === defaultSettings ) getSettings();
 	if ( settings === defaultSettings ) {
-		msg.sendChannel( '⚠ **Limited Functionality** ⚠\nNo settings found, please contact the bot owner!\n' + process.env.invite, {}, true );
+		msg.sendChannel( '⚠️ **Limited Functionality** ⚠️\nNo settings found, please contact the bot owner!\n' + process.env.invite, {}, true );
 	}
 	var lang = i18n[( channel.type === 'text' && settings[msg.guild.id] || settings.default ).lang];
 	
@@ -2899,7 +2898,7 @@ client.on( 'message', msg => {
 				} else if ( line.hasPrefix() && count === 10 ) {
 					count++;
 					console.log( '- Message contains too many commands!' );
-					msg.reactEmoji('⚠');
+					msg.reactEmoji('⚠️');
 					msg.sendChannelError( lang.limit.replaceSave( '%s', author ) );
 				}
 			} );

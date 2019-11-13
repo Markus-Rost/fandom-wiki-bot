@@ -17,6 +17,7 @@
 	},
 	"missingperm": "Bu komutu uygulamak için ihtiyacım olan birkaç izin eksik:",
 	"limit": "🚨 **Dur, limite ulaştın!** 🚨\n\n%s, mesajın çok fazla komut içeriyor!",
+	"warning": "Bu bot artık kullanılmıyor, lütfen güncelleştirilmiş versiyon ile değiştirin:",
 	"disclaimer": "Ben, Fandom Wikilerinin bağlantılarını göndermek ile görevlendirilmiş küçük bir botum. %s, beni JavaScript kullanarak yazdı.\n\n**Fandom ile resmi bir bağım yok, ben bir gayri resmi aracım!!**\n\nBeni Patreon'da da destekleyebilirsiniz:",
 	"helpserver": "Sorular ve sorunlarınız için lütfen destek sunucumu ziyaret edin:",
 	"settings": {
@@ -176,7 +177,7 @@
 		"admin": "Bu komutlar sadece yöneticiler tarafından kullanılabilir:",
 		"noadmin": "Bu komutlar için `Sunucuyu Yönetme` iznine ihtiyacınız var!",
 		"pause": "**Şu an bu sunucuda duraklatılmış durumdayım!**\nSadece bu komutlar gerçekleştirilebilir:",
-		"footer": "Eğer istenmeyen bir cevap verdiysem mesajıma 🗑 ile tepki verin, mesajı sileceğim.",
+		"footer": "Eğer istenmeyen bir cevap verdiysem mesajıma 🗑️ ile tepki verin, mesajı sileceğim.",
 		"list": [
 			{ "cmd": "<arama terimi>", "desc": "Wiki'deki eşleşen bir makale bağlantısıyla cevap vereceğim.", "unsearchable": true },
 			{ "cmd": "!<wiki> <arama terimi>", "desc": "Belirtilen Fandom Wikideki eşleşen bir makale bağlantısıyla cevap vereceğim: `https://<wiki>.fandom.com/`", "unsearchable": true },

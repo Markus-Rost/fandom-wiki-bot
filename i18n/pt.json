@@ -22,6 +22,7 @@
 	},
 	"missingperm": "eu estou perdendo algumas permissões para este comando:",
 	"limit": "🚨 **Pare, você atingiu um limite!** 🚨\n\n%s, sua mensagem continha muitos comandos!",
+	"warning": "Este robô foi descontinuado, por favor, mude para a versão atualizada:",
 	"disclaimer": "Eu sou um pequeno robô com a tarefa de vincular a Wikis da Fandom. %s me escreveu em JavaScript.\n\n**Eu não sou afiliado com a Fandom e sou uma ferramenta não oficial!**\n\nVocê pode me apoiar no Patreon:",
 	"helpserver": "Para dúvidas e problemas, visite o meu servidor de suporte:",
 	"settings": {
@@ -184,7 +185,7 @@
 		"admin": "Esses comandos só podem ser executados por administradores:",
 		"noadmin": "você precisa da permissão de `Gerenciar servidor` para esses comandos!",
 		"pause": "**Estou atualmente em pausa neste servidor!**\nSom estes comandos podem ser executados:",
-		"footer": "Se você recebeu uma resposta indesejada, pode reagir com 🗑 para minha mensagem e eu a apagarei.",
+		"footer": "Se você recebeu uma resposta indesejada, pode reagir com 🗑️ para minha mensagem e eu a apagarei.",
 		"list": [
 			{ "cmd": "<termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente no wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <termo de pesquisa>", "desc": "Vou responder com um link para um artigo correspondente na wiki da Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },

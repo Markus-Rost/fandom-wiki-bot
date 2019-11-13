@@ -15,6 +15,7 @@
 	},
 	"missingperm": "Ik mis een aantal permissies voor deze opdracht:",
 	"limit": "🚨 **Stop, je hebt een limiet bereikt!** 🚨\n\n%s, je bericht bevatte te veel opdrachten!",
+	"warning": "Deze bot is verouderd, schakel alsjeblieft over naar de nieuwste versie:",
 	"disclaimer": "Ik ben een kleine bot met de taak om naar Fandom wiki's te linken. %s schreef me in JavaScript.\n\n**Ik ben niet geaffilieerd met Fandom en ben een onofficieel hulpmiddel!**\n\nJe kunt me ondersteunen op Patreon:",
 	"helpserver": "Voor vragen en problemen verwijs ik je graag naar mijn support server:",
 	"settings": {
@@ -178,7 +179,7 @@
 		"admin": "Deze opdrachten kunnen alleen door administratoren uitgevoerd worden:",
 		"noadmin": "je hebt de `Beheer Server` permissie nodig voor deze opdrachten!",
 		"pause": "**Ik ben momenteel gepauzeerd op deze server!**\nAlleen deze opdrachten kunnen worden uitgevoerd:",
-		"footer": "Als je een ongewenst antwoord krijgt, kun je reageren met 🗑 op mijn bericht en ik zal het verwijderen.",
+		"footer": "Als je een ongewenst antwoord krijgt, kun je reageren met 🗑️ op mijn bericht en ik zal het verwijderen.",
 		"list": [
 			{ "cmd": "<zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <zoek term>", "desc": "Ik zal antwoorden met een link naar een passend artikel uit de benoemde Fandom wiki: `https://<wiki>.fandom.com/`", "unsearchable": true },

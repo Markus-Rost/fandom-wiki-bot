@@ -1,10 +1,14 @@
-# Wikia-Bot
+# Wikia-Bot has been deprecated
+**Please switch to [Wiki-Bot](https://github.com/Markus-Rost/discord-wiki-bot) instead!
+<br>[https://discordapp.com/oauth2/authorize?client_id=461189216198590464&permissions=268954688&scope=bot](https://discordapp.com/oauth2/authorize?client_id=461189216198590464&permissions=268954688&scope=bot)**
+
+## Description
 <a href="https://discordbots.org/bot/523162656346079234"><img align="right" src="https://discordbots.org/api/widget/523162656346079234.svg" alt="Wikia-Bot"></a>
 **Wikia-Bot** is a bot for [Discord](https://discordapp.com/) with the purpose to easily link to [Fandom wikis](https://fandom.wikia.com/explore).
 <br>He resolves redirects and follows interwiki links.
-<br>**Wikia-Bot** has translations for English, German, French, Dutch, Polish, Portuguese and Turkish.
+<br>**Wikia-Bot** has translations for English, German, French, Dutch, Polish, Portuguese, Russian, Turkish and Chinese.
 
-**Wikia-Bot is not affiliated with Fandom/Wikia and is an unofficial tool!**
+**Wikia-Bot is not affiliated with Fandom and is an unofficial tool!**
 
 [Use this link to invite **Wikia-Bot** to your Discord server.](https://discordapp.com/oauth2/authorize?client_id=523162656346079234&permissions=268954689&scope=bot)
 

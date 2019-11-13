@@ -11,6 +11,7 @@
 	},
 	"missingperm": "I'm missing some permissions for this command:",
 	"limit": "🚨 **Stop, you hit a limit!** 🚨\n\n%s, your message contained too many commands!",
+	"warning": "This bot has been deprecated, please switch to the updated version:",
 	"disclaimer": "I am a small bot with the task to link to Fandom wikis. %s wrote me in JavaScript.\n\n**I am not affiliated with Fandom and am an unofficial tool!**\n\nYou can support me on Patreon:",
 	"helpserver": "For questions and problems please visit my support server:",
 	"settings": {
@@ -173,7 +174,7 @@
 		"admin": "These commands can only be performed by administrators:",
 		"noadmin": "you need the `Manage Server` permission for these commands!",
 		"pause": "**I'm currently paused on this server!**\nOnly these commands can be performed:",
-		"footer": "If you got an unwanted response, you can react with 🗑 to my message and I will delete it.",
+		"footer": "If you got an unwanted response, you can react with 🗑️ to my message and I will delete it.",
 		"list": [
 			{ "cmd": "<search term>", "desc": "I will answer with a link to a matching article in the wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <search term>", "desc": "I will answer with a link to a matching article in the named Fandom wiki: `https://<wiki>.fandom.com/`", "unsearchable": true },

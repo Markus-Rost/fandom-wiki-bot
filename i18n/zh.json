@@ -12,6 +12,7 @@
 	},
 	"missingperm": "为执行此命令我缺少一些权限：",
 	"limit": "🚨 **停一下，你太快了！** 🚨\n\n%s，你发出的指令过多了。",
+	"warning": "This bot has been deprecated, please switch to the updated version:",
 	"disclaimer": "我是一个用来服务Fandom wiki的小小机器人， %s使用JavaScript制造了我！\n\n**请注意我并非附属Fandom的官方机器人！**\n\n你可以在这里找到更多信息：",
 	"helpserver": "有问题吗？你可以访问我的专属支援伺服器：",
 	"settings": {
@@ -166,7 +167,7 @@
 		"admin": "这些指令仅限管理员使用：",
 		"noadmin": "这个指令仅限拥有`管理员`权限的用户使用！",
 		"pause": "**我目前处于暂停状态！**\n仅能使用以下指令：",
-		"footer": "如果你觉得我的某个信息刷屏，在信息上添加一个🗑图标我就会自己删掉这一条信息。",
+		"footer": "如果你觉得我的某个信息刷屏，在信息上添加一个🗑️图标我就会自己删掉这一条信息。",
 		"list": [
 			{ "cmd": "<关键字>", "desc": "我将返回一个wiki指定页面的链接", "unsearchable": true },
 			{ "cmd": "!<wiki> <关键字>", "desc": "我将返回特定wiki的指定页面的链接: `https://<wiki>.fandom.com/`", "unsearchable": true },

@@ -14,6 +14,7 @@
 	},
 	"missingperm": "Il me manque certaines permissions pour cette commande :",
 	"limit": "🚨 **Halte ! Vous avez dépassé la limite !** 🚨\n\n%s, votre message contient beaucoup trop de commandes !",
+	"warning": "Ce bot a été rendu obsolète, merci de passer à la version mise à jour :",
 	"disclaimer": "Je suis un petit bot avec la tâche de créer un lien vers les wikis Fandom. %s m'a écrit en JavaScript.\n\n**Je ne suis pas affilié avec Fandom et ne suis pas un outil officiel !**\n\nVous pouvez également me soutenir sur Patreon :",
 	"helpserver": "Pour tout problème ou question, merci de visiter mon serveur de support :",
 	"settings": {
@@ -199,7 +200,7 @@
 		"admin": "Ces commandes ne peuvent être effectuées que par des administrateurs :",
 		"noadmin": "vous devez avoir la permission `Gérer le serveur` pour utiliser ces commandes !",
 		"pause": "**Je suis présentement en pause sur ce serveur!**\n Seuls ces commandes sont disponibles :",
-		"footer": "Si vous avez reçu une réponse non-désirée, vous pouvez réagir avec 🗑 sur mon message and je le supprimerai.",
+		"footer": "Si vous avez reçu une réponse non-désirée, vous pouvez réagir avec 🗑️ sur mon message and je le supprimerai.",
 		"list": [
 			{ "cmd": "<terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur Wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <terme de recherche>", "desc": "Je vais répondre avec un lien vers un article correspondant sur wiki Fandom nommé : `https://<wiki>.fandom.com/`", "unsearchable": true },

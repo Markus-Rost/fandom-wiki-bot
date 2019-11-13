@@ -16,6 +16,7 @@
 	},
 	"missingperm": "Brakuje mi upawnień:",
 	"limit": "🚨 **Chwila moment! Osiągnięto limit!** 🚨\n\n%s, Twoja wiadomość zawiera zbyt wiele komend!",
+	"warning": "Ten bot przestał być wspierany, proszę zamienić go na nowszą wersję:",
 	"disclaimer": "Jestem małym botem, którego zadaniem jest linkowanie do różnych wiki Fandom. Zostałem napisany w JavaScript przez %s.\n\n**Nie jestem oficjalny i nie mam żadnego wsparcia lub powiązania z Fandom!**\n\nMożesz wesprzeć mnie na Patreon-ie:",
 	"helpserver": "W przypadku pytań lub problemów, odwiedź mój serwer:",
 	"settings": {
@@ -202,7 +203,7 @@
 		"admin": "Te komendy mogą być wykonane jedynie przez administrację:",
 		"noadmin": "potrzebujesz uprawnienia `Zarządzanie serwerem` aby używać tych komend!",
 		"pause": "**Moja praca na tym serwerze została wstrzymana!**\nTylko następujące komendy mogą być używane:",
-		"footer": "Jeżeli otrzymałeś niechcianą odpowiedź, możesz na nią zareagować używając emotki 🗑 a wiadomość zostanie ona usunięta.",
+		"footer": "Jeżeli otrzymałeś niechcianą odpowiedź, możesz na nią zareagować używając emotki 🗑️ a wiadomość zostanie ona usunięta.",
 		"list": [
 			{ "cmd": "<wyszukiwana fraza>", "desc": "Odpowiem linkiem do pasujacego artykułu na Wiki.", "unsearchable": true },
 			{ "cmd": "!<wiki> <wyszukiwana fraza>", "desc": "Odpowiem z pasującym linkiem do podanej wiki na Fandom: `https://<wiki>.fandom.com/`", "unsearchable": true },
