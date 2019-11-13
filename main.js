@@ -313,7 +313,7 @@ function cmd_info(lang, msg, args, line) {
  * @param {Discord.Message} [msg] The message
  */
 function cmd_helpserver(lang, msg) {
-	msg.sendChannel( '**' + lang.warning + '**\nhttps://discordapp.com/oauth2/authorize?client_id=461189216198590464&permissions=268954688&scope=bot\n\n' + lang.helpserver + '\n' + process.env.invite );
+	msg.sendChannel( '**' + lang.warning + '**\n<https://discordapp.com/oauth2/authorize?client_id=461189216198590464&permissions=268954688&scope=bot>\n\n' + lang.helpserver + '\n' + process.env.invite );
 }
 
 /**
