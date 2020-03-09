@@ -627,7 +627,7 @@ function cmd_delete(lang, msg, args, line) {
  * @param {String} [cmd=' '] The command to the current wiki
  */
 function cmd_link(lang, msg, title, wiki = msg.channel.getWiki(), cmd = ' ') {
-	if ( msg.isAdmin() ) cmd_helpserver(lang, msg);
+	cmd_helpserver(lang, msg);
 	if ( cmd === ' ' && msg.isAdmin() && !( msg.guild.id in settings ) && settings !== defaultSettings ) {
 		cmd_settings(lang, msg, [], '');
 	}
